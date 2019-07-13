@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on 稀里稀里哗啦啦</title>
-    <link>http://localhost:1313/post/</link>
-    <description>Recent content in Posts on 稀里稀里哗啦啦</description>
+    <title>心得 on 稀里稀里哗啦啦</title>
+    <link>http://localhost:1313/categories/%E5%BF%83%E5%BE%97/</link>
+    <description>Recent content in 心得 on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sat, 13 Jul 2019 15:46:36 +0800</lastBuildDate>
     
-	<atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://localhost:1313/categories/%E5%BF%83%E5%BE%97/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -17,15 +17,6 @@
       <pubDate>Sat, 13 Jul 2019 15:46:36 +0800</pubDate>
       
       <guid>http://localhost:1313/post/gorm_extension_1/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Logstash Docker部署的踩坑笔记</title>
-      <link>http://localhost:1313/post/logstash_docker_note/</link>
-      <pubDate>Sat, 29 Jun 2019 00:43:12 +0800</pubDate>
-      
-      <guid>http://localhost:1313/post/logstash_docker_note/</guid>
       <description></description>
     </item>
     
