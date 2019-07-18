@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Gorm的使用心得和一些常用扩展(二) - 稀里稀里哗啦啦</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="海之方" /><meta name="description" content="" /><meta name="keywords" content="gorm, orm, golang" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6 with even 4.0.0" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/gorm_extension_2/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Gorm的使用心得和一些常用扩展(二)" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/gorm_extension_2/" />
+<meta property="article:published_time" content="2019-07-18T23:47:04&#43;08:00"/>
+<meta property="article:modified_time" content="2019-07-18T23:47:04&#43;08:00"/>
+
+<meta itemprop="name" content="Gorm的使用心得和一些常用扩展(二)">
+<meta itemprop="description" content="">
+
+
+<meta itemprop="datePublished" content="2019-07-18T23:47:04&#43;08:00" />
+<meta itemprop="dateModified" content="2019-07-18T23:47:04&#43;08:00" />
+<meta itemprop="wordCount" content="1896">
+
+
+
+<meta itemprop="keywords" content="golang," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Gorm的使用心得和一些常用扩展(二)"/>
+<meta name="twitter:description" content=""/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">稀里稀里哗啦啦</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">稀里稀里哗啦啦</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Gorm的使用心得和一些常用扩展(二)</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-18 </span>
+        <div class="post-category">
+            <a href="/categories/%E5%BF%83%E5%BE%97/"> 心得 </a>
+            </div>
+          <span class="more-meta"> 1896 words </span>
+          <span class="more-meta"> 4 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#单表查询">单表查询</a>
+<ul>
+<li><a href="#查询一个">查询一个</a></li>
+<li><a href="#范围查询">范围查询</a></li>
+</ul></li>
+<li><a href="#多表查询">多表查询</a>
+<ul>
+<li><a href="#一个复杂的例子">一个复杂的例子</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>在<a href="https://ksloveyuan.github.io/post/gorm_extension_1/">上一篇</a>文章，我分享了自己在新增和更新的场景下，自己使用gorm的一些心得和扩展。本文，我将分享一些在查询的方面的心得。</p>
+
+<p>首先，我把查询按照涉及到的表的数量分为：
+- 单表查询
+- 多表查询</p>
+
+<p>按照查询范围又可以分为：
+- 查询一个
+- 范围查询
+    - 查询一组
+    - 有序查询
+    - 查询前几个
+    - 分页查询</p>
+
+<p>在日常使用中，单表查询占据了多半的场景，把这部分的代码按照查询范围做一些封装，可以大大减少冗余的代码。</p>
+
+<h1 id="单表查询">单表查询</h1>
+
+<p>于是，我仿照gorm API的风格，做了如下的封装：</p>
+
+<p><em>ps：以下例子均以假定已定义user对象</em></p>
+
+<h2 id="查询一个">查询一个</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func (dw *DBExtension) GetOne(result interface{}, query interface{}, args ...interface{}) (found bool, err error) {
+	var (
+		tableNameAble TableNameAble
+		ok            bool
+	)
+
+	if tableNameAble, ok = query.(TableNameAble); !ok {
+		if tableNameAble, ok = result.(TableNameAble); !ok {
+			return false, errors.New(&#34;neither the query nor result implement TableNameAble&#34;)
+		}
+	}
+
+	err = dw.Table(tableNameAble.TableName()).Where(query, args...).First(result).Error
+
+	if err == gorm.ErrRecordNotFound {
+		dw.logger.LogInfoc(&#34;mysql&#34;, fmt.Sprintf(&#34;record not found for query %s, the query is %+v, args are %+v&#34;, tableNameAble.TableName(), query, args))
+		return false, nil
+	}
+
+	if err != nil {
+		dw.logger.LogErrorc(&#34;mysql&#34;, err, fmt.Sprintf(&#34;failed to query %s, the query is %+v, args are %+v&#34;, tableNameAble.TableName(), query, args))
+		return false, err
+	}
+
+	return true, nil
+}</pre></td></tr></table>
+</div>
+</div>
+<p>这段值得说明的就是对查询不到数据时的处理，gorm是报了<strong>gorm.ErrRecordNotFound</strong>的error, 我是对这个错误做了特殊处理，用found这个boolean值表述这个特殊状态。</p>
+
+<p>调用代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">condition := User{Id:1}
+result := User{}
+
+if  found, err := dw.GetOne(&amp;result, condition); !found {
+	//not found
+    if err != nil {
+    	// has error
+        return err
+    }
+    
+}</pre></td></tr></table>
+</div>
+</div>
+<p>也可以这样写，更加灵活的指定的查询条件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">result := User{}
+
+if  found, err := dw.GetOne(&amp;result, &#34;id = ？&#34;， 1); !found {
+	//not found
+    if err != nil {
+    	// has error
+        return err
+    }
+    
+}</pre></td></tr></table>
+</div>
+</div>
+<p>两种写法执行的语句都是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">select * from test.user where id = 1</pre></td></tr></table>
+</div>
+</div>
+<h2 id="范围查询">范围查询</h2>
+
+<p>针对四种范国查询，我做了如下封装：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func (dw *DBExtension) GetList(result interface{}, query interface{}, args ...interface{}) error {
+	return dw.getListCore(result, &#34;&#34;, 0, 0, query, args)
+}
+
+func (dw *DBExtension) GetOrderedList(result interface{}, order string, query interface{}, args ...interface{}) error {
+	return dw.getListCore(result, order, 0, 0, query, args)
+}
+
+func (dw *DBExtension) GetFirstNRecords(result interface{}, order string, limit int, query interface{}, args ...interface{}) error {
+	return dw.getListCore(result, order, limit, 0, query, args)
+}
+
+func (dw *DBExtension) GetPageRangeList(result interface{}, order string, limit, offset int, query interface{}, args ...interface{}) error {
+	return dw.getListCore(result, order, limit, offset, query, args)
+}
+
+func (dw *DBExtension) getListCore(result interface{}, order string, limit, offset int, query interface{}, args []interface{}) error {
+	var (
+		tableNameAble TableNameAble
+		ok            bool
+	)
+
+	if tableNameAble, ok = query.(TableNameAble); !ok {
+		// type Result []*Item{}
+		// result := &amp;Result{}
+		resultType := reflect.TypeOf(result)
+		if resultType.Kind() != reflect.Ptr {
+			return errors.New(&#34;result is not a pointer&#34;)
+		}
+
+		sliceType := resultType.Elem()
+		if sliceType.Kind() != reflect.Slice {
+			return errors.New(&#34;result doesn&#39;t point to a slice&#34;)
+		}
+		// *Item
+		itemPtrType := sliceType.Elem()
+		// Item
+		itemType := itemPtrType.Elem()
+
+		elemValue := reflect.New(itemType)
+		elemValueType := reflect.TypeOf(elemValue)
+		tableNameAbleType := reflect.TypeOf((*TableNameAble)(nil)).Elem()
+
+		if elemValueType.Implements(tableNameAbleType) {
+			return errors.New(&#34;neither the query nor result implement TableNameAble&#34;)
+		}
+
+		tableNameAble = elemValue.Interface().(TableNameAble)
+	}
+
+	db := dw.Table(tableNameAble.TableName()).Where(query, args...)
+	if len(order) != 0 {
+		db = db.Order(order)
+	}
+
+	if offset &gt; 0 {
+		db = db.Offset(offset)
+	}
+
+	if limit &gt; 0 {
+		db = db.Limit(limit)
+	}
+
+	if err := db.Find(result).Error; err != nil {
+		dw.logger.LogErrorc(&#34;mysql&#34;, err, fmt.Sprintf(&#34;failed to query %s, query is %+v, args are %+v, order is %s, limit is %d&#34;, tableNameAble.TableName(), query, args, order, limit))
+		return err
+	}
+
+	return nil
+}</pre></td></tr></table>
+</div>
+</div>
+<p>为了减少冗余的代码，通用的逻辑写在<strong>getListCore</strong>函数里，里面用到了一些golang反射的知识。</p>
+
+<p>但只要记得golang的反射和其它语言的反射最大的不同，是<strong>golang的反射是基本值而不是类型的</strong>，一切就好理解了。</p>
+
+<p>其中的一个小技巧是如何判断一个类型是否实现了某个接口，用到了指向nil的指针。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">	elemValue := reflect.New(itemType)
+	elemValueType := reflect.TypeOf(elemValue)
+	tableNameAbleType := reflect.TypeOf((*TableNameAble)(nil)).Elem()
+
+	if elemValueType.Implements(tableNameAbleType) {
+		return errors.New(&#34;neither the query nor result implement TableNameAble&#34;)
+	}</pre></td></tr></table>
+</div>
+</div>
+<p>关于具体的使用，就不再一一举例子了，熟悉gorm api的同学可以一眼看出。</p>
+
+<h1 id="多表查询">多表查询</h1>
+
+<p>关于多表查询，因为不同场景很难抽取出不同，也就没有再做封装，但是我的经验是<strong>优先多使用gorm的方法，而不是自己拼sql</strong>。你想要做的gorm都可以实现。</p>
+
+<p>这里，我偷个懒，贴出自己在项目中写的最复杂的一段代码，供各位看官娱乐。</p>
+
+<h2 id="一个复杂的例子">一个复杂的例子</h2>
+
+<p>这段代码是从埋点数据的中间表，为了用通用的代码实现不同展示场景下的查询，代码设计的比较灵活，其中涉及了关联多表的查询，按查询条件动态过滤和聚合，还有分页查询的逻辑。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func buildCommonStatisticQuery(tableName, startDate, endDate string) *gorm.DB {
+	query := models.DB().Table(tableName)
+
+	if startDate == endDate || endDate == &#34;&#34; {
+		query = query.Where(&#34;date = ?&#34;, startDate)
+	} else {
+		query = query.Where(&#34;date &gt;= ? and date &lt;= ?&#34;, startDate, endDate)
+	}
+
+	return query
+}
+
+func buildElementsStatisticQuery(startDate, endDate,  elemId string,  elemType int32) *gorm.DB {
+	query := buildCommonStatisticQuery(&#34;spotanalysis.element_statistics&#34;, startDate, endDate)
+
+	if elemId != &#34;&#34; &amp;&amp; elemType != 0 {
+		query = query.Where(&#34;element_id = ? and element_type = ?&#34;, elemId, elemType)
+	}
+
+	return query
+}
+
+func CountElementsStatistics(count *int32, startDate, endDate, instId, appId, elemId string, elemType int32, groupFields []string ) error {
+	query := buildElementsStatisticQuery(startDate, endDate,  elemId, elemType)
+
+	query = whereInstAndApp(query, instId, appId)
+
+	if len(groupFields) != 0 {
+		query = query.Select(fmt.Sprintf(&#34;count(distinct(concat(%s)))&#34;, strings.Join(groupFields, &#34;,&#34;)))
+	} else {
+		query = query.Select(&#34;count(id)&#34;)
+	}
+
+	query = query.Count(count)
+	return query.Error
+}
+
+
+func GetElementsStatistics(result interface{}, startDate, endDate, instId, appId, elemId string, elemType int32, groupFields []string, orderBy string, ascOrder bool, limit, offset int32) error {
+	query := buildElementsStatisticQuery(startDate, endDate, elemId, elemType)
+	if len(groupFields) != 0 {
+		groupBy := strings.Join(groupFields, &#34;`,`&#34;)
+		groupBy = &#34;`&#34; + groupBy + &#34;`&#34;
+		query = query.Group(groupBy)
+		query = havingInstAndApp(query, instId, appId)
+
+		sumFields := strings.Join([]string{
+			&#34;SUM(`element_statistics`.`mp_count`) AS `mp_count`&#34;,
+			&#34;SUM(`element_statistics`.`h5_count`) AS `h5_count`&#34;,
+			&#34;SUM(`element_statistics`.`total_count`) AS `total_count`&#34;,
+			&#34;SUM(`element_statistics`.`collection_count`) AS `collection_count`&#34;,
+			&#34;SUM(`element_statistics`.`mp_share_count`) AS `mp_share_count`&#34;,
+			&#34;SUM(`element_statistics`.`h5_share_count`) AS `h5_share_count`&#34;,
+			&#34;SUM(`element_statistics`.`poster_share_count`) AS `poster_share_count`&#34;,
+			&#34;SUM(`element_statistics`.`total_share_count`) AS `total_share_count`&#34;,
+		}, &#34;,&#34;)
+
+		query = query.Select(groupBy + &#34;,&#34; + sumFields)
+	} else {
+		query = whereInstAndApp(query, instId, appId)
+	}
+
+	query = getPagedList(query, orderBy, ascOrder, limit, offset)
+
+	return query.Find(result).Error
+}
+
+func getPagedList(query *gorm.DB, orderBy string, ascOrder bool, limit , offset int32) *gorm.DB {
+	if orderBy != &#34;&#34; {
+		if ascOrder {
+			orderBy += &#34; asc&#34;
+		} else {
+			orderBy += &#34; desc&#34;
+		}
+		query = query.Order(orderBy)
+	}
+
+	if offset != 0 {
+		query = query.Offset(offset)
+	}
+	if limit != 0 {
+		query = query.Limit(limit)
+	}
+	return query
+}
+
+func whereInstAndApp(query *gorm.DB, instId string, appId string) *gorm.DB {
+	query = query.Where(&#34;inst_id = ?&#34;, instId)
+	if appId != &#34;&#34; {
+		query = query.Where(&#34;app_id = ?&#34;, appId)
+	}
+	return query
+}
+
+func havingInstAndApp(query *gorm.DB, instId string, appId string) *gorm.DB {
+	query = query.Having(&#34;inst_id = ?&#34;, instId)
+	if appId != &#34;&#34; {
+		query = query.Having(&#34;app_id = ?&#34;, appId)
+	}
+	return query
+}</pre></td></tr></table>
+</div>
+</div>
+<p>感谢各位看官耐心看完，如果本文对你有用，请点个赞~~~</p>
+
+<p>如果能到代码仓库：<a href="https://github.com/Ksloveyuan/gorm-ex">Github:Ksloveyuan/gorm-ex</a> 给个✩star✩, 楼主就更加感谢了！</p>
+    </div>
+
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    <label class="qr-code-image" for="reward">
+        <img class="image" src="https://upload-images.jianshu.io/upload_images/1573435-86a380a3ae35456e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+        <span>wechat</span>
+      </label>
+    
+  </div>
+</div><footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/golang/">golang</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/gorm_extension_1/">
+            <span class="next-text nav-default">Gorm的使用心得和一些常用扩展(一)</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-linkedin" title="linkedin"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">ksloveyuan</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
