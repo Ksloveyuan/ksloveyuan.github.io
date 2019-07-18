@@ -51,7 +51,7 @@
 
 <meta itemprop="datePublished" content="2019-07-13T15:46:36&#43;08:00" />
 <meta itemprop="dateModified" content="2019-07-13T15:46:36&#43;08:00" />
-<meta itemprop="wordCount" content="2095">
+<meta itemprop="wordCount" content="2145">
 
 
 
@@ -128,13 +128,28 @@
         <div class="post-category">
             <a href="/categories/%E5%BF%83%E5%BE%97/"> 心得 </a>
             </div>
-          <span class="more-meta"> 2095 words </span>
+          <span class="more-meta"> 2145 words </span>
           <span class="more-meta"> 5 mins read </span>
         
       </div>
     </header>
 
-    
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#准备">准备</a></li>
+<li><a href="#新增">新增</a></li>
+<li><a href="#更新">更新</a>
+<ul>
+<li><a href="#全量更新">全量更新</a></li>
+<li><a href="#条件更新">条件更新</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
     <div class="post-content">
       <p>Gorm是golang的一个orm框架，它提供了对数据库操作的封装，使用起来相当便利。</p>
 
@@ -290,6 +305,14 @@ if err := dw.SaveOne(&amp;instInfo); err != nil{
 
 <h1 id="更新">更新</h1>
 
+<p>首先，按照更新的字段的范围可以分为：
+- 全量更新
+- 条件更新</p>
+
+<p>下面将分这两种情况分别说明：</p>
+
+<h2 id="全量更新">全量更新</h2>
+
 <p>SaveOne方法是<strong>全量更新</strong>，但大部分情况是，可能只是更新某条数据的部分字段，又或者是只想更新改过的字段。关于这部分操作，gorm虽然提供了很多操作方法，但也是最让人困惑的。</p>
 
 <p>在这种场景我常用的处理方式有两种，一是定义一个专门的结构体，如：</p>
@@ -343,6 +366,8 @@ if err := dw.SaveOne(&amp;userDesc); err != nil{
 <pre class="chroma">update test.user set description = &#34;A programmer&#34; where id = 1</pre></td></tr></table>
 </div>
 </div>
+<h2 id="条件更新">条件更新</h2>
+
 <p>但是更多的时候，是想按匹配条件更新的匹配的数据，这时SaveOne就无法满足了。于是，我做了如下扩展：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
