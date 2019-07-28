@@ -6,10 +6,19 @@
     <description>Recent content in Posts on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 18 Jul 2019 23:47:04 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 28 Jul 2019 23:21:16 +0800</lastBuildDate>
     
 	<atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>解析一道区块链行业前三公司的笔试题</title>
+      <link>http://localhost:1313/post/interview_bft_1/</link>
+      <pubDate>Sun, 28 Jul 2019 23:21:16 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/interview_bft_1/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Gorm的使用心得和一些常用扩展(二)</title>
