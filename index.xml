@@ -6,10 +6,19 @@
     <description>Recent content on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 28 Jul 2019 23:21:16 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 12 Aug 2019 23:48:17 +0800</lastBuildDate>
     
 	<atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>记一次golang程序CPU高的排查过程</title>
+      <link>http://localhost:1313/post/golang_high_cpu/</link>
+      <pubDate>Mon, 12 Aug 2019 23:48:17 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/golang_high_cpu/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>解析一道区块链行业前三公司的笔试题</title>

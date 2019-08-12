@@ -6,10 +6,19 @@
     <description>Recent content in Categories on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 28 Jul 2019 23:21:16 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 12 Aug 2019 23:48:17 +0800</lastBuildDate>
     
 	<atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>排错笔记</title>
+      <link>http://localhost:1313/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Mon, 12 Aug 2019 23:48:17 +0800</pubDate>
+      
+      <guid>http://localhost:1313/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>面试</title>

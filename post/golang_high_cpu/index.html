@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>记一次golang程序CPU高的排查过程 - 稀里稀里哗啦啦</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="海之方" /><meta name="description" content="golang程序CPU高" /><meta name="keywords" content="Golang, CPU高" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6 with even 4.0.0" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/golang_high_cpu/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="记一次golang程序CPU高的排查过程" />
+<meta property="og:description" content="golang程序CPU高" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/golang_high_cpu/" />
+<meta property="article:published_time" content="2019-08-12T23:48:17&#43;08:00"/>
+<meta property="article:modified_time" content="2019-08-12T23:48:17&#43;08:00"/>
+
+<meta itemprop="name" content="记一次golang程序CPU高的排查过程">
+<meta itemprop="description" content="golang程序CPU高">
+
+
+<meta itemprop="datePublished" content="2019-08-12T23:48:17&#43;08:00" />
+<meta itemprop="dateModified" content="2019-08-12T23:48:17&#43;08:00" />
+<meta itemprop="wordCount" content="936">
+
+
+
+<meta itemprop="keywords" content="golang,笔记," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="记一次golang程序CPU高的排查过程"/>
+<meta name="twitter:description" content="golang程序CPU高"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">稀里稀里哗啦啦</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">稀里稀里哗啦啦</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">记一次golang程序CPU高的排查过程</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-08-12 </span>
+        <div class="post-category">
+            <a href="/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/"> 排错笔记 </a>
+            </div>
+          <span class="more-meta"> 936 words </span>
+          <span class="more-meta"> 2 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#分析">分析</a></li>
+<li><a href="#解决方法">解决方法</a></li>
+<li><a href="#总结">总结</a></li>
+<li><a href="#参考文章">参考文章</a></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h1 id="前言">前言</h1>
+
+<p>事情的起因是某天CTO突然和我说，生产环境的程序CPU有点高，关键是现在也没什么负载，同样的代码在开发环境上CPU就低的多了。</p>
+
+<p>不用细说，那一定是有什么地方出问题了。</p>
+
+<p>CTO还说，他pprof过了，占用CPU最高的<strong>runtime.futex</strong>，还发了一篇相关的文章<a href="https://zhuanlan.zhihu.com/p/45959147">谁占了该CPU核的30% - 一个较意外的Go性能问题
+</a>，打趣说没准系统负载高了，这个问题就没了。因为原文中写到：</p>
+
+<blockquote>
+<p>必须指出，本问题是因为系统空闲没有goroutine可以调度造成的。显然的，系统繁忙的时候，即CPU资源真正体现价值时，上述30%的%CPU的overhead并不存在，因为大概率下会有goroutine可供调度，无需去做让M去sleep这个很重的操作。</p>
+</blockquote>
+
+<p>然后就把这个锅就“甩”给我了，让我研究一下。毕竟开发环境的负载也没有那么高，但是CPU却蛮正常的。</p>
+
+<h1 id="分析">分析</h1>
+
+<p>一开始我是没什么头绪，顺着CTO提供的线索，搜索了一些<strong>runtime.futex</strong>的文章，几乎所有文章都会提到以下可能会使CPU占用率高的示例代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">  var ticker = time.NewTicker(100 * time.Millisecond)
+    defer ticker.Stop()
+    var counter = 0
+    for {
+        select {
+        case &lt;-serverDone:
+            return
+        case &lt;-ticker.C:
+            counter += 1
+        }
+    }</pre></td></tr></table>
+</div>
+</div>
+<p>这段代码给我指明了一些方向，我开始全局搜索一些time.NewTicker的代码。</p>
+
+<p>巧的是，还真让我搜到了一些，其中一个ticker的时间设置的很有问题。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">options = append(options, metrics.BatchInterval(time.Duration(conf.BatchInterval)))</pre></td></tr></table>
+</div>
+</div>
+<p>这里的<strong>time.Duration</strong>(<strong>conf.BatchInterval</strong>)没有指定单位，那可就是nano second（纳秒）级别的，这ticker的协程跑起来，没造成死锁，只能说linux服务器的性能好。</p>
+
+<p>后来，顺藤摸瓜，发现了这个interval其实是promethus的采样interval，promethus只在生产打开了，也可以解释了为什么同样的代码只在生产上出问题。</p>
+
+<h1 id="解决方法">解决方法</h1>
+
+<p>初步的解决方法很简单，就是给这个interval加上单位，再略微调大一些就好，而且目前我们并没有太重视promethus的性能数据，所以也不是很确定50ms的采样间隔是不是有些过大。</p>
+
+<h1 id="总结">总结</h1>
+
+<p>虽说找到了问题的root cause，但还是有值得改进的地方，比如说，如果一开始就先diff生产和开发的程序的配置有哪些不同，说不定可以更快的解决问题。</p>
+
+<h1 id="参考文章">参考文章</h1>
+
+<ul>
+<li><a href="http://xiaorui.cc/2018/03/28/%E5%88%86%E6%9E%90golang%E5%AE%9A%E6%97%B6%E5%99%A8cpu%E4%BD%BF%E7%94%A8%E7%8E%87%E9%AB%98%E7%9A%84%E7%8E%B0%E8%B1%A1/">分析golang定时器cpu使用率高的现象</a></li>
+</ul>
+    </div>
+
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    <label class="qr-code-image" for="reward">
+        <img class="image" src="https://upload-images.jianshu.io/upload_images/1573435-86a380a3ae35456e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+        <span>wechat</span>
+      </label>
+    
+  </div>
+</div><footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/golang/">golang</a>
+          <a href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/interview_bft_1/">
+            <span class="next-text nav-default">解析一道区块链行业前三公司的笔试题</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="http://localhost:1313" class="iconfont icon-linkedin" title="linkedin"></a>
+      <a href="http://localhost:1313" class="iconfont icon-github" title="github"></a>
+      <a href="http://localhost:1313" class="iconfont icon-zhihu" title="zhihu"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">ksloveyuan</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

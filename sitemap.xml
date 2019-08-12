@@ -2,31 +2,56 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://localhost:1313/tags/bft/</loc>
-    <lastmod>2019-07-28T23:21:16+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://localhost:1313/categories/</loc>
-    <lastmod>2019-07-28T23:21:16+08:00</lastmod>
+    <lastmod>2019-08-12T23:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://localhost:1313/post/</loc>
-    <lastmod>2019-07-28T23:21:16+08:00</lastmod>
+    <lastmod>2019-08-12T23:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2019-07-28T23:21:16+08:00</lastmod>
+    <lastmod>2019-08-12T23:48:17+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/tags/golang/</loc>
+    <lastmod>2019-08-12T23:48:17+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2019-08-12T23:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://localhost:1313/</loc>
+    <lastmod>2019-08-12T23:48:17+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/tags/%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2019-08-12T23:48:17+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/post/golang_high_cpu/</loc>
+    <lastmod>2019-08-12T23:48:17+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost:1313/tags/bft/</loc>
     <lastmod>2019-07-28T23:21:16+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -58,12 +83,6 @@
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/golang/</loc>
-    <lastmod>2019-07-18T23:47:04+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://localhost:1313/categories/%E5%BF%83%E5%BE%97/</loc>
     <lastmod>2019-07-18T23:47:04+08:00</lastmod>
     <priority>0</priority>
@@ -87,12 +106,6 @@
     <lastmod>2019-06-29T00:43:12+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://localhost:1313/tags/%E7%AC%94%E8%AE%B0/</loc>
-    <lastmod>2019-06-29T00:43:12+08:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
