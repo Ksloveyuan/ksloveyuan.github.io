@@ -6,10 +6,37 @@
     <description>Recent content in Categories on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 12 Aug 2019 23:48:17 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 19 Sep 2019 23:46:57 +0800</lastBuildDate>
     
 	<atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Sql优化</title>
+      <link>http://localhost:1313/categories/sql%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Thu, 19 Sep 2019 23:46:57 +0800</pubDate>
+      
+      <guid>http://localhost:1313/categories/sql%E4%BC%98%E5%8C%96/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>toolkit</title>
+      <link>http://localhost:1313/categories/toolkit/</link>
+      <pubDate>Fri, 13 Sep 2019 23:43:24 +0800</pubDate>
+      
+      <guid>http://localhost:1313/categories/toolkit/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Step by step</title>
+      <link>http://localhost:1313/categories/step-by-step/</link>
+      <pubDate>Fri, 23 Aug 2019 23:33:12 +0800</pubDate>
+      
+      <guid>http://localhost:1313/categories/step-by-step/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>排错笔记</title>

@@ -6,10 +6,46 @@
     <description>Recent content on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 12 Aug 2019 23:48:17 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 19 Sep 2019 23:46:57 +0800</lastBuildDate>
     
 	<atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>为什么所有的查询条件都命中索引还是那么慢？记一次慢查询优化过程</title>
+      <link>http://localhost:1313/post/slow_sql_analysis_1/</link>
+      <pubDate>Thu, 19 Sep 2019 23:46:57 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/slow_sql_analysis_1/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>如何把Golang的channel用的如nodejs的stream一样丝滑</title>
+      <link>http://localhost:1313/post/channelx_stream/</link>
+      <pubDate>Fri, 13 Sep 2019 23:43:24 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/channelx_stream/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>内部API的安全防护怎么搞？密码学中有答案</title>
+      <link>http://localhost:1313/post/api_security/</link>
+      <pubDate>Mon, 26 Aug 2019 23:39:00 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/api_security/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Step by step 搭建Gitlab CI Pipeline的监控Dashboard</title>
+      <link>http://localhost:1313/post/gitlab_ci_dashboard/</link>
+      <pubDate>Fri, 23 Aug 2019 23:33:12 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/gitlab_ci_dashboard/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>记一次golang程序CPU高的排查过程</title>

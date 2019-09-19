@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>内部API的安全防护怎么搞？密码学中有答案 - 稀里稀里哗啦啦</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="海之方" /><meta name="description" content="" /><meta name="keywords" content="API安全, 密码学" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6 with even 4.0.0" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/api_security/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="内部API的安全防护怎么搞？密码学中有答案" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/api_security/" />
+<meta property="article:published_time" content="2019-08-26T23:39:00&#43;08:00"/>
+<meta property="article:modified_time" content="2019-08-26T23:39:00&#43;08:00"/>
+
+<meta itemprop="name" content="内部API的安全防护怎么搞？密码学中有答案">
+<meta itemprop="description" content="">
+
+
+<meta itemprop="datePublished" content="2019-08-26T23:39:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-08-26T23:39:00&#43;08:00" />
+<meta itemprop="wordCount" content="2041">
+
+
+
+<meta itemprop="keywords" content="安全," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="内部API的安全防护怎么搞？密码学中有答案"/>
+<meta name="twitter:description" content=""/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">稀里稀里哗啦啦</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">稀里稀里哗啦啦</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">内部API的安全防护怎么搞？密码学中有答案</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-08-26 </span>
+        <div class="post-category">
+            <a href="/categories/toolkit/"> toolkit </a>
+            </div>
+          <span class="more-meta"> 2041 words </span>
+          <span class="more-meta"> 5 mins read </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#分析">分析</a></li>
+<li><a href="#实现">实现</a>
+<ul>
+<li><a href="#后端实现">后端实现</a></li>
+<li><a href="#前端实现">前端实现</a></li>
+</ul></li>
+<li><a href="#写在最后">写在最后</a></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h1 id="前言">前言</h1>
+
+<p>事情的起因是公司之前的CDN服务是通过腾讯云的COSFS来做的，它的好处是可以像使用本地文件系统一样直接操作腾讯云对象存储中的对象，但后来因为性能等因素，我花时间把上传文件到CDN的功能用SDK重写了（*其实可能比搭个COSFS还简单呢*）。</p>
+
+<p>前端同事恰好也有图床的使用需求，就想让我给他们开个API，这样他们就可以直接通过代码上传文件了，而不用每次都找后端同事帮忙。这件事本身没什么难度，唯一的问题是这个API的安全方面如何保证，至少不能让外人勿用。</p>
+
+<h1 id="分析">分析</h1>
+
+<p>其它业务上的API都是用的用户登录后的token及用户的权限进行验证，眼下这种用于开发需求的API虽然也可以用同样的方式来做，但一方面不够方便（*上传个图还要先登录，想想就麻烦*），另一方面安全性也还是差些（*是不是所有登录的用户都能调用呢？如果要再加权限的限制，也是麻烦*）。</p>
+
+<p>恰好自己上份工作是做区块链相关的，有一些密码学的基础知识，所以很自然想到用<strong>签名验签</strong>的方式来做安全验证。</p>
+
+<p>先简单的解释一下密码学基础知识，常用的加密方式有两大类，一种是对称加密，即加密和解密都是相同的秘钥; 另一种是非对称加密，秘钥有公私钥之分，公钥是用私钥生成的。签名是指要私钥对一段信息的Hash加密，验签是指用私钥对应的公钥来验证一段信息的签名是否和信息匹配。非对称加密原理的保证了签名只能来自于私钥，而只有对应在公钥才能解签。(<em>如果你对这些原理感兴趣，可以自行搜索相关文章哈</em>)</p>
+
+<h1 id="实现">实现</h1>
+
+<p>我们的后端是用的golang，前端是用NodeJS来实现的。非对称加密的实现方式有好几种，考虑到多端调试的成本，同时不想引入过多的第三方包，我这里选择了更加常用的RSA。下面将分为后端和前端两个部分来分别说明。</p>
+
+<h2 id="后端实现">后端实现</h2>
+
+<p>1 生成密钥。方法有很多，可以ssh的工具来生成，这是是用代码来生成.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func GenerateKey(bits int) (*rsa.PrivateKey, *rsa.PublicKey, error) {
+	private, err := rsa.GenerateKey(rand.Reader, bits)
+	if err != nil {
+		return nil, nil, err
+	}
+	return private, &amp;private.PublicKey, nil
+}</pre></td></tr></table>
+</div>
+</div>
+<p>然后把密钥导出成base64的字符串，方便保存和使用。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func EncodePrivateKey(private *rsa.PrivateKey) []byte {
+	return pem.EncodeToMemory(&amp;pem.Block{
+		Bytes: x509.MarshalPKCS1PrivateKey(private),
+		Type:  &#34;RSA PRIVATE KEY&#34;,
+	})
+}
+
+func EncodePublicKey(public *rsa.PublicKey) ([]byte, error) {
+	publicBytes, err := x509.MarshalPKIXPublicKey(public)
+	if err != nil {
+		return nil, err
+	}
+	return pem.EncodeToMemory(&amp;pem.Block{
+		Bytes: publicBytes,
+		Type:  &#34;PUBLIC KEY&#34;,
+	}), nil
+}</pre></td></tr></table>
+</div>
+</div>
+<p>代码的话，没什么花头，唯一需要注意的是Type不要乱填，这可是标准哈! pem也是最常用的的密钥的编码方式。</p>
+
+<p>2 签名解签。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func SignWithSha256Base64(data string, prvKeyBytes []byte) (string, error) {
+	block, _ := pem.Decode(prvKeyBytes)
+	if block == nil {
+		return &#34;&#34;, errors.New(&#34;fail to decode private key&#34;)
+	}
+
+	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err != nil {
+		return &#34;&#34;, err
+	}
+	h := sha256.New()
+	h.Write([]byte([]byte(data)))
+	hash := h.Sum(nil)
+	signature, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hash[:])
+	if err != nil {
+		return &#34;&#34;, err
+	}
+	out := base64.StdEncoding.EncodeToString(signature)
+	return out, nil
+}
+
+func VerySignWithSha256Base64(originalData, signData string, pubKeyBytes[]byte) (bool, error) {
+	sign, err := base64.StdEncoding.DecodeString(signData)
+	if err != nil {
+		return false ,err
+	}
+	block, _ := pem.Decode(pubKeyBytes)
+	if block == nil {
+		return false, errors.New(&#34;fail to decode public key&#34;)
+	}
+
+	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return false, err
+	}
+	hash := sha256.New()
+	hash.Write([]byte(originalData))
+	err = rsa.VerifyPKCS1v15(pub.(*rsa.PublicKey), crypto.SHA256, hash.Sum(nil), sign)
+	return err == nil, err
+}</pre></td></tr></table>
+</div>
+</div>
+<p>这里选用的Hash方法是Sha256，在签名和解签时都要用Sha256哦。</p>
+
+<p>其实，加解密的相关代码在使用起来是比较固定的，但是一定是要记得使用的Hash方式和加解密的方法，要不然&ndash;嘿嘿&ndash;那真是调试到欲哭无泪呀。</p>
+
+<p>3 经过一层封装，使用起来就很方便啦，下面测试一下。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func TestSignAndVerify(t *testing.T)  {
+	sk, pk, _ := GenerateKey(1024)
+	skBytes := EncodePrivateKey(sk)
+	pkBytes, _ := EncodePublicKey(pk)
+	fmt.Println(string(skBytes))
+	fmt.Println(string(pkBytes))
+
+	sig, err := SignWithSha256Base64(&#34;test&#34;, skBytes)
+	if err != nil{
+		fmt.Printf(&#34;%+v&#34;, err)
+	}
+	fmt.Println(sig)
+
+	success, err := VerySignWithSha256Base64(&#34;test&#34;, sig, pkBytes)
+	if success {
+		fmt.Println(&#34;pass&#34;)
+	} else {
+		fmt.Printf(&#34;%+v&#34;, err)
+	}
+}</pre></td></tr></table>
+</div>
+</div>
+<p>上述代码可在<a href="https://github.com/Ksloveyuan/rsautil">ksloveyuan/rsautil</a>查看。</p>
+
+<p>4 接着，我用echo写了一个简单的server端。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;github.com/ksloveyuan/rsautil&#34;</span>
+	<span class="s">&#34;net/http&#34;</span>
+	<span class="s">&#34;github.com/labstack/echo&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">const</span> <span class="nx">PublicKey</span>  <span class="p">=</span> <span class="s">`-----BEGIN PUBLIC KEY----- 公钥 -----END PUBLIC KEY-----``
+</span><span class="s">
+</span><span class="s">type VerifyArgs struct {
+</span><span class="s">	Content string  `</span><span class="nx">json</span><span class="p">:</span><span class="s">&#34;content&#34;</span> <span class="nx">description</span><span class="p">:</span><span class="s">&#34;&#34;</span> <span class="nx">binding</span><span class="p">:</span><span class="s">&#34;required&#34;</span> <span class="s">`
+</span><span class="s">	Signature string  `</span><span class="nx">json</span><span class="p">:</span><span class="s">&#34;signature&#34;</span> <span class="nx">description</span><span class="p">:</span><span class="s">&#34;&#34;</span> <span class="nx">binding</span><span class="p">:</span><span class="s">&#34;required&#34;</span> <span class="err">`</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">e</span> <span class="o">:=</span> <span class="nx">echo</span><span class="p">.</span><span class="nf">New</span><span class="p">()</span>
+
+	<span class="nx">e</span><span class="p">.</span><span class="nf">POST</span><span class="p">(</span><span class="s">&#34;/verify&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">c</span> <span class="nx">echo</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+		<span class="nx">args</span><span class="o">:=</span> <span class="nx">VerifyArgs</span><span class="p">{}</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nf">Bind</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">args</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span><span class="kc">nil</span><span class="p">{</span>
+			<span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusBadRequest</span><span class="p">,</span> <span class="s">&#34;参数不正确&#34;</span><span class="p">)</span>
+		<span class="p">}</span>
+
+		<span class="nx">message</span> <span class="o">:=</span> <span class="s">&#34;&#34;</span>
+		<span class="k">if</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">rsautil</span><span class="p">.</span><span class="nf">VerySignWithSha256Base64</span><span class="p">(</span><span class="nx">args</span><span class="p">.</span><span class="nx">Content</span><span class="p">,</span> <span class="nx">args</span><span class="p">.</span><span class="nx">Signature</span><span class="p">,</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">PublicKey</span><span class="p">));</span> <span class="nx">success</span><span class="p">{</span>
+			<span class="nx">message</span> <span class="p">=</span> <span class="s">&#34;success&#34;</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">message</span> <span class="p">=</span> <span class="s">&#34;fail&#34;</span>
+		<span class="p">}</span>
+
+		<span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">,</span> <span class="nx">message</span><span class="p">)</span>
+	<span class="p">})</span>
+
+	<span class="nx">e</span><span class="p">.</span><span class="nx">Logger</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nf">Start</span><span class="p">(</span><span class="s">&#34;:1323&#34;</span><span class="p">))</span>
+<span class="p">}</span></pre></td></tr></table>
+</div>
+</div>
+<h2 id="前端实现">前端实现</h2>
+
+<p>前端的主要工作是发起请求，同时附带请求参数的签名。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">let crypto = require(&#39;crypto&#39;)
+let request = require(&#39;request&#39;)
+
+let sk = `-----BEGIN RSA PRIVATE KEY-----对应的私钥-----END RSA PRIVATE KEY-----`
+
+function sendRequest ({ content, signature }) {
+    var bodyData = { content, signature }
+    return new Promise((resolve, reject) =&gt; {
+        request.post({ url: &#39;http://localhost:1323/verify&#39;, body: bodyData, json: true }, function optionalCallback (
+            err,
+            httpResponse,
+            body
+        ) {
+            if (err) {
+                reject()
+                return console.error(&#39;upload failed:&#39;, err)
+            }
+
+            console.log(&#39;Upload successful!&#39;, body)
+            resolve()
+        })
+    })
+}
+
+async function action() {
+    let signer = crypto.createSign(&#39;RSA-SHA256&#39;)
+
+    let content = &#39;test_test_test&#39;
+    signer.update(content)
+
+    let privateKey = {key: sk, format:&#34;pem&#34;, type:&#34;pkcs1&#34;}
+    let signature = signer.sign(privateKey, &#39;base64&#39;)
+
+    console.log(signature)
+
+    await sendRequest({ content, signature })
+}
+
+action()</pre></td></tr></table>
+</div>
+</div>
+<p>其中request第三方包，crypto是nodejs自带的库。</p>
+
+<p>代码中需要注意的地方有两点:
+1. 选用的签名方法一定要是<strong>RSA-SHA256</strong>，否则的话，和后端就对不上了。
+2. 使用的私钥的格式参数虽然是默认参数，但最好显示指定哈。</p>
+
+<p>以上demo的完整代码可在<a href="https://github.com/Ksloveyuan/ApiSecurityDemo">ksloveyuan/ApiSecurityDemo</a>中查看，欢迎star哈。</p>
+
+<h1 id="写在最后">写在最后</h1>
+
+<p>关于私钥的保存，明文HardCode在代码里自然是一个安全隐患。</p>
+
+<p>这一点，一方面可以保存在文件里，使用时读取，密钥的安全由保管的人负责（*话说ssh密钥登录就是这样*）;或者是对私钥再做一层AES的加密，每次使用时输入AES加密的Keyword。</p>
+
+<p>话说回来，安全攻防是没有尽头的，主要还是要看要保证的安全级别而定。</p>
+
+<p>公司前端的同事，对目前的安全保证已经很满意了。</p>
+    </div>
+
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    <label class="qr-code-image" for="reward">
+        <img class="image" src="https://i.loli.net/2019/09/19/YTfGD6rFwlejbyx.jpg">
+        <span>wechat</span>
+      </label>
+    
+  </div>
+</div><footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E5%AE%89%E5%85%A8/">安全</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/channelx_stream/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">如何把Golang的channel用的如nodejs的stream一样丝滑</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/gitlab_ci_dashboard/">
+            <span class="next-text nav-default">Step by step 搭建Gitlab CI Pipeline的监控Dashboard</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="gitalk-container"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var gitalk = new Gitalk({
+        id: '2019-08-26 23:39:00 \x2b0800 CST',
+        title: '内部API的安全防护怎么搞？密码学中有答案',
+        clientID: '78955027ad5b85438cca',
+        clientSecret: '4bfb35fe0e33d8ff52fa8ec7e622f488129c4de5',
+        repo: 'ksloveyuan.github.io',
+        owner: 'ksloveyuan',
+        admin: ['ksloveyuan'],
+        body: decodeURI(location.href)
+      });
+      gitalk.render('gitalk-container');
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/gitalk/gitalk">comments powered by gitalk.</a></noscript>
+  
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:ksloveyuan@live.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://www.linkedin.com/in/jeremy-liu-24278668/" class="iconfont icon-linkedin" title="linkedin"></a>
+      <a href="https://github.com/Ksloveyuan" class="iconfont icon-github" title="github"></a>
+  <a href="http://localhost:1313/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">ksloveyuan</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-145633116-1', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+
+</body>
+</html>

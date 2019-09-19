@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>记一次golang程序CPU高的排查过程 - 稀里稀里哗啦啦</title>
+  <title>Step by step 搭建Gitlab CI Pipeline的监控Dashboard - 稀里稀里哗啦啦</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="海之方" /><meta name="description" content="golang程序CPU高" /><meta name="keywords" content="Golang, CPU高" />
+<meta name="author" content="海之方" /><meta name="description" content="" /><meta name="keywords" content="Gitlab, Dashboard" />
 
 
 
@@ -26,7 +26,7 @@
 <meta name="generator" content="Hugo 0.55.6 with even 4.0.0" />
 
 
-<link rel="canonical" href="http://localhost:1313/post/golang_high_cpu/" />
+<link rel="canonical" href="http://localhost:1313/post/gitlab_ci_dashboard/" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -38,27 +38,27 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="记一次golang程序CPU高的排查过程" />
-<meta property="og:description" content="golang程序CPU高" />
+<meta property="og:title" content="Step by step 搭建Gitlab CI Pipeline的监控Dashboard" />
+<meta property="og:description" content="" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://localhost:1313/post/golang_high_cpu/" />
-<meta property="article:published_time" content="2019-08-12T23:48:17&#43;08:00"/>
-<meta property="article:modified_time" content="2019-08-12T23:48:17&#43;08:00"/>
+<meta property="og:url" content="http://localhost:1313/post/gitlab_ci_dashboard/" />
+<meta property="article:published_time" content="2019-08-23T23:33:12&#43;08:00"/>
+<meta property="article:modified_time" content="2019-08-23T23:33:12&#43;08:00"/>
 
-<meta itemprop="name" content="记一次golang程序CPU高的排查过程">
-<meta itemprop="description" content="golang程序CPU高">
-
-
-<meta itemprop="datePublished" content="2019-08-12T23:48:17&#43;08:00" />
-<meta itemprop="dateModified" content="2019-08-12T23:48:17&#43;08:00" />
-<meta itemprop="wordCount" content="936">
+<meta itemprop="name" content="Step by step 搭建Gitlab CI Pipeline的监控Dashboard">
+<meta itemprop="description" content="">
 
 
+<meta itemprop="datePublished" content="2019-08-23T23:33:12&#43;08:00" />
+<meta itemprop="dateModified" content="2019-08-23T23:33:12&#43;08:00" />
+<meta itemprop="wordCount" content="681">
 
-<meta itemprop="keywords" content="golang,笔记," />
+
+
+<meta itemprop="keywords" content="CI," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="记一次golang程序CPU高的排查过程"/>
-<meta name="twitter:description" content="golang程序CPU高"/>
+<meta name="twitter:title" content="Step by step 搭建Gitlab CI Pipeline的监控Dashboard"/>
+<meta name="twitter:description" content=""/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -121,14 +121,14 @@
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">记一次golang程序CPU高的排查过程</h1>
+      <h1 class="post-title">Step by step 搭建Gitlab CI Pipeline的监控Dashboard</h1>
 
       <div class="post-meta">
-        <span class="post-time"> 2019-08-12 </span>
+        <span class="post-time"> 2019-08-23 </span>
         <div class="post-category">
-            <a href="/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/"> 排错笔记 </a>
+            <a href="/categories/step-by-step/"> Step by step </a>
             </div>
-          <span class="more-meta"> 936 words </span>
+          <span class="more-meta"> 681 words </span>
           <span class="more-meta"> 2 mins read </span>
         
       </div>
@@ -140,10 +140,8 @@
     <nav id="TableOfContents">
 <ul>
 <li><a href="#前言">前言</a></li>
-<li><a href="#分析">分析</a></li>
-<li><a href="#解决方法">解决方法</a></li>
-<li><a href="#总结">总结</a></li>
-<li><a href="#参考文章">参考文章</a></li>
+<li><a href="#搭建步骤">搭建步骤</a></li>
+<li><a href="#写在最后">写在最后</a></li>
 </ul>
 </nav>
   </div>
@@ -151,78 +149,82 @@
     <div class="post-content">
       <h1 id="前言">前言</h1>
 
-<p>事情的起因是某天CTO突然和我说，生产环境的程序CPU有点高，关键是现在也没什么负载，同样的代码在开发环境上CPU就低的多了。</p>
+<p>公司的代码管理是用的Gitlab, 持续集成(CI)估计是顺手就用了Gitlab的CI（*不要问我为啥不用jenkins*）。</p>
 
-<p>不用细说，那一定是有什么地方出问题了。</p>
+<p>经过一段时间使用下来，基本功能是够用的，就是差了一个Dashboard来统一查看当前CI的状态，这点还是挺不方便的。</p>
 
-<p>CTO还说，他pprof过了，占用CPU最高的<strong>runtime.futex</strong>，还发了一篇相关的文章<a href="https://zhuanlan.zhihu.com/p/45959147">谁占了该CPU核的30% - 一个较意外的Go性能问题
-</a>，打趣说没准系统负载高了，这个问题就没了。因为原文中写到：</p>
+<p>于是，经过一番搜索，选中了<a href="https://github.com/timoschwarzer/gitlab-monitor">gitlab-monitor</a>，原因吗，一方面比较简洁美观;另一方面，可以docker部署。
+<img src="https://i.loli.net/2019/08/23/SUt2l5ZA3xw4TCa.png" alt="screenshot.png" /></p>
 
-<blockquote>
-<p>必须指出，本问题是因为系统空闲没有goroutine可以调度造成的。显然的，系统繁忙的时候，即CPU资源真正体现价值时，上述30%的%CPU的overhead并不存在，因为大概率下会有goroutine可供调度，无需去做让M去sleep这个很重的操作。</p>
-</blockquote>
+<h1 id="搭建步骤">搭建步骤</h1>
 
-<p>然后就把这个锅就“甩”给我了，让我研究一下。毕竟开发环境的负载也没有那么高，但是CPU却蛮正常的。</p>
-
-<h1 id="分析">分析</h1>
-
-<p>一开始我是没什么头绪，顺着CTO提供的线索，搜索了一些<strong>runtime.futex</strong>的文章，几乎所有文章都会提到以下可能会使CPU占用率高的示例代码：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></pre></td>
-<td class="lntd">
-<pre class="chroma">  var ticker = time.NewTicker(100 * time.Millisecond)
-    defer ticker.Stop()
-    var counter = 0
-    for {
-        select {
-        case &lt;-serverDone:
-            return
-        case &lt;-ticker.C:
-            counter += 1
-        }
-    }</pre></td></tr></table>
-</div>
-</div>
-<p>这段代码给我指明了一些方向，我开始全局搜索一些time.NewTicker的代码。</p>
-
-<p>巧的是，还真让我搜到了一些，其中一个ticker的时间设置的很有问题。</p>
+<ol>
+<li><p>首先拉取镜像</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><span class="lnt">1
 </span></pre></td>
 <td class="lntd">
-<pre class="chroma">options = append(options, metrics.BatchInterval(time.Duration(conf.BatchInterval)))</pre></td></tr></table>
+<pre class="chroma">docker pull timoschwarzer/gitlab-monitor</pre></td></tr></table>
+</div>
+</div></li>
+
+<li><p>获得gitlab的access token。登录gitlab后，进入用户设置，点击左侧菜单的Access Token，可以看到如下的页面。
+<img src="https://i.loli.net/2019/08/23/4oXwGz3bTO7D92f.png" alt="Personal Access Tokens · User Settings · GitLab.png" /></p></li>
+</ol>
+
+<p>然后，输入个名字，设置过期时间，勾选API和Read Repository，就可以创建一个token。
+<img src="https://i.loli.net/2019/08/23/HCXoZtBe951VG7n.png" alt="New Personal Access Tokens · User Settings · GitLab.png" /></p>
+
+<p><strong>记得一定要复制保存好，回头可是没有地方再看到这个token了！不过也没什么大不了，忘了就再申请一个吗</strong></p>
+
+<ol>
+<li>下面，就是启动gitlab-monitor的container了。它支持一些自定义的参数可以在<a href="https://github.com/timoschwarzer/gitlab-monitor/blob/master/CONFIGURATION.md">configuration</a>里查询。</li>
+</ol>
+
+<p>我根据自己的偏好，设置如下。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+    &#34;gitlabApi&#34;: &#34;https://gitlab.******.com/api/v4&#34;,
+    &#34;privateToken&#34;: &#34;*********&#34;,
+    &#34;showStagesNames&#34;: true,
+    &#34;fetchCount&#34;: 40,
+    &#34;pipelinesOnly&#34;: true,
+    &#34;showUsers&#34;: true,
+    &#34;pollingIntervalMultiplier&#34;: 0.2
+}</pre></td></tr></table>
 </div>
 </div>
-<p>这里的<strong>time.Duration</strong>(<strong>conf.BatchInterval</strong>)没有指定单位，那可就是nano second（纳秒）级别的，这ticker的协程跑起来，没造成死锁，只能说linux服务器的性能好。</p>
+<p>这个参数可以通过环境变量<strong>GITLAB_MONITOR_CONFIG</strong>传入，于是启动docker的命令如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">docker run -d -p 11080:80 -e GITLAB_MONITOR_CONFIG=&#39;{&#34;gitlabApi&#34;: &#34;https://gitlab.*****.com/api/v4&#34;,&#34;privateToken&#34;: &#34;********&#34;,&#34;showStagesNames&#34;: true,&#34;fetchCount&#34;: 40, &#34;pipelinesOnly&#34;: true, &#34;showUsers&#34;: true,&#34;pollingIntervalMultiplier&#34;: 0.2}&#39;  --name=gitlab-monitor timoschwarzer/gitlab-monitor:latest</pre></td></tr></table>
+</div>
+</div>
+<ol>
+<li>最后一步，在浏览器里输入localhost:11080就好了。</li>
+</ol>
 
-<p>后来，顺藤摸瓜，发现了这个interval其实是promethus的采样interval，promethus只在生产打开了，也可以解释了为什么同样的代码只在生产上出问题。</p>
+<h1 id="写在最后">写在最后</h1>
 
-<h1 id="解决方法">解决方法</h1>
-
-<p>初步的解决方法很简单，就是给这个interval加上单位，再略微调大一些就好，而且目前我们并没有太重视promethus的性能数据，所以也不是很确定50ms的采样间隔是不是有些过大。</p>
-
-<h1 id="总结">总结</h1>
-
-<p>虽说找到了问题的root cause，但还是有值得改进的地方，比如说，如果一开始就先diff生产和开发的程序的配置有哪些不同，说不定可以更快的解决问题。</p>
-
-<h1 id="参考文章">参考文章</h1>
-
-<ul>
-<li><a href="http://xiaorui.cc/2018/03/28/%E5%88%86%E6%9E%90golang%E5%AE%9A%E6%97%B6%E5%99%A8cpu%E4%BD%BF%E7%94%A8%E7%8E%87%E9%AB%98%E7%9A%84%E7%8E%B0%E8%B1%A1/">分析golang定时器cpu使用率高的现象</a></li>
-</ul>
+<p>有一个点需要注意一下，我们通过环境变量指定的配置是会保存在浏览器的LocalStorage里的，并且是明文的，理论上这个AccessToken是有泄露的风险的。
+<img src="https://i.loli.net/2019/08/23/pVsc9gAR8ha7mvn.png" alt="localstorage.png" />
+但这是gitlab-monitor的实现决定的，除非修改源码。</p>
     </div>
 
     
@@ -239,17 +241,16 @@
   </div>
 </div><footer class="post-footer">
       <div class="post-tags">
-          <a href="/tags/golang/">golang</a>
-          <a href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a>
+          <a href="/tags/ci/">CI</a>
           </div>
       <nav class="post-nav">
-        <a class="prev" href="/post/gitlab_ci_dashboard/">
+        <a class="prev" href="/post/api_security/">
             <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">Step by step 搭建Gitlab CI Pipeline的监控Dashboard</span>
+            <span class="prev-text nav-default">内部API的安全防护怎么搞？密码学中有答案</span>
             <span class="prev-text nav-mobile">Prev</span>
           </a>
-        <a class="next" href="/post/interview_bft_1/">
-            <span class="next-text nav-default">解析一道区块链行业前三公司的笔试题</span>
+        <a class="next" href="/post/golang_high_cpu/">
+            <span class="next-text nav-default">记一次golang程序CPU高的排查过程</span>
             <span class="next-text nav-mobile">Next</span>
             <i class="iconfont icon-right"></i>
           </a>
@@ -262,8 +263,8 @@
     <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript">
       var gitalk = new Gitalk({
-        id: '2019-08-12 23:48:17 \x2b0800 CST',
-        title: '记一次golang程序CPU高的排查过程',
+        id: '2019-08-23 23:33:12 \x2b0800 CST',
+        title: 'Step by step 搭建Gitlab CI Pipeline的监控Dashboard',
         clientID: '78955027ad5b85438cca',
         clientSecret: '4bfb35fe0e33d8ff52fa8ec7e622f488129c4de5',
         repo: 'ksloveyuan.github.io',

@@ -6,10 +6,19 @@
     <description>Recent content in golang on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 12 Aug 2019 23:48:17 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 13 Sep 2019 23:43:24 +0800</lastBuildDate>
     
 	<atom:link href="http://localhost:1313/tags/golang/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>如何把Golang的channel用的如nodejs的stream一样丝滑</title>
+      <link>http://localhost:1313/post/channelx_stream/</link>
+      <pubDate>Fri, 13 Sep 2019 23:43:24 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/channelx_stream/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>记一次golang程序CPU高的排查过程</title>
