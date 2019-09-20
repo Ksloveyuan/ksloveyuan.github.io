@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content=''>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='解析一道区块链行业前三公司的笔试题 • 海之方'>
+<meta property='og:description' content=''>
+<meta property='og:url' content='http://www.example.com/posts/interview_bft_1/'>
+<meta property='og:site_name' content='稀里稀里哗啦啦'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='面试'><meta property='article:tag' content='BFT'><meta property='article:published_time' content='2019-07-28T23:21:16&#43;08:00'/><meta property='article:modified_time' content='2019-07-28T23:21:16&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+  <title>解析一道区块链行业前三公司的笔试题 • 海之方</title>
+  <link rel='canonical' href='http://www.example.com/posts/interview_bft_1/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-145633116-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      稀里稀里哗啦啦
+      </a>
+    </h2>
+    <div class='desc'>
+    代码代码快发芽
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item has-children'>
+  <a href='/posts/'>Posts</a><button class='sub-menu-toggler'>
+    <span class='screen-reader-text'>expand sub menu</span>
+    <span class='sign'></span>
+  </button>
+
+  <ul class='sub-menu'><li class='item'>
+  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li><li class='item'>
+  <a href='/me/'>About Me</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/bft/' style='font-size:1em'>BFT</a>
+      </li><li>
+        <a href='/tags/channel/' style='font-size:1em'>channel</a>
+      </li><li>
+        <a href='/tags/ci/' style='font-size:1em'>CI</a>
+      </li><li>
+        <a href='/tags/elk/' style='font-size:1em'>ELK</a>
+      </li><li>
+        <a href='/tags/golang/' style='font-size:2em'>golang</a>
+      </li><li>
+        <a href='/tags/sql/' style='font-size:1em'>sql</a>
+      </li><li>
+        <a href='/tags/%E5%AE%89%E5%85%A8/' style='font-size:1em'>安全</a>
+      </li><li>
+        <a href='/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/' style='font-size:1em'>性能优化</a>
+      </li><li>
+        <a href='/tags/%E7%AC%94%E8%AE%B0/' style='font-size:1.3333333333333333em'>笔记</a>
+      </li><li>
+        <a href='/tags/%E9%9D%A2%E8%AF%95/' style='font-size:1em'>面试</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>稀里稀里哗啦啦</p><p class='desc site-desc'>代码代码快发芽</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>解析一道区块链行业前三公司的笔试题</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2019-07-28T23:21:16&#43;08:00'>2019, Jul 28</time>
+</span>
+
+  <span class='byline'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M21,21V20c0-2.76-4-5-9-5s-9,2.24-9,5v1"/>
+  <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
+  
+</svg>
+<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+3 mins read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc'>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+<ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#题目">题目</a></li>
+<li><a href="#分析">分析</a></li>
+<li><a href="#编码">编码</a></li>
+<li><a href="#完整代码">完整代码</a></li>
+<li><a href="#后记">后记</a></li>
+</ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <h1 id="前言">前言</h1>
+
+<p>年初找工作时，面过一家自称区块链行业前三的公司（*事实上也差不多*），他们笔试题蛮有意思的，时隔半年，估计他们也更新题库了，就拿出来和大家分享一下。</p>
+
+<h1 id="题目">题目</h1>
+
+<p><img src="https://i.loli.net/2019/09/19/yQbYUVHFr8KPnI5.jpg" alt="" />)</p>
+
+<p>翻译如下：</p>
+
+<p>Sandy是一个制作地图的探险家。她从点（0,0）开始探索，每次可以向左、向右、向上或者向下移动一点。例如，如果Sandy站在（x,y）处，她可以移动到(x+1,y),(x-1,y),(x,y+1)或(x,y-1)。她不能跳也不能走对角线方向。</p>
+
+<p>John要阻止Sandy，他会在坐标数字的绝对值之和大于21的地方埋地雷。例如，点（59，-79）有地雷，因为5+7+9+9&gt;21；而点（-113，-104）没有地雷，因为1+1+3+1+0+4&lt;=21。</p>
+
+<p>如果Sandy踩到地雷，她会死。她不能跳过地雷，必须绕着走。</p>
+
+<p>请编写一个程序，来计算Sandy从(0,0)开始可以访问的点的数量。</p>
+
+<h1 id="分析">分析</h1>
+
+<p>首先，可以快速判断出这道题考的是图的遍历，遍历的方法无非深度优先，或者广度优先。此题是要计算所有可遍历的点，于是，我选择用广度优先。</p>
+
+<p>然后，因为Sandy可以向四个方向移动，初步可以判断可以遍历的范围是关于XY轴对称。再则，根据地雷的埋放规则“<strong>坐标数字的绝对值之和大于21的地方埋地雷</strong>”, 可以进一步推出可以遍历的范围是关于y=x、y=-x、y=0和x=0对称的。举个例子，(56,65),(-56,65),(56,-65),(-56,-65)和(65，56),(-65，56),(65,-56),(-65,-56)都是埋放的地雷的点。</p>
+
+<p>于是，我们只需要考虑x&gt;=0,y&gt;=0且x&lt;=y的区域，乘以对称的次数，就可以推出所有可以遍历的点。但需要注意的是对于x&gt;0,y&gt;0且x<y的区域，可以访问点可以乘以8；对于x>0和y=x且x&gt;0这两条边，只需要乘以4就好，因为它们是被两个区块所共有的，乘以8就算重了；特别需要注意的是(x=0,y=0)这点，是所有可以遍历的区域的中心，乘以1即可。</p>
+
+<h1 id="编码">编码</h1>
+
+<p>按照上述的分析，编码工作就可以依次开始了。</p>
+
+<p>首先，先定义一个关于的点的结构体，并增加一个计算坐标和的函数。</p>
+
+<pre><code>type Point struct {
+	X int
+	Y int
+}
+
+func (p Point) CoordinateSum() int {
+	xNumStrs := strings.Split(strconv.Itoa(p.X), &quot;&quot;)
+	yNumStrs := strings.Split(strconv.Itoa(p.Y), &quot;&quot;)
+	numStrs := append(xNumStrs, yNumStrs...)
+
+	sum := 0
+	for _, str := range numStrs {
+		num, _ := strconv.ParseInt(str, 10, 32)
+		sum += int(num)
+	}
+
+	return sum
+}
+</code></pre>
+
+<p><strong>CoordinateSum</strong>不会改变点的X,Y值，于是，定义和值类型的方法。</p>
+
+<p>接着，在通用的遍历图算法，需要有个map判断当前点是否遍历过，来剪枝。在本题中，还需要判断当前点是否是地雷，于是，我把这两段逻辑写到了一方法里。</p>
+
+<pre><code>var checkedPoints map[Point]bool
+
+func CheckPoint(p Point) bool {
+	if _, ok := checkedPoints[p]; ok {
+		return false
+	}
+
+	if p.Y &gt; p.X || p.X &lt; 0 || p.Y &lt; 0{
+		return false
+	}
+
+	return p.CoordinateSum() &lt;= 21
+}
+</code></pre>
+
+<p>全局变量在工程化的代码中是需要尽量避免使用的，这里图方便，权且用一下。</p>
+
+<p>下面就是广度优先遍历的代码了。</p>
+
+<pre><code>var toCheckPoints = list.New()
+checkedPoints = map[Point]bool{}
+var point = Point{0, 0}
+
+toCheckPoints.PushFront(point)
+checkedPoints[point] = true
+
+for toCheckPoints.Len() &gt; 0 {
+	element := toCheckPoints.Front()
+	point = toCheckPoints.Remove(element).(Point)
+
+	searchPoint := Point{point.X, point.Y - 1}
+	Search(searchPoint, toCheckPoints)
+
+	searchPoint = Point{point.X - 1, point.Y}
+	Search(searchPoint, toCheckPoints)
+
+	searchPoint = Point{point.X + 1, point.Y}
+	Search(searchPoint, toCheckPoints)
+
+	searchPoint = Point{point.X, point.Y + 1}
+	Search(searchPoint, toCheckPoints)
+}
+	
+func Search(searchPoint Point, toCheckPoints *list.List) {
+	if CheckPoint(searchPoint) {
+		checkedPoints[searchPoint] = true
+		toCheckPoints.PushFront(searchPoint)
+	} else {
+		if _, ok := checkedPoints[searchPoint]; !ok {
+			checkedPoints[searchPoint] = false
+		}
+	}
+}
+</code></pre>
+
+<p>最后，就是根据遍历的过的点，计算可以遍历点的数量。</p>
+
+<pre><code>pointsOnMap := 0
+var minedPoints = list.New()
+var visiblePoints = list.New()
+
+for point, visible := range checkedPoints {
+	if visible {
+		if point.X == 0 &amp;&amp; point.Y == 0 {
+			pointsOnMap += 1
+		} else if point.Y == 0 || point.X == point.Y {
+			pointsOnMap += 4
+		} else {
+			pointsOnMap += 8
+		}
+		visiblePoints.PushFront(point)
+	}else {
+		minedPoints.PushFront(point)
+	}
+}
+fmt.Println(&quot;Points on map are&quot;, pointsOnMap)
+</code></pre>
+
+<p>程序写好，但是不确定对不对怎么办？</p>
+
+<p>这个吗，就需要把可以遍历的点和地雷分别画出来，就可以知道。</p>
+
+<p>这里，我选择了用Echarts的散点图的在线示例来画。地址是<a href="https://echarts.baidu.com/examples/editor.html?c=scatter-simple" target="_blank">https://echarts.baidu.com/examples/editor.html?c=scatter-simple</a></p>
+
+<p>使用的配置是：</p>
+
+<pre><code>option = {
+    dataZoom: [
+        {
+            type: 'slider',
+            show: true,
+            xAxisIndex: [0],
+            start: 0,
+            end: 500,
+        },
+        {
+            type: 'slider',
+            show: true,
+            yAxisIndex: [0],
+            start: 0,
+            end: 250
+        }
+    ],
+    xAxis: {},
+    yAxis: {},
+    series: [{
+        symbolSize: 1,
+        data: [
+            [10.0, 8.04],
+        ],
+        type: 'scatter'
+    }]
+};
+
+</code></pre>
+
+<p>用算出来的点，替换data部分就可以画出来了。</p>
+
+<p>可以遍历的点的图是：
+<img src="https://i.loli.net/2019/09/19/58pvLK61k9FNOC4.png" alt="" /></p>
+
+<p>地雷的点的图是：
+<img src="https://i.loli.net/2019/09/19/812EwLv3MlPrJuA.png" alt="" /></p>
+
+<h1 id="完整代码">完整代码</h1>
+
+<pre><code>package main
+
+import (
+	&quot;container/list&quot;
+	&quot;fmt&quot;
+	&quot;strconv&quot;
+	&quot;strings&quot;
+)
+
+type Point struct {
+	X int
+	Y int
+}
+
+func (p Point) CoordinateSum() int {
+	xNumStrs := strings.Split(strconv.Itoa(p.X), &quot;&quot;)
+	yNumStrs := strings.Split(strconv.Itoa(p.Y), &quot;&quot;)
+	numStrs := append(xNumStrs, yNumStrs...)
+
+	sum := 0
+	for _, str := range numStrs {
+		num, _ := strconv.ParseInt(str, 10, 32)
+		sum += int(num)
+	}
+
+	return sum
+}
+
+var checkedPoints map[Point]bool
+
+func main() {
+
+	var toCheckPoints = list.New()
+	checkedPoints = map[Point]bool{}
+	var point = Point{0, 0}
+
+	toCheckPoints.PushFront(point)
+	checkedPoints[point] = true
+
+	for toCheckPoints.Len() &gt; 0 {
+		element := toCheckPoints.Front()
+		point = toCheckPoints.Remove(element).(Point)
+
+		searchPoint := Point{point.X, point.Y - 1}
+		Search(searchPoint, toCheckPoints)
+
+		searchPoint = Point{point.X - 1, point.Y}
+		Search(searchPoint, toCheckPoints)
+
+		searchPoint = Point{point.X + 1, point.Y}
+		Search(searchPoint, toCheckPoints)
+
+		searchPoint = Point{point.X, point.Y + 1}
+		Search(searchPoint, toCheckPoints)
+	}
+
+	//fmt.Println(len(checkedPoints))
+	//fmt.Println(checkedPoints)
+
+	pointsOnMap := 0
+	var minedPoints = list.New()
+	var visiblePoints = list.New()
+
+	for point, visible := range checkedPoints {
+		if visible {
+			if point.X == 0 &amp;&amp; point.Y == 0 {
+				pointsOnMap += 1
+			} else if point.Y == 0 || point.X == point.Y {
+				pointsOnMap += 4
+			} else {
+				pointsOnMap += 8
+			}
+			visiblePoints.PushFront(point)
+		}else {
+			minedPoints.PushFront(point)
+		}
+	}
+	fmt.Println(&quot;Points on map are&quot;, pointsOnMap)
+
+	//for e := minedPoints.Front();  e != nil; e = e.Next()  {
+	//	p := e.Value.(Point)
+	//	fmt.Println(&quot;[&quot;, p.X, &quot;,&quot;, p.Y,&quot;],&quot;)
+	//}
+
+}
+
+func Search(searchPoint Point, toCheckPoints *list.List) {
+	if CheckPoint(searchPoint) {
+		checkedPoints[searchPoint] = true
+		toCheckPoints.PushFront(searchPoint)
+	} else {
+		if _, ok := checkedPoints[searchPoint]; !ok {
+			checkedPoints[searchPoint] = false
+		}
+	}
+}
+
+func CheckPoint(p Point) bool {
+	if _, ok := checkedPoints[p]; ok {
+		return false
+	}
+
+	if p.Y &gt; p.X || p.X &lt; 0 || p.Y &lt; 0{
+		return false
+	}
+
+	return p.CoordinateSum() &lt;= 21
+}
+
+</code></pre>
+
+<p>答案：<strong>287881</strong></p>
+
+<h1 id="后记">后记</h1>
+
+<p>笔试我是答对了，但是也没能得到面试机会……</p>
+
+<p>HR反馈说，面试官觉得我的年龄和实力不符合团队结构的期望 ˚‧º·(˚ ˃̣̣̥⌓˂̣̣̥ )‧º·˚</p>
+
+<p>那次面试，也最终断了我继续在区块链行业奋斗的希望。没办法，我可是要工作养家的男人哈。</p>
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/%E9%9D%A2%E8%AF%95/'>面试</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/%E9%9D%A2%E8%AF%95/'>面试</a>, <a class='tag' href='/tags/bft/'>BFT</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/gorm_extension_2/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>Gorm的使用心得和一些常用扩展(二)</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/golang_high_cpu/'>
+        <span class='screen-reader-text'>Next post: </span>记一次golang程序CPU高的排查过程<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>All rights reserved by &copy; 2019 海之方 </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script><script src='/js/custom.js'></script>
+
+</body>
+
+</html>
+

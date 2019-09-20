@@ -2,21 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>面试 on 稀里稀里哗啦啦</title>
-    <link>http://localhost:1313/categories/%E9%9D%A2%E8%AF%95/</link>
+    <link>http://www.example.com/categories/%E9%9D%A2%E8%AF%95/</link>
     <description>Recent content in 面试 on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
     <lastBuildDate>Sun, 28 Jul 2019 23:21:16 +0800</lastBuildDate>
     
-	<atom:link href="http://localhost:1313/categories/%E9%9D%A2%E8%AF%95/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://www.example.com/categories/%E9%9D%A2%E8%AF%95/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>解析一道区块链行业前三公司的笔试题</title>
-      <link>http://localhost:1313/post/interview_bft_1/</link>
+      <link>http://www.example.com/posts/interview_bft_1/</link>
       <pubDate>Sun, 28 Jul 2019 23:21:16 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/interview_bft_1/</guid>
+      <guid>http://www.example.com/posts/interview_bft_1/</guid>
       <description></description>
     </item>
     

@@ -2,75 +2,74 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on 稀里稀里哗啦啦</title>
-    <link>http://localhost:1313/categories/</link>
+    <link>http://www.example.com/categories/</link>
     <description>Recent content in Categories on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
     <lastBuildDate>Thu, 19 Sep 2019 23:46:57 +0800</lastBuildDate>
     
-	<atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://www.example.com/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Sql优化</title>
-      <link>http://localhost:1313/categories/sql%E4%BC%98%E5%8C%96/</link>
+      <link>http://www.example.com/categories/sql%E4%BC%98%E5%8C%96/</link>
       <pubDate>Thu, 19 Sep 2019 23:46:57 +0800</pubDate>
       
-      <guid>http://localhost:1313/categories/sql%E4%BC%98%E5%8C%96/</guid>
+      <guid>http://www.example.com/categories/sql%E4%BC%98%E5%8C%96/</guid>
       <description></description>
     </item>
     
     <item>
       <title>toolkit</title>
-      <link>http://localhost:1313/categories/toolkit/</link>
+      <link>http://www.example.com/categories/toolkit/</link>
       <pubDate>Fri, 13 Sep 2019 23:43:24 +0800</pubDate>
       
-      <guid>http://localhost:1313/categories/toolkit/</guid>
+      <guid>http://www.example.com/categories/toolkit/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Step by step</title>
-      <link>http://localhost:1313/categories/step-by-step/</link>
+      <link>http://www.example.com/categories/step-by-step/</link>
       <pubDate>Fri, 23 Aug 2019 23:33:12 +0800</pubDate>
       
-      <guid>http://localhost:1313/categories/step-by-step/</guid>
+      <guid>http://www.example.com/categories/step-by-step/</guid>
       <description></description>
     </item>
     
     <item>
       <title>排错笔记</title>
-      <link>http://localhost:1313/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/</link>
+      <link>http://www.example.com/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/</link>
       <pubDate>Mon, 12 Aug 2019 23:48:17 +0800</pubDate>
       
-      <guid>http://localhost:1313/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/</guid>
+      <guid>http://www.example.com/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/</guid>
       <description></description>
     </item>
     
     <item>
       <title>面试</title>
-      <link>http://localhost:1313/categories/%E9%9D%A2%E8%AF%95/</link>
+      <link>http://www.example.com/categories/%E9%9D%A2%E8%AF%95/</link>
       <pubDate>Sun, 28 Jul 2019 23:21:16 +0800</pubDate>
       
-      <guid>http://localhost:1313/categories/%E9%9D%A2%E8%AF%95/</guid>
+      <guid>http://www.example.com/categories/%E9%9D%A2%E8%AF%95/</guid>
       <description></description>
     </item>
     
     <item>
       <title>心得</title>
-      <link>http://localhost:1313/categories/%E5%BF%83%E5%BE%97/</link>
+      <link>http://www.example.com/categories/%E5%BF%83%E5%BE%97/</link>
       <pubDate>Thu, 18 Jul 2019 23:47:04 +0800</pubDate>
       
-      <guid>http://localhost:1313/categories/%E5%BF%83%E5%BE%97/</guid>
+      <guid>http://www.example.com/categories/%E5%BF%83%E5%BE%97/</guid>
       <description></description>
     </item>
     
     <item>
       <title>踩坑笔记</title>
-      <link>http://localhost:1313/categories/%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/</link>
+      <link>http://www.example.com/categories/%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/</link>
       <pubDate>Sat, 29 Jun 2019 00:43:12 +0800</pubDate>
       
-      <guid>http://localhost:1313/categories/%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/</guid>
+      <guid>http://www.example.com/categories/%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/</guid>
       <description></description>
     </item>
     

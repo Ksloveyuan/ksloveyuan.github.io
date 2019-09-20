@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content=''>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='为什么所有的查询条件都命中索引还是那么慢？记一次慢查询优化过程 • 海之方'>
+<meta property='og:description' content=''>
+<meta property='og:url' content='http://www.example.com/posts/slow_sql_analysis_1/'>
+<meta property='og:site_name' content='稀里稀里哗啦啦'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='sql'><meta property='article:tag' content='性能优化'><meta property='article:published_time' content='2019-09-19T23:46:57&#43;08:00'/><meta property='article:modified_time' content='2019-09-19T23:46:57&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+  <title>为什么所有的查询条件都命中索引还是那么慢？记一次慢查询优化过程 • 海之方</title>
+  <link rel='canonical' href='http://www.example.com/posts/slow_sql_analysis_1/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-145633116-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      稀里稀里哗啦啦
+      </a>
+    </h2>
+    <div class='desc'>
+    代码代码快发芽
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item has-children'>
+  <a href='/posts/'>Posts</a><button class='sub-menu-toggler'>
+    <span class='screen-reader-text'>expand sub menu</span>
+    <span class='sign'></span>
+  </button>
+
+  <ul class='sub-menu'><li class='item'>
+  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li><li class='item'>
+  <a href='/me/'>About Me</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/bft/' style='font-size:1em'>BFT</a>
+      </li><li>
+        <a href='/tags/channel/' style='font-size:1em'>channel</a>
+      </li><li>
+        <a href='/tags/ci/' style='font-size:1em'>CI</a>
+      </li><li>
+        <a href='/tags/elk/' style='font-size:1em'>ELK</a>
+      </li><li>
+        <a href='/tags/golang/' style='font-size:2em'>golang</a>
+      </li><li>
+        <a href='/tags/sql/' style='font-size:1em'>sql</a>
+      </li><li>
+        <a href='/tags/%E5%AE%89%E5%85%A8/' style='font-size:1em'>安全</a>
+      </li><li>
+        <a href='/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/' style='font-size:1em'>性能优化</a>
+      </li><li>
+        <a href='/tags/%E7%AC%94%E8%AE%B0/' style='font-size:1.3333333333333333em'>笔记</a>
+      </li><li>
+        <a href='/tags/%E9%9D%A2%E8%AF%95/' style='font-size:1em'>面试</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>稀里稀里哗啦啦</p><p class='desc site-desc'>代码代码快发芽</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>为什么所有的查询条件都命中索引还是那么慢？记一次慢查询优化过程</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2019-09-19T23:46:57&#43;08:00'>2019, Sep 19</time>
+</span>
+
+  <span class='byline'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M21,21V20c0-2.76-4-5-9-5s-9,2.24-9,5v1"/>
+  <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
+  
+</svg>
+<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+One min read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc'>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+<ul>
+<li><a href="#引子">引子</a></li>
+<li><a href="#排查过程">排查过程</a></li>
+<li><a href="#总结与反思">总结与反思</a></li>
+</ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <h1 id="引子">引子</h1>
+
+<p>话说，自从前段时间用granafa配好后端微服务prometheus监控的Dashboard后，我就有了一个新习惯，每天上班第一件事就是盯着这个Dashboard瞅一会儿。</p>
+
+<p>你还别说，很快我就发现了问题，一些名字看似不复杂的查询接口，却慢到要2到3秒，这是很不正常的。</p>
+
+<p>于是，我就是这样盯上了一个接口。</p>
+
+<h1 id="排查过程">排查过程</h1>
+
+<p>这是一个查询文章列表的接口，支持分页，最终执行的SQL如下：</p>
+
+<pre><code>SELECT DISTINCT
+    C.*,
+    B.nickname,
+    D.feed_id,
+    D.home_feed,
+    D.read_scope,
+    D.publish_time
+FROM
+    XXcloud.mp_pubno_info A,
+    XXcloud.wechat_pubno B,
+    XXcloud.wechat_article C
+        LEFT JOIN
+    XXcloud.mp_feed_info D ON D.element_id = C.article_id
+        AND D.element_type = 3
+        AND D.valid = 1
+        AND D.app_id = 'pf'
+WHERE
+     A.app_id = 'pf' AND A.pubno = C.pubno AND A.pubno = B.pubno
+ORDER BY C.create_time DESC
+LIMIT 0 , 20
+</code></pre>
+
+<p>咋一看这么多表联查，还有一个左联接，心想能快就奇怪了！</p>
+
+<p>一开始真不想理这段sql的业务逻辑，就快速用工具分析了一下查询计划，想着如果是没加索引，那<strong>偷个懒</strong>:）加个索引就好了。</p>
+
+<p><img src="https://i.loli.net/2019/09/16/TaB52AsWroieGPD.png" alt="slow_analysis.png" /></p>
+
+<p><strong>结果一看，竟然全部都命中索引了…</strong> &gt;_&lt;!!!</p>
+
+<p>心想有点麻烦呀，没办法只能耐着性子一点点看起。</p>
+
+<p><strong>首先</strong>，对于select部分，因为是C表在左的左联，那么distinct关键字是明显不需要的。但是去掉后，也没有快太多。</p>
+
+<p><strong>接着</strong>，因为个人风格偏好，内联查询更喜欢写inner join on，于是，我把sql的from和where整理了一下，虽然看起来规整些，但并无任何提升。</p>
+
+<p><strong>这时</strong>，我把注意力转移到limit部分，心想如果能<strong>早点做limit</strong>，这样就可以<strong>减少表联接笛卡尔积的集合大小</strong>。</p>
+
+<p>突破口就在这里！</p>
+
+<p>当我把sql调整成，</p>
+
+<pre><code>SELECT
+	C.*,
+	B.nickname,
+	D.feed_id,
+	D.home_feed,
+	D.read_scope,
+	D.publish_time 
+FROM
+	XXcloud.wechat_article C inner join (select C2.article_id from XXcloud.mp_pubno_info A inner join XXcloud.wechat_article C2 on A.app_id = 'sc' and  A.pubno = C2.pubno order by C2.create_time desc limit 20) ai on C.article_id = ai.article_id
+    inner join XXcloud.wechat_pubno B on C.pubno = B.pubno
+    left join XXcloud.mp_feed_info D ON D.valid = 1 AND D.app_id = 'sc' AND D.element_type = 3 AND  D.element_id = C.article_id
+ORDER BY
+	C.create_time DESC
+</code></pre>
+
+<p>再分析一下查询计划，</p>
+
+<p><img src="https://i.loli.net/2019/09/16/GRHoA4wjfVEih86.png" alt="quick_analysis.png" /></p>
+
+<p><strong>清爽的看到query cost从1975降到107!</strong></p>
+
+<p>但还有优化空间，在这里为了能够一句sql实现查询，使用了临时表，实际上是可以在代码中通过两次查询，一次查询出前20的article_id, 第二次查询时，直接把这20个article_id当成in的命中条件即可。</p>
+
+<h1 id="总结与反思">总结与反思</h1>
+
+<p>话说，这次排查慢sql，打破了我原有的一个认知偏误，以为命中了索引查询速度就不会慢；同时也让我加深了对左联加内联查询性能消耗的认识，左联真心是拖油瓶，本质上还是会将一个表的数据全部查出，如果这个表的数据还是逐渐增加的，那么上了生产环境变慢是必然的。</p>
+
+<p>值得反思的是，目前公司项目的后端是使用的微服务架构，但涉及到数据库查询方面还是比较随便，同库的表连接也许还可以接受，跨库的表连接实在是后患无穷。</p>
+
+<p>我能想到的未来改进方向是：
+- 要么是加索引，不断优化查询计划；
+- 要么就是严格限制单表查询，在代码中完成联接等操作，方便以后分库分表的扩展；
+- 特别复杂的需要group by的查询考虑场景做离线的ETL，或者用引入ELK。</p>
+
+<p>最后，各位看官，关于数据库应用查询方面的优化，你们有什么好的实战经验可以分享一下吗？</p>
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/sql%E4%BC%98%E5%8C%96/'>Sql优化</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/sql/'>sql</a>, <a class='tag' href='/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/'>性能优化</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/channelx_stream/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>如何把Golang的channel用的如nodejs的stream一样丝滑</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>All rights reserved by &copy; 2019 海之方 </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script><script src='/js/custom.js'></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content=''>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='如何把Golang的channel用的如nodejs的stream一样丝滑 • 海之方'>
+<meta property='og:description' content=''>
+<meta property='og:url' content='http://www.example.com/posts/channelx_stream/'>
+<meta property='og:site_name' content='稀里稀里哗啦啦'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='golang'><meta property='article:tag' content='channel'><meta property='article:published_time' content='2019-09-13T23:43:24&#43;08:00'/><meta property='article:modified_time' content='2019-03-19T23:43:24&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+  <title>如何把Golang的channel用的如nodejs的stream一样丝滑 • 海之方</title>
+  <link rel='canonical' href='http://www.example.com/posts/channelx_stream/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-145633116-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      稀里稀里哗啦啦
+      </a>
+    </h2>
+    <div class='desc'>
+    代码代码快发芽
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item has-children'>
+  <a href='/posts/'>Posts</a><button class='sub-menu-toggler'>
+    <span class='screen-reader-text'>expand sub menu</span>
+    <span class='sign'></span>
+  </button>
+
+  <ul class='sub-menu'><li class='item'>
+  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li><li class='item'>
+  <a href='/me/'>About Me</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/bft/' style='font-size:1em'>BFT</a>
+      </li><li>
+        <a href='/tags/channel/' style='font-size:1em'>channel</a>
+      </li><li>
+        <a href='/tags/ci/' style='font-size:1em'>CI</a>
+      </li><li>
+        <a href='/tags/elk/' style='font-size:1em'>ELK</a>
+      </li><li>
+        <a href='/tags/golang/' style='font-size:2em'>golang</a>
+      </li><li>
+        <a href='/tags/sql/' style='font-size:1em'>sql</a>
+      </li><li>
+        <a href='/tags/%E5%AE%89%E5%85%A8/' style='font-size:1em'>安全</a>
+      </li><li>
+        <a href='/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/' style='font-size:1em'>性能优化</a>
+      </li><li>
+        <a href='/tags/%E7%AC%94%E8%AE%B0/' style='font-size:1.3333333333333333em'>笔记</a>
+      </li><li>
+        <a href='/tags/%E9%9D%A2%E8%AF%95/' style='font-size:1em'>面试</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>稀里稀里哗啦啦</p><p class='desc site-desc'>代码代码快发芽</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>如何把Golang的channel用的如nodejs的stream一样丝滑</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2019-09-13T23:43:24&#43;08:00'>2019, Sep 13</time>
+</span>
+
+  <span class='byline'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M21,21V20c0-2.76-4-5-9-5s-9,2.24-9,5v1"/>
+  <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
+  
+</svg>
+<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+2 mins read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc'>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  
+</details>
+
+
+  <div class='container entry-content'>
+  <p>如果让我和别人说说Golang有什么特点，我首先想到不一定是goroutine，但一定会是channel。</p>
+
+<p>因为Channel的存在，是让Goroutine威力加成的利器。</p>
+
+<p>如果用一句话来解释channel的作用，我会说</p>
+
+<blockquote>
+<p>Chanel是一个管道，它会让数据流动起来。</p>
+</blockquote>
+
+<p>++那么如何理解这个让数据流程起来呢？++</p>
+
+<p>假如说你需要对100次请求，做两种比较耗时的操作，然后再统计加权结果，还需要尽可能的并发来提高性能。示例代码如下：</p>
+
+<pre><code>var multipleChan = make(chan int, 4)
+var minusChan = make(chan int, 4)
+var harvestChan = make(chan int, 4)
+
+defer close(multipleChan)
+defer close(minusChan)
+defer close(harvestChan)
+
+go func() {
+	for i:=1;i&lt;=100;i++{
+		multipleChan &lt;- i
+	}
+}()
+
+for i:=0; i&lt;4; i++{
+	go func() {
+		for data := range multipleChan {
+			minusChan &lt;- data * 2
+			time.Sleep(10* time.Millisecond)
+		}
+	}()
+
+	go func() {
+		for data := range minusChan {
+			harvestChan &lt;- data - 1
+			time.Sleep(10* time.Millisecond)
+		}
+	}()
+}
+
+var sum = 0
+var index = 0
+for data := range harvestChan{
+	sum += data
+	index++
+	if index == 100{
+		break
+	}
+}
+
+fmt.Println(sum)
+</code></pre>
+
+<p>不要笑这段代码简单，如果考虑到错误处理的情况，那还是有些复杂的。比如，某个环节是遇到错误可以忽略，某个环节是遇到要终止所有操作；再加上，有时只关心第一个满足条件的返回值，还需要超时处理。</p>
+
+<p>写一遍也许还可以，要是很多地方都要这样写，那真是头大&gt;_&lt;!!!</p>
+
+<p><strong>重复的代码是万恶之源，Don&rsquo;t repeat yourself是成为优秀工程师的第一步</strong>。</p>
+
+<p>于是，<a href="https://github.com/Ksloveyuan/channelx" target="_blank"><strong>channelx</strong></a>这个库诞生了！</p>
+
+<p>使用了这个库，实现上述同样的功能，代码是这样子的~~</p>
+
+<pre><code>var sum = 0
+
+NewChannelStream(func(seedChan chan&lt;- Result, quitChannel chan struct{}) {
+	for i:=1; i&lt;=100;i++{
+		seedChan &lt;- Result{Data:i}
+	}
+	close(seedChan) //记得关闭哦~~~
+}).Pipe(func(result Result) Result {
+	return Result{Data: result.Data.(int) * 2}
+}).Pipe(func(result Result) Result {
+	return Result{Data: result.Data.(int) - 1}
+}).Harvest(func(result Result) {
+	sum += result.Data.(int)
+})
+
+fmt.Println(sum)
+</code></pre>
+
+<p>我喜欢链式风格，所以写成这个样子，你也可以拆开来写的。但重点是代码这样写起来是不是很丝滑，有nodejs stream流的快感呢，嘻嘻~~</p>
+
+<p>除了<strong>Pipe-&gt;Harvest</strong>的组合，还可以实现<strong>Pipe-&gt;Race</strong>, <strong>Pipe-&gt;Drain</strong>, <strong>Pipe-&gt;Cancel</strong>等操作的组合。</p>
+
+<p>这些复杂的例子，都可以参照<a href="https://github.com/Ksloveyuan/channelx/blob/master/stream_test.go" target="_blank">stream_test.go</a>文件中的单元测试来实现，就不一一贴代码出来了哈。</p>
+
+<p>那么，这个stream又是如何实现的呢？核心就在<strong>NewChannelStream</strong>和<strong>Pipe</strong>这个两个函数里。</p>
+
+<pre><code>func NewChannelStream(seedFunc SeedFunc, optionFuncs ...OptionFunc) *ChannelStream {
+	cs := &amp;ChannelStream{
+		workers:     runtime.NumCPU(),
+		optionFuncs: optionFuncs,
+	}
+
+	for _, of := range optionFuncs {
+		of(cs)
+	}
+
+	if cs.quitChan == nil {
+		cs.quitChan = make(chan struct{})
+	}
+
+	cs.dataChannel = make(chan Item, cs.workers)
+
+	go func() {
+		inputChan := make(chan Item)
+
+		go seedFunc(inputChan, cs.quitChan)
+
+	loop:
+		for {
+			select {
+			case &lt;-cs.quitChan:
+				break loop
+
+			case res, ok := &lt;-inputChan:
+				if !ok {
+					break loop
+				}
+
+				select {
+				case &lt;-cs.quitChan:
+					break loop
+				default:
+				}
+
+				if res.Err != nil {
+					cs.errors = append(cs.errors, res.Err)
+				}
+
+				if !cs.hasError &amp;&amp; res.Err != nil {
+					cs.hasError = true
+					cs.dataChannel &lt;- res
+					if cs.ape == stop {
+						cs.Cancel()
+					}
+					continue
+				}
+
+				if cs.hasError &amp;&amp; cs.ape == stop {
+					continue
+				}
+
+				cs.dataChannel &lt;- res
+			}
+		}
+
+		safeCloseChannel(cs.dataChannel)
+
+	}()
+
+	return cs
+}
+
+func (p *ChannelStream) Pipe(dataPipeFunc PipeFunc, optionFuncs ...OptionFunc) *ChannelStream {
+	seedFunc := func(dataPipeChannel chan&lt;- Item, quitChannel chan struct{}) {
+		wg := &amp;sync.WaitGroup{}
+		wg.Add(p.workers)
+		for i := 0; i &lt; p.workers; i++ {
+			go func() {
+				defer wg.Done()
+			loop:
+				for {
+					select {
+					case &lt;-quitChannel:
+						break loop
+					case data, ok := &lt;-p.dataChannel:
+						if !ok {
+							break loop
+						}
+
+						select {
+						case &lt;-quitChannel:
+							break loop
+						default:
+						}
+
+						dataPipeChannel &lt;- dataPipeFunc(data)
+					}
+				}
+			}()
+		}
+
+		go func() {
+			wg.Wait()
+			safeCloseChannel(dataPipeChannel)
+		}()
+	}
+
+	mergeOptionFuncs := make([]OptionFunc, len(p.optionFuncs)+len(optionFuncs)+1)
+	copy(mergeOptionFuncs[0:len(p.optionFuncs)], p.optionFuncs)
+	copy(mergeOptionFuncs[len(p.optionFuncs):], optionFuncs)
+	mergeOptionFuncs[len(p.optionFuncs)+len(optionFuncs)] = passByQuitChan(p.quitChan) //这行保证了整个stream中有一个唯一的quitChan
+
+	return NewChannelStream(seedFunc, mergeOptionFuncs...)
+}
+
+</code></pre>
+
+<p>代码看着多，刨除初始化的代码、错误处理和退出处理的代码，核心还是通过channel的数据流动。</p>
+
+<p>首先，NewChannelStream中会新建一个inputChan传入seedFunc，然后数据会通过seedChan(即inputChan)，传到dataChannel。</p>
+
+<p>然后，当调用Pipe的时候，Pipe函数会自己创建一个seedFunc从上一个channelStream的dataChannel传到dataPipeChannel中。这个Pipe中的seedFunc又会传入NewChannelStream中，产生一个新channelStream对象，这时在新的channelStream中，inputChan即Pipe中的dataPipeChannel，整个数据流就这样串起来了，过程如下：</p>
+
+<blockquote>
+<p>inputChan(seedChan)-&gt;dataChannel-&gt;inputChan(dataPipeChannel)-&gt;dataChannel-&gt;&hellip;.</p>
+</blockquote>
+
+<p>分析过源码，再来看使用ChannelStream的例子和直接用Channel的例子，两个dataChannel分别对应的是multipleChan和minusChan，多出的两个inputChan，就是用这个库额外的开销喽。</p>
+
+<p>原创不易，你的支持就是对我最大的鼓励，欢迎给<a href="https://github.com/Ksloveyuan/channelx" target="_blank"><strong>channelx</strong></a>点个star！:)</p>
+
+<p>未完待续，<a href="https://github.com/Ksloveyuan/channelx" target="_blank"><strong>channelx</strong></a>中还会陆续增加各种常用场景的channel实现，敬请期待……</p>
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='last-updated'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34" />
+  <polygon points="18 2 22 6 12 16 8 16 8 12 18 2" />
+  
+</svg>
+<span class='screen-reader-text'>Last updated: </span>
+      <time class='entry-date' datetime='2019-03-19T23:43:24&#43;08:00'>2019, Mar 19</time>
+    </div><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/toolkit/'>toolkit</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/golang/'>golang</a>, <a class='tag' href='/tags/channel/'>channel</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/api_security/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>内部API的安全防护怎么搞？密码学中有答案</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/slow_sql_analysis_1/'>
+        <span class='screen-reader-text'>Next post: </span>为什么所有的查询条件都命中索引还是那么慢？记一次慢查询优化过程<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>All rights reserved by &copy; 2019 海之方 </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script><script src='/js/custom.js'></script>
+
+</body>
+
+</html>
+

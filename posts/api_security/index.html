@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content=''>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='内部API的安全防护怎么搞？密码学中有答案 • 海之方'>
+<meta property='og:description' content=''>
+<meta property='og:url' content='http://www.example.com/posts/api_security/'>
+<meta property='og:site_name' content='稀里稀里哗啦啦'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='安全'><meta property='article:published_time' content='2019-08-26T23:39:00&#43;08:00'/><meta property='article:modified_time' content='2019-08-26T23:39:00&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+  <title>内部API的安全防护怎么搞？密码学中有答案 • 海之方</title>
+  <link rel='canonical' href='http://www.example.com/posts/api_security/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><link rel='stylesheet' href='/css/custom.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-145633116-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      稀里稀里哗啦啦
+      </a>
+    </h2>
+    <div class='desc'>
+    代码代码快发芽
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item has-children'>
+  <a href='/posts/'>Posts</a><button class='sub-menu-toggler'>
+    <span class='screen-reader-text'>expand sub menu</span>
+    <span class='sign'></span>
+  </button>
+
+  <ul class='sub-menu'><li class='item'>
+  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li><li class='item'>
+  <a href='/me/'>About Me</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/bft/' style='font-size:1em'>BFT</a>
+      </li><li>
+        <a href='/tags/channel/' style='font-size:1em'>channel</a>
+      </li><li>
+        <a href='/tags/ci/' style='font-size:1em'>CI</a>
+      </li><li>
+        <a href='/tags/elk/' style='font-size:1em'>ELK</a>
+      </li><li>
+        <a href='/tags/golang/' style='font-size:2em'>golang</a>
+      </li><li>
+        <a href='/tags/sql/' style='font-size:1em'>sql</a>
+      </li><li>
+        <a href='/tags/%E5%AE%89%E5%85%A8/' style='font-size:1em'>安全</a>
+      </li><li>
+        <a href='/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/' style='font-size:1em'>性能优化</a>
+      </li><li>
+        <a href='/tags/%E7%AC%94%E8%AE%B0/' style='font-size:1.3333333333333333em'>笔记</a>
+      </li><li>
+        <a href='/tags/%E9%9D%A2%E8%AF%95/' style='font-size:1em'>面试</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button><div class='header-widgets'>
+        <div class='container'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>稀里稀里哗啦啦</p><p class='desc site-desc'>代码代码快发芽</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>内部API的安全防护怎么搞？密码学中有答案</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2019-08-26T23:39:00&#43;08:00'>2019, Aug 26</time>
+</span>
+
+  <span class='byline'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M21,21V20c0-2.76-4-5-9-5s-9,2.24-9,5v1"/>
+  <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
+  
+</svg>
+<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+3 mins read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+<details class='container entry-toc'>
+  <summary class='title'>
+    <span>Table of Contents</span>
+  </summary>
+  <nav id="TableOfContents">
+<ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#分析">分析</a></li>
+<li><a href="#实现">实现</a>
+<ul>
+<li><a href="#后端实现">后端实现</a></li>
+<li><a href="#前端实现">前端实现</a></li>
+</ul></li>
+<li><a href="#写在最后">写在最后</a></li>
+</ul>
+</nav>
+</details>
+
+
+  <div class='container entry-content'>
+  <h1 id="前言">前言</h1>
+
+<p>事情的起因是公司之前的CDN服务是通过腾讯云的COSFS来做的，它的好处是可以像使用本地文件系统一样直接操作腾讯云对象存储中的对象，但后来因为性能等因素，我花时间把上传文件到CDN的功能用SDK重写了（*其实可能比搭个COSFS还简单呢*）。</p>
+
+<p>前端同事恰好也有图床的使用需求，就想让我给他们开个API，这样他们就可以直接通过代码上传文件了，而不用每次都找后端同事帮忙。这件事本身没什么难度，唯一的问题是这个API的安全方面如何保证，至少不能让外人勿用。</p>
+
+<h1 id="分析">分析</h1>
+
+<p>其它业务上的API都是用的用户登录后的token及用户的权限进行验证，眼下这种用于开发需求的API虽然也可以用同样的方式来做，但一方面不够方便（*上传个图还要先登录，想想就麻烦*），另一方面安全性也还是差些（*是不是所有登录的用户都能调用呢？如果要再加权限的限制，也是麻烦*）。</p>
+
+<p>恰好自己上份工作是做区块链相关的，有一些密码学的基础知识，所以很自然想到用<strong>签名验签</strong>的方式来做安全验证。</p>
+
+<p>先简单的解释一下密码学基础知识，常用的加密方式有两大类，一种是对称加密，即加密和解密都是相同的秘钥; 另一种是非对称加密，秘钥有公私钥之分，公钥是用私钥生成的。签名是指要私钥对一段信息的Hash加密，验签是指用私钥对应的公钥来验证一段信息的签名是否和信息匹配。非对称加密原理的保证了签名只能来自于私钥，而只有对应在公钥才能解签。(<em>如果你对这些原理感兴趣，可以自行搜索相关文章哈</em>)</p>
+
+<h1 id="实现">实现</h1>
+
+<p>我们的后端是用的golang，前端是用NodeJS来实现的。非对称加密的实现方式有好几种，考虑到多端调试的成本，同时不想引入过多的第三方包，我这里选择了更加常用的RSA。下面将分为后端和前端两个部分来分别说明。</p>
+
+<h2 id="后端实现">后端实现</h2>
+
+<p>1 生成密钥。方法有很多，可以ssh的工具来生成，这是是用代码来生成.</p>
+
+<pre><code>func GenerateKey(bits int) (*rsa.PrivateKey, *rsa.PublicKey, error) {
+	private, err := rsa.GenerateKey(rand.Reader, bits)
+	if err != nil {
+		return nil, nil, err
+	}
+	return private, &amp;private.PublicKey, nil
+}
+</code></pre>
+
+<p>然后把密钥导出成base64的字符串，方便保存和使用。</p>
+
+<pre><code>func EncodePrivateKey(private *rsa.PrivateKey) []byte {
+	return pem.EncodeToMemory(&amp;pem.Block{
+		Bytes: x509.MarshalPKCS1PrivateKey(private),
+		Type:  &quot;RSA PRIVATE KEY&quot;,
+	})
+}
+
+func EncodePublicKey(public *rsa.PublicKey) ([]byte, error) {
+	publicBytes, err := x509.MarshalPKIXPublicKey(public)
+	if err != nil {
+		return nil, err
+	}
+	return pem.EncodeToMemory(&amp;pem.Block{
+		Bytes: publicBytes,
+		Type:  &quot;PUBLIC KEY&quot;,
+	}), nil
+}
+</code></pre>
+
+<p>代码的话，没什么花头，唯一需要注意的是Type不要乱填，这可是标准哈! pem也是最常用的的密钥的编码方式。</p>
+
+<p>2 签名解签。</p>
+
+<pre><code>func SignWithSha256Base64(data string, prvKeyBytes []byte) (string, error) {
+	block, _ := pem.Decode(prvKeyBytes)
+	if block == nil {
+		return &quot;&quot;, errors.New(&quot;fail to decode private key&quot;)
+	}
+
+	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err != nil {
+		return &quot;&quot;, err
+	}
+	h := sha256.New()
+	h.Write([]byte([]byte(data)))
+	hash := h.Sum(nil)
+	signature, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hash[:])
+	if err != nil {
+		return &quot;&quot;, err
+	}
+	out := base64.StdEncoding.EncodeToString(signature)
+	return out, nil
+}
+
+func VerySignWithSha256Base64(originalData, signData string, pubKeyBytes[]byte) (bool, error) {
+	sign, err := base64.StdEncoding.DecodeString(signData)
+	if err != nil {
+		return false ,err
+	}
+	block, _ := pem.Decode(pubKeyBytes)
+	if block == nil {
+		return false, errors.New(&quot;fail to decode public key&quot;)
+	}
+
+	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return false, err
+	}
+	hash := sha256.New()
+	hash.Write([]byte(originalData))
+	err = rsa.VerifyPKCS1v15(pub.(*rsa.PublicKey), crypto.SHA256, hash.Sum(nil), sign)
+	return err == nil, err
+}
+</code></pre>
+
+<p>这里选用的Hash方法是Sha256，在签名和解签时都要用Sha256哦。</p>
+
+<p>其实，加解密的相关代码在使用起来是比较固定的，但是一定是要记得使用的Hash方式和加解密的方法，要不然&ndash;嘿嘿&ndash;那真是调试到欲哭无泪呀。</p>
+
+<p>3 经过一层封装，使用起来就很方便啦，下面测试一下。</p>
+
+<pre><code>func TestSignAndVerify(t *testing.T)  {
+	sk, pk, _ := GenerateKey(1024)
+	skBytes := EncodePrivateKey(sk)
+	pkBytes, _ := EncodePublicKey(pk)
+	fmt.Println(string(skBytes))
+	fmt.Println(string(pkBytes))
+
+	sig, err := SignWithSha256Base64(&quot;test&quot;, skBytes)
+	if err != nil{
+		fmt.Printf(&quot;%+v&quot;, err)
+	}
+	fmt.Println(sig)
+
+	success, err := VerySignWithSha256Base64(&quot;test&quot;, sig, pkBytes)
+	if success {
+		fmt.Println(&quot;pass&quot;)
+	} else {
+		fmt.Printf(&quot;%+v&quot;, err)
+	}
+}
+</code></pre>
+
+<p>上述代码可在<a href="https://github.com/Ksloveyuan/rsautil" target="_blank">ksloveyuan/rsautil</a>查看。</p>
+
+<p>4 接着，我用echo写了一个简单的server端。</p>
+
+<pre><code>package main
+
+import (
+	&quot;github.com/ksloveyuan/rsautil&quot;
+	&quot;net/http&quot;
+	&quot;github.com/labstack/echo&quot;
+)
+
+const PublicKey  = `-----BEGIN PUBLIC KEY----- 公钥 -----END PUBLIC KEY-----``
+
+type VerifyArgs struct {
+	Content string  `json:&quot;content&quot; description:&quot;&quot; binding:&quot;required&quot; `
+	Signature string  `json:&quot;signature&quot; description:&quot;&quot; binding:&quot;required&quot; `
+}
+
+func main() {
+	e := echo.New()
+
+	e.POST(&quot;/verify&quot;, func(c echo.Context) error {
+		args:= VerifyArgs{}
+		if err := c.Bind(&amp;args); err !=nil{
+			return c.String(http.StatusBadRequest, &quot;参数不正确&quot;)
+		}
+
+		message := &quot;&quot;
+		if success, _ := rsautil.VerySignWithSha256Base64(args.Content, args.Signature, []byte(PublicKey)); success{
+			message = &quot;success&quot;
+		} else {
+			message = &quot;fail&quot;
+		}
+
+		return c.String(http.StatusOK, message)
+	})
+
+	e.Logger.Fatal(e.Start(&quot;:1323&quot;))
+}
+</code></pre>
+
+<h2 id="前端实现">前端实现</h2>
+
+<p>前端的主要工作是发起请求，同时附带请求参数的签名。</p>
+
+<pre><code>let crypto = require('crypto')
+let request = require('request')
+
+let sk = `-----BEGIN RSA PRIVATE KEY-----对应的私钥-----END RSA PRIVATE KEY-----`
+
+function sendRequest ({ content, signature }) {
+    var bodyData = { content, signature }
+    return new Promise((resolve, reject) =&gt; {
+        request.post({ url: 'http://localhost:1323/verify', body: bodyData, json: true }, function optionalCallback (
+            err,
+            httpResponse,
+            body
+        ) {
+            if (err) {
+                reject()
+                return console.error('upload failed:', err)
+            }
+
+            console.log('Upload successful!', body)
+            resolve()
+        })
+    })
+}
+
+async function action() {
+    let signer = crypto.createSign('RSA-SHA256')
+
+    let content = 'test_test_test'
+    signer.update(content)
+
+    let privateKey = {key: sk, format:&quot;pem&quot;, type:&quot;pkcs1&quot;}
+    let signature = signer.sign(privateKey, 'base64')
+
+    console.log(signature)
+
+    await sendRequest({ content, signature })
+}
+
+action()
+
+</code></pre>
+
+<p>其中request第三方包，crypto是nodejs自带的库。</p>
+
+<p>代码中需要注意的地方有两点:
+1. 选用的签名方法一定要是<strong>RSA-SHA256</strong>，否则的话，和后端就对不上了。
+2. 使用的私钥的格式参数虽然是默认参数，但最好显示指定哈。</p>
+
+<p>以上demo的完整代码可在<a href="https://github.com/Ksloveyuan/ApiSecurityDemo" target="_blank">ksloveyuan/ApiSecurityDemo</a>中查看，欢迎star哈。</p>
+
+<h1 id="写在最后">写在最后</h1>
+
+<p>关于私钥的保存，明文HardCode在代码里自然是一个安全隐患。</p>
+
+<p>这一点，一方面可以保存在文件里，使用时读取，密钥的安全由保管的人负责（*话说ssh密钥登录就是这样*）;或者是对私钥再做一层AES的加密，每次使用时输入AES加密的Keyword。</p>
+
+<p>话说回来，安全攻防是没有尽头的，主要还是要看要保证的安全级别而定。</p>
+
+<p>公司前端的同事，对目前的安全保证已经很满意了。</p>
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/toolkit/'>toolkit</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/%E5%AE%89%E5%85%A8/'>安全</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/gitlab_ci_dashboard/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>Step by step 搭建Gitlab CI Pipeline的监控Dashboard</a>
+    </div><div class='next-entry sep-before'>
+      <a href='/posts/channelx_stream/'>
+        <span class='screen-reader-text'>Next post: </span>如何把Golang的channel用的如nodejs的stream一样丝滑<span aria-hidden='true'>Next <svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="4" y1="12" x2="20" y2="12"/>
+  <polyline points="14 6 20 12 14 18"/>
+  
+</svg>
+</span>
+      </a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>All rights reserved by &copy; 2019 海之方 </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script><script src='/js/custom.js'></script>
+
+</body>
+
+</html>
+

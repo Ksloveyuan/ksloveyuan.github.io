@@ -2,48 +2,47 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>golang on 稀里稀里哗啦啦</title>
-    <link>http://localhost:1313/tags/golang/</link>
+    <link>http://www.example.com/tags/golang/</link>
     <description>Recent content in golang on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
     <lastBuildDate>Fri, 13 Sep 2019 23:43:24 +0800</lastBuildDate>
     
-	<atom:link href="http://localhost:1313/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://www.example.com/tags/golang/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>如何把Golang的channel用的如nodejs的stream一样丝滑</title>
-      <link>http://localhost:1313/post/channelx_stream/</link>
+      <link>http://www.example.com/posts/channelx_stream/</link>
       <pubDate>Fri, 13 Sep 2019 23:43:24 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/channelx_stream/</guid>
+      <guid>http://www.example.com/posts/channelx_stream/</guid>
       <description></description>
     </item>
     
     <item>
       <title>记一次golang程序CPU高的排查过程</title>
-      <link>http://localhost:1313/post/golang_high_cpu/</link>
+      <link>http://www.example.com/posts/golang_high_cpu/</link>
       <pubDate>Mon, 12 Aug 2019 23:48:17 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/golang_high_cpu/</guid>
+      <guid>http://www.example.com/posts/golang_high_cpu/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Gorm的使用心得和一些常用扩展(二)</title>
-      <link>http://localhost:1313/post/gorm_extension_2/</link>
+      <link>http://www.example.com/posts/gorm_extension_2/</link>
       <pubDate>Thu, 18 Jul 2019 23:47:04 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/gorm_extension_2/</guid>
+      <guid>http://www.example.com/posts/gorm_extension_2/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Gorm的使用心得和一些常用扩展(一)</title>
-      <link>http://localhost:1313/post/gorm_extension_1/</link>
+      <link>http://www.example.com/posts/gorm_extension_1/</link>
       <pubDate>Sat, 13 Jul 2019 15:46:36 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/gorm_extension_1/</guid>
+      <guid>http://www.example.com/posts/gorm_extension_1/</guid>
       <description></description>
     </item>
     

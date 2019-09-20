@@ -2,102 +2,101 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on 稀里稀里哗啦啦</title>
-    <link>http://localhost:1313/tags/</link>
+    <link>http://www.example.com/tags/</link>
     <description>Recent content in Tags on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
     <lastBuildDate>Thu, 19 Sep 2019 23:46:57 +0800</lastBuildDate>
     
-	<atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://www.example.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>sql</title>
-      <link>http://localhost:1313/tags/sql/</link>
+      <link>http://www.example.com/tags/sql/</link>
       <pubDate>Thu, 19 Sep 2019 23:46:57 +0800</pubDate>
       
-      <guid>http://localhost:1313/tags/sql/</guid>
+      <guid>http://www.example.com/tags/sql/</guid>
       <description></description>
     </item>
     
     <item>
       <title>性能优化</title>
-      <link>http://localhost:1313/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</link>
+      <link>http://www.example.com/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</link>
       <pubDate>Thu, 19 Sep 2019 23:46:57 +0800</pubDate>
       
-      <guid>http://localhost:1313/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</guid>
+      <guid>http://www.example.com/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</guid>
       <description></description>
     </item>
     
     <item>
       <title>channel</title>
-      <link>http://localhost:1313/tags/channel/</link>
+      <link>http://www.example.com/tags/channel/</link>
       <pubDate>Fri, 13 Sep 2019 23:43:24 +0800</pubDate>
       
-      <guid>http://localhost:1313/tags/channel/</guid>
+      <guid>http://www.example.com/tags/channel/</guid>
       <description></description>
     </item>
     
     <item>
       <title>golang</title>
-      <link>http://localhost:1313/tags/golang/</link>
+      <link>http://www.example.com/tags/golang/</link>
       <pubDate>Fri, 13 Sep 2019 23:43:24 +0800</pubDate>
       
-      <guid>http://localhost:1313/tags/golang/</guid>
+      <guid>http://www.example.com/tags/golang/</guid>
       <description></description>
     </item>
     
     <item>
       <title>安全</title>
-      <link>http://localhost:1313/tags/%E5%AE%89%E5%85%A8/</link>
+      <link>http://www.example.com/tags/%E5%AE%89%E5%85%A8/</link>
       <pubDate>Mon, 26 Aug 2019 23:39:00 +0800</pubDate>
       
-      <guid>http://localhost:1313/tags/%E5%AE%89%E5%85%A8/</guid>
+      <guid>http://www.example.com/tags/%E5%AE%89%E5%85%A8/</guid>
       <description></description>
     </item>
     
     <item>
       <title>CI</title>
-      <link>http://localhost:1313/tags/ci/</link>
+      <link>http://www.example.com/tags/ci/</link>
       <pubDate>Fri, 23 Aug 2019 23:33:12 +0800</pubDate>
       
-      <guid>http://localhost:1313/tags/ci/</guid>
+      <guid>http://www.example.com/tags/ci/</guid>
       <description></description>
     </item>
     
     <item>
       <title>笔记</title>
-      <link>http://localhost:1313/tags/%E7%AC%94%E8%AE%B0/</link>
+      <link>http://www.example.com/tags/%E7%AC%94%E8%AE%B0/</link>
       <pubDate>Mon, 12 Aug 2019 23:48:17 +0800</pubDate>
       
-      <guid>http://localhost:1313/tags/%E7%AC%94%E8%AE%B0/</guid>
+      <guid>http://www.example.com/tags/%E7%AC%94%E8%AE%B0/</guid>
       <description></description>
     </item>
     
     <item>
       <title>BFT</title>
-      <link>http://localhost:1313/tags/bft/</link>
+      <link>http://www.example.com/tags/bft/</link>
       <pubDate>Sun, 28 Jul 2019 23:21:16 +0800</pubDate>
       
-      <guid>http://localhost:1313/tags/bft/</guid>
+      <guid>http://www.example.com/tags/bft/</guid>
       <description></description>
     </item>
     
     <item>
       <title>面试</title>
-      <link>http://localhost:1313/tags/%E9%9D%A2%E8%AF%95/</link>
+      <link>http://www.example.com/tags/%E9%9D%A2%E8%AF%95/</link>
       <pubDate>Sun, 28 Jul 2019 23:21:16 +0800</pubDate>
       
-      <guid>http://localhost:1313/tags/%E9%9D%A2%E8%AF%95/</guid>
+      <guid>http://www.example.com/tags/%E9%9D%A2%E8%AF%95/</guid>
       <description></description>
     </item>
     
     <item>
       <title>ELK</title>
-      <link>http://localhost:1313/tags/elk/</link>
+      <link>http://www.example.com/tags/elk/</link>
       <pubDate>Sat, 29 Jun 2019 00:43:12 +0800</pubDate>
       
-      <guid>http://localhost:1313/tags/elk/</guid>
+      <guid>http://www.example.com/tags/elk/</guid>
       <description></description>
     </item>
     

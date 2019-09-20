@@ -1,192 +1,200 @@
-<?xml-stylesheet type="text/xsl" href="http://localhost:1313/sitemap.xsl"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>http://www.example.com/</loc>
+    <lastmod>2019-09-19T23:46:57+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/posts/</loc>
+    <lastmod>2019-09-19T23:46:57+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/me/</loc>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/categories/</loc>
     <lastmod>2019-09-19T23:46:57+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/post/</loc>
+    <loc>http://www.example.com/categories/sql%E4%BC%98%E5%8C%96/</loc>
     <lastmod>2019-09-19T23:46:57+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/categories/sql%E4%BC%98%E5%8C%96/</loc>
+    <loc>http://www.example.com/tags/</loc>
     <lastmod>2019-09-19T23:46:57+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>http://www.example.com/tags/sql/</loc>
     <lastmod>2019-09-19T23:46:57+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/sql/</loc>
+    <loc>http://www.example.com/posts/slow_sql_analysis_1/</loc>
+    <lastmod>2019-09-19T23:46:57+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</loc>
     <lastmod>2019-09-19T23:46:57+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/post/slow_sql_analysis_1/</loc>
-    <lastmod>2019-09-19T23:46:57+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://localhost:1313/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</loc>
-    <lastmod>2019-09-19T23:46:57+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://localhost:1313/</loc>
-    <lastmod>2019-09-19T23:46:57+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://localhost:1313/tags/channel/</loc>
+    <loc>http://www.example.com/tags/channel/</loc>
     <lastmod>2019-03-19T23:43:24+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/golang/</loc>
+    <loc>http://www.example.com/tags/golang/</loc>
     <lastmod>2019-08-12T23:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/categories/toolkit/</loc>
+    <loc>http://www.example.com/categories/toolkit/</loc>
     <lastmod>2019-08-26T23:39:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/post/channelx_stream/</loc>
+    <loc>http://www.example.com/posts/channelx_stream/</loc>
     <lastmod>2019-03-19T23:43:24+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/post/api_security/</loc>
+    <loc>http://www.example.com/posts/api_security/</loc>
     <lastmod>2019-08-26T23:39:00+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/%E5%AE%89%E5%85%A8/</loc>
+    <loc>http://www.example.com/tags/%E5%AE%89%E5%85%A8/</loc>
     <lastmod>2019-08-26T23:39:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/ci/</loc>
+    <loc>http://www.example.com/tags/ci/</loc>
     <lastmod>2019-08-23T23:33:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/categories/step-by-step/</loc>
+    <loc>http://www.example.com/categories/step-by-step/</loc>
     <lastmod>2019-08-23T23:33:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/post/gitlab_ci_dashboard/</loc>
+    <loc>http://www.example.com/posts/gitlab_ci_dashboard/</loc>
     <lastmod>2019-08-23T23:33:12+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/</loc>
+    <loc>http://www.example.com/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2019-08-12T23:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/%E7%AC%94%E8%AE%B0/</loc>
+    <loc>http://www.example.com/tags/%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2019-08-12T23:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/post/golang_high_cpu/</loc>
+    <loc>http://www.example.com/posts/golang_high_cpu/</loc>
     <lastmod>2019-08-12T23:48:17+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/bft/</loc>
+    <loc>http://www.example.com/tags/bft/</loc>
     <lastmod>2019-07-28T23:21:16+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/post/interview_bft_1/</loc>
+    <loc>http://www.example.com/posts/interview_bft_1/</loc>
     <lastmod>2019-07-28T23:21:16+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/categories/%E9%9D%A2%E8%AF%95/</loc>
+    <loc>http://www.example.com/tags/%E9%9D%A2%E8%AF%95/</loc>
     <lastmod>2019-07-28T23:21:16+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/%E9%9D%A2%E8%AF%95/</loc>
+    <loc>http://www.example.com/categories/%E9%9D%A2%E8%AF%95/</loc>
     <lastmod>2019-07-28T23:21:16+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/post/gorm_extension_2/</loc>
+    <loc>http://www.example.com/posts/gorm_extension_2/</loc>
     <lastmod>2019-07-18T23:47:04+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/categories/%E5%BF%83%E5%BE%97/</loc>
+    <loc>http://www.example.com/categories/%E5%BF%83%E5%BE%97/</loc>
     <lastmod>2019-07-18T23:47:04+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/post/gorm_extension_1/</loc>
+    <loc>http://www.example.com/posts/gorm_extension_1/</loc>
     <lastmod>2019-07-13T15:46:36+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/tags/elk/</loc>
+    <loc>http://www.example.com/tags/elk/</loc>
     <lastmod>2019-06-29T00:43:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/post/logstash_docker_note/</loc>
+    <loc>http://www.example.com/posts/logstash_docker_note/</loc>
     <lastmod>2019-06-29T00:43:12+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>http://localhost:1313/categories/%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/</loc>
+    <loc>http://www.example.com/categories/%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2019-06-29T00:43:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/authors/</loc>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/page/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/search/</loc>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/series/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/%E6%B5%B7%E4%B9%8B%E6%96%B9/</loc>
     <priority>0</priority>
   </url>
   

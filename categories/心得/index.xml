@@ -2,30 +2,29 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>心得 on 稀里稀里哗啦啦</title>
-    <link>http://localhost:1313/categories/%E5%BF%83%E5%BE%97/</link>
+    <link>http://www.example.com/categories/%E5%BF%83%E5%BE%97/</link>
     <description>Recent content in 心得 on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
     <lastBuildDate>Thu, 18 Jul 2019 23:47:04 +0800</lastBuildDate>
     
-	<atom:link href="http://localhost:1313/categories/%E5%BF%83%E5%BE%97/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://www.example.com/categories/%E5%BF%83%E5%BE%97/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Gorm的使用心得和一些常用扩展(二)</title>
-      <link>http://localhost:1313/post/gorm_extension_2/</link>
+      <link>http://www.example.com/posts/gorm_extension_2/</link>
       <pubDate>Thu, 18 Jul 2019 23:47:04 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/gorm_extension_2/</guid>
+      <guid>http://www.example.com/posts/gorm_extension_2/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Gorm的使用心得和一些常用扩展(一)</title>
-      <link>http://localhost:1313/post/gorm_extension_1/</link>
+      <link>http://www.example.com/posts/gorm_extension_1/</link>
       <pubDate>Sat, 13 Jul 2019 15:46:36 +0800</pubDate>
       
-      <guid>http://localhost:1313/post/gorm_extension_1/</guid>
+      <guid>http://www.example.com/posts/gorm_extension_1/</guid>
       <description></description>
     </item>
     
