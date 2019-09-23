@@ -200,7 +200,7 @@ if (!doNotTrack) {
   <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
   
 </svg>
-<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+<span class='screen-reader-text'> by </span><a href='/authors/%e6%b5%b7%e4%b9%8b%e6%96%b9'>海之方</a></span>
   
 <span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
@@ -261,199 +261,181 @@ if (!doNotTrack) {
 <h2 id="后端实现">后端实现</h2>
 
 <p>1 生成密钥。方法有很多，可以ssh的工具来生成，这是是用代码来生成.</p>
-
-<pre><code>func GenerateKey(bits int) (*rsa.PrivateKey, *rsa.PublicKey, error) {
-	private, err := rsa.GenerateKey(rand.Reader, bits)
-	if err != nil {
-		return nil, nil, err
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">GenerateKey</span>(<span style="color:#a6e22e">bits</span> <span style="color:#66d9ef">int</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">PrivateKey</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">PublicKey</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#a6e22e">private</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">GenerateKey</span>(<span style="color:#a6e22e">rand</span>.<span style="color:#a6e22e">Reader</span>, <span style="color:#a6e22e">bits</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
 	}
-	return private, &amp;private.PublicKey, nil
-}
-</code></pre>
-
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">private</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">private</span>.<span style="color:#a6e22e">PublicKey</span>, <span style="color:#66d9ef">nil</span>
+}</code></pre></div>
 <p>然后把密钥导出成base64的字符串，方便保存和使用。</p>
-
-<pre><code>func EncodePrivateKey(private *rsa.PrivateKey) []byte {
-	return pem.EncodeToMemory(&amp;pem.Block{
-		Bytes: x509.MarshalPKCS1PrivateKey(private),
-		Type:  &quot;RSA PRIVATE KEY&quot;,
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">EncodePrivateKey</span>(<span style="color:#a6e22e">private</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">PrivateKey</span>) []<span style="color:#66d9ef">byte</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">pem</span>.<span style="color:#a6e22e">EncodeToMemory</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pem</span>.<span style="color:#a6e22e">Block</span>{
+		<span style="color:#a6e22e">Bytes</span>: <span style="color:#a6e22e">x509</span>.<span style="color:#a6e22e">MarshalPKCS1PrivateKey</span>(<span style="color:#a6e22e">private</span>),
+		<span style="color:#a6e22e">Type</span>:  <span style="color:#e6db74">&#34;RSA PRIVATE KEY&#34;</span>,
 	})
 }
 
-func EncodePublicKey(public *rsa.PublicKey) ([]byte, error) {
-	publicBytes, err := x509.MarshalPKIXPublicKey(public)
-	if err != nil {
-		return nil, err
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">EncodePublicKey</span>(<span style="color:#a6e22e">public</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">PublicKey</span>) ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#a6e22e">publicBytes</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">x509</span>.<span style="color:#a6e22e">MarshalPKIXPublicKey</span>(<span style="color:#a6e22e">public</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
 	}
-	return pem.EncodeToMemory(&amp;pem.Block{
-		Bytes: publicBytes,
-		Type:  &quot;PUBLIC KEY&quot;,
-	}), nil
-}
-</code></pre>
-
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">pem</span>.<span style="color:#a6e22e">EncodeToMemory</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pem</span>.<span style="color:#a6e22e">Block</span>{
+		<span style="color:#a6e22e">Bytes</span>: <span style="color:#a6e22e">publicBytes</span>,
+		<span style="color:#a6e22e">Type</span>:  <span style="color:#e6db74">&#34;PUBLIC KEY&#34;</span>,
+	}), <span style="color:#66d9ef">nil</span>
+}</code></pre></div>
 <p>代码的话，没什么花头，唯一需要注意的是Type不要乱填，这可是标准哈! pem也是最常用的的密钥的编码方式。</p>
 
 <p>2 签名解签。</p>
-
-<pre><code>func SignWithSha256Base64(data string, prvKeyBytes []byte) (string, error) {
-	block, _ := pem.Decode(prvKeyBytes)
-	if block == nil {
-		return &quot;&quot;, errors.New(&quot;fail to decode private key&quot;)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">SignWithSha256Base64</span>(<span style="color:#a6e22e">data</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">prvKeyBytes</span> []<span style="color:#66d9ef">byte</span>) (<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#a6e22e">block</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pem</span>.<span style="color:#a6e22e">Decode</span>(<span style="color:#a6e22e">prvKeyBytes</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">block</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;fail to decode private key&#34;</span>)
 	}
 
-	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-	if err != nil {
-		return &quot;&quot;, err
+	<span style="color:#a6e22e">privateKey</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">x509</span>.<span style="color:#a6e22e">ParsePKCS1PrivateKey</span>(<span style="color:#a6e22e">block</span>.<span style="color:#a6e22e">Bytes</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">err</span>
 	}
-	h := sha256.New()
-	h.Write([]byte([]byte(data)))
-	hash := h.Sum(nil)
-	signature, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hash[:])
-	if err != nil {
-		return &quot;&quot;, err
+	<span style="color:#a6e22e">h</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sha256</span>.<span style="color:#a6e22e">New</span>()
+	<span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">Write</span>([]byte([]byte(<span style="color:#a6e22e">data</span>)))
+	<span style="color:#a6e22e">hash</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">Sum</span>(<span style="color:#66d9ef">nil</span>)
+	<span style="color:#a6e22e">signature</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">SignPKCS1v15</span>(<span style="color:#a6e22e">rand</span>.<span style="color:#a6e22e">Reader</span>, <span style="color:#a6e22e">privateKey</span>, <span style="color:#a6e22e">crypto</span>.<span style="color:#a6e22e">SHA256</span>, <span style="color:#a6e22e">hash</span>[:])
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">err</span>
 	}
-	out := base64.StdEncoding.EncodeToString(signature)
-	return out, nil
+	<span style="color:#a6e22e">out</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">base64</span>.<span style="color:#a6e22e">StdEncoding</span>.<span style="color:#a6e22e">EncodeToString</span>(<span style="color:#a6e22e">signature</span>)
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">out</span>, <span style="color:#66d9ef">nil</span>
 }
 
-func VerySignWithSha256Base64(originalData, signData string, pubKeyBytes[]byte) (bool, error) {
-	sign, err := base64.StdEncoding.DecodeString(signData)
-	if err != nil {
-		return false ,err
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">VerySignWithSha256Base64</span>(<span style="color:#a6e22e">originalData</span>, <span style="color:#a6e22e">signData</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">pubKeyBytes</span>[]<span style="color:#66d9ef">byte</span>) (<span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#a6e22e">sign</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">base64</span>.<span style="color:#a6e22e">StdEncoding</span>.<span style="color:#a6e22e">DecodeString</span>(<span style="color:#a6e22e">signData</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span> ,<span style="color:#a6e22e">err</span>
 	}
-	block, _ := pem.Decode(pubKeyBytes)
-	if block == nil {
-		return false, errors.New(&quot;fail to decode public key&quot;)
+	<span style="color:#a6e22e">block</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pem</span>.<span style="color:#a6e22e">Decode</span>(<span style="color:#a6e22e">pubKeyBytes</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">block</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;fail to decode public key&#34;</span>)
 	}
 
-	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
-	if err != nil {
-		return false, err
+	<span style="color:#a6e22e">pub</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">x509</span>.<span style="color:#a6e22e">ParsePKIXPublicKey</span>(<span style="color:#a6e22e">block</span>.<span style="color:#a6e22e">Bytes</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">err</span>
 	}
-	hash := sha256.New()
-	hash.Write([]byte(originalData))
-	err = rsa.VerifyPKCS1v15(pub.(*rsa.PublicKey), crypto.SHA256, hash.Sum(nil), sign)
-	return err == nil, err
-}
-</code></pre>
-
+	<span style="color:#a6e22e">hash</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sha256</span>.<span style="color:#a6e22e">New</span>()
+	<span style="color:#a6e22e">hash</span>.<span style="color:#a6e22e">Write</span>([]byte(<span style="color:#a6e22e">originalData</span>))
+	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">VerifyPKCS1v15</span>(<span style="color:#a6e22e">pub</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">PublicKey</span>), <span style="color:#a6e22e">crypto</span>.<span style="color:#a6e22e">SHA256</span>, <span style="color:#a6e22e">hash</span>.<span style="color:#a6e22e">Sum</span>(<span style="color:#66d9ef">nil</span>), <span style="color:#a6e22e">sign</span>)
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+}</code></pre></div>
 <p>这里选用的Hash方法是Sha256，在签名和解签时都要用Sha256哦。</p>
 
 <p>其实，加解密的相关代码在使用起来是比较固定的，但是一定是要记得使用的Hash方式和加解密的方法，要不然&ndash;嘿嘿&ndash;那真是调试到欲哭无泪呀。</p>
 
 <p>3 经过一层封装，使用起来就很方便啦，下面测试一下。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestSignAndVerify</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>)  {
+	<span style="color:#a6e22e">sk</span>, <span style="color:#a6e22e">pk</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">GenerateKey</span>(<span style="color:#ae81ff">1024</span>)
+	<span style="color:#a6e22e">skBytes</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">EncodePrivateKey</span>(<span style="color:#a6e22e">sk</span>)
+	<span style="color:#a6e22e">pkBytes</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">EncodePublicKey</span>(<span style="color:#a6e22e">pk</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(string(<span style="color:#a6e22e">skBytes</span>))
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(string(<span style="color:#a6e22e">pkBytes</span>))
 
-<pre><code>func TestSignAndVerify(t *testing.T)  {
-	sk, pk, _ := GenerateKey(1024)
-	skBytes := EncodePrivateKey(sk)
-	pkBytes, _ := EncodePublicKey(pk)
-	fmt.Println(string(skBytes))
-	fmt.Println(string(pkBytes))
-
-	sig, err := SignWithSha256Base64(&quot;test&quot;, skBytes)
-	if err != nil{
-		fmt.Printf(&quot;%+v&quot;, err)
+	<span style="color:#a6e22e">sig</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">SignWithSha256Base64</span>(<span style="color:#e6db74">&#34;test&#34;</span>, <span style="color:#a6e22e">skBytes</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%+v&#34;</span>, <span style="color:#a6e22e">err</span>)
 	}
-	fmt.Println(sig)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">sig</span>)
 
-	success, err := VerySignWithSha256Base64(&quot;test&quot;, sig, pkBytes)
-	if success {
-		fmt.Println(&quot;pass&quot;)
-	} else {
-		fmt.Printf(&quot;%+v&quot;, err)
+	<span style="color:#a6e22e">success</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">VerySignWithSha256Base64</span>(<span style="color:#e6db74">&#34;test&#34;</span>, <span style="color:#a6e22e">sig</span>, <span style="color:#a6e22e">pkBytes</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">success</span> {
+		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;pass&#34;</span>)
+	} <span style="color:#66d9ef">else</span> {
+		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%+v&#34;</span>, <span style="color:#a6e22e">err</span>)
 	}
-}
-</code></pre>
-
+}</code></pre></div>
 <p>上述代码可在<a href="https://github.com/Ksloveyuan/rsautil" target="_blank">ksloveyuan/rsautil</a>查看。</p>
 
 <p>4 接着，我用echo写了一个简单的server端。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code>package main
-
-import (
-	&quot;github.com/ksloveyuan/rsautil&quot;
-	&quot;net/http&quot;
-	&quot;github.com/labstack/echo&quot;
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;github.com/ksloveyuan/rsautil&#34;</span>
+	<span style="color:#e6db74">&#34;net/http&#34;</span>
+	<span style="color:#e6db74">&#34;github.com/labstack/echo&#34;</span>
 )
 
-const PublicKey  = `-----BEGIN PUBLIC KEY----- 公钥 -----END PUBLIC KEY-----``
-
-type VerifyArgs struct {
-	Content string  `json:&quot;content&quot; description:&quot;&quot; binding:&quot;required&quot; `
-	Signature string  `json:&quot;signature&quot; description:&quot;&quot; binding:&quot;required&quot; `
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">PublicKey</span>  = <span style="color:#e6db74">`-----BEGIN PUBLIC KEY----- 公钥 -----END PUBLIC KEY-----``
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">type VerifyArgs struct {
+</span><span style="color:#e6db74">	Content string  `</span><span style="color:#a6e22e">json</span>:<span style="color:#e6db74">&#34;content&#34;</span> <span style="color:#a6e22e">description</span>:<span style="color:#e6db74">&#34;&#34;</span> <span style="color:#a6e22e">binding</span>:<span style="color:#e6db74">&#34;required&#34;</span> <span style="color:#e6db74">`
+</span><span style="color:#e6db74">	Signature string  `</span><span style="color:#a6e22e">json</span>:<span style="color:#e6db74">&#34;signature&#34;</span> <span style="color:#a6e22e">description</span>:<span style="color:#e6db74">&#34;&#34;</span> <span style="color:#a6e22e">binding</span>:<span style="color:#e6db74">&#34;required&#34;</span> <span style="color:#960050;background-color:#1e0010">`</span>
 }
 
-func main() {
-	e := echo.New()
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">e</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">echo</span>.<span style="color:#a6e22e">New</span>()
 
-	e.POST(&quot;/verify&quot;, func(c echo.Context) error {
-		args:= VerifyArgs{}
-		if err := c.Bind(&amp;args); err !=nil{
-			return c.String(http.StatusBadRequest, &quot;参数不正确&quot;)
+	<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">POST</span>(<span style="color:#e6db74">&#34;/verify&#34;</span>, <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">c</span> <span style="color:#a6e22e">echo</span>.<span style="color:#a6e22e">Context</span>) <span style="color:#66d9ef">error</span> {
+		<span style="color:#a6e22e">args</span><span style="color:#f92672">:=</span> <span style="color:#a6e22e">VerifyArgs</span>{}
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Bind</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">args</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span><span style="color:#66d9ef">nil</span>{
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">String</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusBadRequest</span>, <span style="color:#e6db74">&#34;参数不正确&#34;</span>)
 		}
 
-		message := &quot;&quot;
-		if success, _ := rsautil.VerySignWithSha256Base64(args.Content, args.Signature, []byte(PublicKey)); success{
-			message = &quot;success&quot;
-		} else {
-			message = &quot;fail&quot;
+		<span style="color:#a6e22e">message</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;&#34;</span>
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">success</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rsautil</span>.<span style="color:#a6e22e">VerySignWithSha256Base64</span>(<span style="color:#a6e22e">args</span>.<span style="color:#a6e22e">Content</span>, <span style="color:#a6e22e">args</span>.<span style="color:#a6e22e">Signature</span>, []byte(<span style="color:#a6e22e">PublicKey</span>)); <span style="color:#a6e22e">success</span>{
+			<span style="color:#a6e22e">message</span> = <span style="color:#e6db74">&#34;success&#34;</span>
+		} <span style="color:#66d9ef">else</span> {
+			<span style="color:#a6e22e">message</span> = <span style="color:#e6db74">&#34;fail&#34;</span>
 		}
 
-		return c.String(http.StatusOK, message)
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">String</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusOK</span>, <span style="color:#a6e22e">message</span>)
 	})
 
-	e.Logger.Fatal(e.Start(&quot;:1323&quot;))
-}
-</code></pre>
-
+	<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Start</span>(<span style="color:#e6db74">&#34;:1323&#34;</span>))
+}</code></pre></div>
 <h2 id="前端实现">前端实现</h2>
 
 <p>前端的主要工作是发起请求，同时附带请求参数的签名。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">crypto</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;crypto&#39;</span>)
+<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">request</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;request&#39;</span>)
 
-<pre><code>let crypto = require('crypto')
-let request = require('request')
+<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">sk</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`-----BEGIN RSA PRIVATE KEY-----对应的私钥-----END RSA PRIVATE KEY-----`</span>
 
-let sk = `-----BEGIN RSA PRIVATE KEY-----对应的私钥-----END RSA PRIVATE KEY-----`
-
-function sendRequest ({ content, signature }) {
-    var bodyData = { content, signature }
-    return new Promise((resolve, reject) =&gt; {
-        request.post({ url: 'http://localhost:1323/verify', body: bodyData, json: true }, function optionalCallback (
-            err,
-            httpResponse,
-            body
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">sendRequest</span> ({ <span style="color:#a6e22e">content</span>, <span style="color:#a6e22e">signature</span> }) {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">bodyData</span> <span style="color:#f92672">=</span> { <span style="color:#a6e22e">content</span>, <span style="color:#a6e22e">signature</span> }
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Promise((<span style="color:#a6e22e">resolve</span>, <span style="color:#a6e22e">reject</span>) =&gt; {
+        <span style="color:#a6e22e">request</span>.<span style="color:#a6e22e">post</span>({ <span style="color:#a6e22e">url</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;http://localhost:1323/verify&#39;</span>, <span style="color:#a6e22e">body</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">bodyData</span>, <span style="color:#a6e22e">json</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> }, <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">optionalCallback</span> (
+            <span style="color:#a6e22e">err</span>,
+            <span style="color:#a6e22e">httpResponse</span>,
+            <span style="color:#a6e22e">body</span>
         ) {
-            if (err) {
-                reject()
-                return console.error('upload failed:', err)
+            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">err</span>) {
+                <span style="color:#a6e22e">reject</span>()
+                <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#39;upload failed:&#39;</span>, <span style="color:#a6e22e">err</span>)
             }
 
-            console.log('Upload successful!', body)
-            resolve()
+            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Upload successful!&#39;</span>, <span style="color:#a6e22e">body</span>)
+            <span style="color:#a6e22e">resolve</span>()
         })
     })
 }
 
-async function action() {
-    let signer = crypto.createSign('RSA-SHA256')
+<span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">action</span>() {
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">signer</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">crypto</span>.<span style="color:#a6e22e">createSign</span>(<span style="color:#e6db74">&#39;RSA-SHA256&#39;</span>)
 
-    let content = 'test_test_test'
-    signer.update(content)
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">content</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;test_test_test&#39;</span>
+    <span style="color:#a6e22e">signer</span>.<span style="color:#a6e22e">update</span>(<span style="color:#a6e22e">content</span>)
 
-    let privateKey = {key: sk, format:&quot;pem&quot;, type:&quot;pkcs1&quot;}
-    let signature = signer.sign(privateKey, 'base64')
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">privateKey</span> <span style="color:#f92672">=</span> {<span style="color:#a6e22e">key</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">sk</span>, <span style="color:#a6e22e">format</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#34;pem&#34;</span>, <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#34;pkcs1&#34;</span>}
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">signature</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">signer</span>.<span style="color:#a6e22e">sign</span>(<span style="color:#a6e22e">privateKey</span>, <span style="color:#e6db74">&#39;base64&#39;</span>)
 
-    console.log(signature)
+    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">signature</span>)
 
-    await sendRequest({ content, signature })
+    <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">sendRequest</span>({ <span style="color:#a6e22e">content</span>, <span style="color:#a6e22e">signature</span> })
 }
 
-action()
-
-</code></pre>
-
+<span style="color:#a6e22e">action</span>()
+</code></pre></div>
 <p>其中request第三方包，crypto是nodejs自带的库。</p>
 
 <p>代码中需要注意的地方有两点:

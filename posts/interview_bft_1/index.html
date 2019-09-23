@@ -200,7 +200,7 @@ if (!doNotTrack) {
   <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
   
 </svg>
-<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+<span class='screen-reader-text'> by </span><a href='/authors/%e6%b5%b7%e4%b9%8b%e6%96%b9'>海之方</a></span>
   
 <span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
@@ -269,109 +269,97 @@ if (!doNotTrack) {
 <p>按照上述的分析，编码工作就可以依次开始了。</p>
 
 <p>首先，先定义一个关于的点的结构体，并增加一个计算坐标和的函数。</p>
-
-<pre><code>type Point struct {
-	X int
-	Y int
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Point</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">X</span> <span style="color:#66d9ef">int</span>
+	<span style="color:#a6e22e">Y</span> <span style="color:#66d9ef">int</span>
 }
 
-func (p Point) CoordinateSum() int {
-	xNumStrs := strings.Split(strconv.Itoa(p.X), &quot;&quot;)
-	yNumStrs := strings.Split(strconv.Itoa(p.Y), &quot;&quot;)
-	numStrs := append(xNumStrs, yNumStrs...)
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">p</span> <span style="color:#a6e22e">Point</span>) <span style="color:#a6e22e">CoordinateSum</span>() <span style="color:#66d9ef">int</span> {
+	<span style="color:#a6e22e">xNumStrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">X</span>), <span style="color:#e6db74">&#34;&#34;</span>)
+	<span style="color:#a6e22e">yNumStrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">Y</span>), <span style="color:#e6db74">&#34;&#34;</span>)
+	<span style="color:#a6e22e">numStrs</span> <span style="color:#f92672">:=</span> append(<span style="color:#a6e22e">xNumStrs</span>, <span style="color:#a6e22e">yNumStrs</span><span style="color:#f92672">...</span>)
 
-	sum := 0
-	for _, str := range numStrs {
-		num, _ := strconv.ParseInt(str, 10, 32)
-		sum += int(num)
+	<span style="color:#a6e22e">sum</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">str</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">numStrs</span> {
+		<span style="color:#a6e22e">num</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">ParseInt</span>(<span style="color:#a6e22e">str</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">32</span>)
+		<span style="color:#a6e22e">sum</span> <span style="color:#f92672">+=</span> int(<span style="color:#a6e22e">num</span>)
 	}
 
-	return sum
-}
-</code></pre>
-
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sum</span>
+}</code></pre></div>
 <p><strong>CoordinateSum</strong>不会改变点的X,Y值，于是，定义和值类型的方法。</p>
 
 <p>接着，在通用的遍历图算法，需要有个map判断当前点是否遍历过，来剪枝。在本题中，还需要判断当前点是否是地雷，于是，我把这两段逻辑写到了一方法里。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">checkedPoints</span> <span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">Point</span>]<span style="color:#66d9ef">bool</span>
 
-<pre><code>var checkedPoints map[Point]bool
-
-func CheckPoint(p Point) bool {
-	if _, ok := checkedPoints[p]; ok {
-		return false
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">CheckPoint</span>(<span style="color:#a6e22e">p</span> <span style="color:#a6e22e">Point</span>) <span style="color:#66d9ef">bool</span> {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">checkedPoints</span>[<span style="color:#a6e22e">p</span>]; <span style="color:#a6e22e">ok</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
 	}
 
-	if p.Y &gt; p.X || p.X &lt; 0 || p.Y &lt; 0{
-		return false
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">Y</span> &gt; <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">X</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">X</span> &lt; <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">Y</span> &lt; <span style="color:#ae81ff">0</span>{
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
 	}
 
-	return p.CoordinateSum() &lt;= 21
-}
-</code></pre>
-
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">CoordinateSum</span>() <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">21</span>
+}</code></pre></div>
 <p>全局变量在工程化的代码中是需要尽量避免使用的，这里图方便，权且用一下。</p>
 
 <p>下面就是广度优先遍历的代码了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">toCheckPoints</span> = <span style="color:#a6e22e">list</span>.<span style="color:#a6e22e">New</span>()
+<span style="color:#a6e22e">checkedPoints</span> = <span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">Point</span>]<span style="color:#66d9ef">bool</span>{}
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">point</span> = <span style="color:#a6e22e">Point</span>{<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>}
 
-<pre><code>var toCheckPoints = list.New()
-checkedPoints = map[Point]bool{}
-var point = Point{0, 0}
+<span style="color:#a6e22e">toCheckPoints</span>.<span style="color:#a6e22e">PushFront</span>(<span style="color:#a6e22e">point</span>)
+<span style="color:#a6e22e">checkedPoints</span>[<span style="color:#a6e22e">point</span>] = <span style="color:#66d9ef">true</span>
 
-toCheckPoints.PushFront(point)
-checkedPoints[point] = true
+<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">toCheckPoints</span>.<span style="color:#a6e22e">Len</span>() &gt; <span style="color:#ae81ff">0</span> {
+	<span style="color:#a6e22e">element</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">toCheckPoints</span>.<span style="color:#a6e22e">Front</span>()
+	<span style="color:#a6e22e">point</span> = <span style="color:#a6e22e">toCheckPoints</span>.<span style="color:#a6e22e">Remove</span>(<span style="color:#a6e22e">element</span>).(<span style="color:#a6e22e">Point</span>)
 
-for toCheckPoints.Len() &gt; 0 {
-	element := toCheckPoints.Front()
-	point = toCheckPoints.Remove(element).(Point)
+	<span style="color:#a6e22e">searchPoint</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Point</span>{<span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">X</span>, <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>}
+	<span style="color:#a6e22e">Search</span>(<span style="color:#a6e22e">searchPoint</span>, <span style="color:#a6e22e">toCheckPoints</span>)
 
-	searchPoint := Point{point.X, point.Y - 1}
-	Search(searchPoint, toCheckPoints)
+	<span style="color:#a6e22e">searchPoint</span> = <span style="color:#a6e22e">Point</span>{<span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">X</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span>}
+	<span style="color:#a6e22e">Search</span>(<span style="color:#a6e22e">searchPoint</span>, <span style="color:#a6e22e">toCheckPoints</span>)
 
-	searchPoint = Point{point.X - 1, point.Y}
-	Search(searchPoint, toCheckPoints)
+	<span style="color:#a6e22e">searchPoint</span> = <span style="color:#a6e22e">Point</span>{<span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">X</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span>}
+	<span style="color:#a6e22e">Search</span>(<span style="color:#a6e22e">searchPoint</span>, <span style="color:#a6e22e">toCheckPoints</span>)
 
-	searchPoint = Point{point.X + 1, point.Y}
-	Search(searchPoint, toCheckPoints)
-
-	searchPoint = Point{point.X, point.Y + 1}
-	Search(searchPoint, toCheckPoints)
+	<span style="color:#a6e22e">searchPoint</span> = <span style="color:#a6e22e">Point</span>{<span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">X</span>, <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>}
+	<span style="color:#a6e22e">Search</span>(<span style="color:#a6e22e">searchPoint</span>, <span style="color:#a6e22e">toCheckPoints</span>)
 }
 	
-func Search(searchPoint Point, toCheckPoints *list.List) {
-	if CheckPoint(searchPoint) {
-		checkedPoints[searchPoint] = true
-		toCheckPoints.PushFront(searchPoint)
-	} else {
-		if _, ok := checkedPoints[searchPoint]; !ok {
-			checkedPoints[searchPoint] = false
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Search</span>(<span style="color:#a6e22e">searchPoint</span> <span style="color:#a6e22e">Point</span>, <span style="color:#a6e22e">toCheckPoints</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">list</span>.<span style="color:#a6e22e">List</span>) {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">CheckPoint</span>(<span style="color:#a6e22e">searchPoint</span>) {
+		<span style="color:#a6e22e">checkedPoints</span>[<span style="color:#a6e22e">searchPoint</span>] = <span style="color:#66d9ef">true</span>
+		<span style="color:#a6e22e">toCheckPoints</span>.<span style="color:#a6e22e">PushFront</span>(<span style="color:#a6e22e">searchPoint</span>)
+	} <span style="color:#66d9ef">else</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">checkedPoints</span>[<span style="color:#a6e22e">searchPoint</span>]; !<span style="color:#a6e22e">ok</span> {
+			<span style="color:#a6e22e">checkedPoints</span>[<span style="color:#a6e22e">searchPoint</span>] = <span style="color:#66d9ef">false</span>
 		}
 	}
-}
-</code></pre>
-
+}</code></pre></div>
 <p>最后，就是根据遍历的过的点，计算可以遍历点的数量。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">pointsOnMap</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">minedPoints</span> = <span style="color:#a6e22e">list</span>.<span style="color:#a6e22e">New</span>()
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">visiblePoints</span> = <span style="color:#a6e22e">list</span>.<span style="color:#a6e22e">New</span>()
 
-<pre><code>pointsOnMap := 0
-var minedPoints = list.New()
-var visiblePoints = list.New()
-
-for point, visible := range checkedPoints {
-	if visible {
-		if point.X == 0 &amp;&amp; point.Y == 0 {
-			pointsOnMap += 1
-		} else if point.Y == 0 || point.X == point.Y {
-			pointsOnMap += 4
-		} else {
-			pointsOnMap += 8
+<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">point</span>, <span style="color:#a6e22e">visible</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">checkedPoints</span> {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">visible</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">X</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+			<span style="color:#a6e22e">pointsOnMap</span> <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+		} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">X</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span> {
+			<span style="color:#a6e22e">pointsOnMap</span> <span style="color:#f92672">+=</span> <span style="color:#ae81ff">4</span>
+		} <span style="color:#66d9ef">else</span> {
+			<span style="color:#a6e22e">pointsOnMap</span> <span style="color:#f92672">+=</span> <span style="color:#ae81ff">8</span>
 		}
-		visiblePoints.PushFront(point)
-	}else {
-		minedPoints.PushFront(point)
+		<span style="color:#a6e22e">visiblePoints</span>.<span style="color:#a6e22e">PushFront</span>(<span style="color:#a6e22e">point</span>)
+	}<span style="color:#66d9ef">else</span> {
+		<span style="color:#a6e22e">minedPoints</span>.<span style="color:#a6e22e">PushFront</span>(<span style="color:#a6e22e">point</span>)
 	}
 }
-fmt.Println(&quot;Points on map are&quot;, pointsOnMap)
-</code></pre>
-
+<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;Points on map are&#34;</span>, <span style="color:#a6e22e">pointsOnMap</span>)</code></pre></div>
 <p>程序写好，但是不确定对不对怎么办？</p>
 
 <p>这个吗，就需要把可以遍历的点和地雷分别画出来，就可以知道。</p>
@@ -379,37 +367,33 @@ fmt.Println(&quot;Points on map are&quot;, pointsOnMap)
 <p>这里，我选择了用Echarts的散点图的在线示例来画。地址是<a href="https://echarts.baidu.com/examples/editor.html?c=scatter-simple" target="_blank">https://echarts.baidu.com/examples/editor.html?c=scatter-simple</a></p>
 
 <p>使用的配置是：</p>
-
-<pre><code>option = {
-    dataZoom: [
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#960050;background-color:#1e0010">option</span> <span style="color:#960050;background-color:#1e0010">=</span> {
+    <span style="color:#960050;background-color:#1e0010">dataZoom:</span> <span style="color:#960050;background-color:#1e0010">[</span>
+        <span style="color:#960050;background-color:#1e0010">{</span>
+            <span style="color:#960050;background-color:#1e0010">type:</span> <span style="color:#960050;background-color:#1e0010">&#39;slider&#39;,</span>
+            <span style="color:#960050;background-color:#1e0010">show:</span> <span style="color:#960050;background-color:#1e0010">true,</span>
+            <span style="color:#960050;background-color:#1e0010">xAxisIndex:</span> <span style="color:#960050;background-color:#1e0010">[0],</span>
+            <span style="color:#960050;background-color:#1e0010">start:</span> <span style="color:#960050;background-color:#1e0010">0,</span>
+            <span style="color:#960050;background-color:#1e0010">end:</span> <span style="color:#960050;background-color:#1e0010">500,</span>
+        }<span style="color:#960050;background-color:#1e0010">,</span>
         {
-            type: 'slider',
-            show: true,
-            xAxisIndex: [0],
-            start: 0,
-            end: 500,
-        },
-        {
-            type: 'slider',
-            show: true,
-            yAxisIndex: [0],
-            start: 0,
-            end: 250
+            <span style="color:#960050;background-color:#1e0010">type:</span> <span style="color:#960050;background-color:#1e0010">&#39;slider&#39;,</span>
+            <span style="color:#960050;background-color:#1e0010">show:</span> <span style="color:#960050;background-color:#1e0010">true,</span>
+            <span style="color:#960050;background-color:#1e0010">yAxisIndex:</span> <span style="color:#960050;background-color:#1e0010">[0],</span>
+            <span style="color:#960050;background-color:#1e0010">start:</span> <span style="color:#960050;background-color:#1e0010">0,</span>
+            <span style="color:#960050;background-color:#1e0010">end:</span> <span style="color:#960050;background-color:#1e0010">250</span>
         }
-    ],
-    xAxis: {},
-    yAxis: {},
-    series: [{
-        symbolSize: 1,
-        data: [
-            [10.0, 8.04],
-        ],
-        type: 'scatter'
+    <span style="color:#960050;background-color:#1e0010">],</span>
+    <span style="color:#960050;background-color:#1e0010">xAxis:</span> {}<span style="color:#960050;background-color:#1e0010">,</span>
+    <span style="color:#960050;background-color:#1e0010">yAxis:</span> {}<span style="color:#960050;background-color:#1e0010">,</span>
+    <span style="color:#960050;background-color:#1e0010">series:</span> [{
+        <span style="color:#960050;background-color:#1e0010">symbolSize:</span> <span style="color:#960050;background-color:#1e0010">1,</span>
+        <span style="color:#960050;background-color:#1e0010">data:</span> <span style="color:#960050;background-color:#1e0010">[</span>
+            <span style="color:#960050;background-color:#1e0010">[10.0,</span> <span style="color:#960050;background-color:#1e0010">8.04],</span>
+        <span style="color:#960050;background-color:#1e0010">],</span>
+        <span style="color:#960050;background-color:#1e0010">type:</span> <span style="color:#960050;background-color:#1e0010">&#39;scatter&#39;</span>
     }]
-};
-
-</code></pre>
-
+<span style="color:#960050;background-color:#1e0010">};</span></code></pre></div>
 <p>用算出来的点，替换data部分就可以画出来了。</p>
 
 <p>可以遍历的点的图是：
@@ -419,118 +403,114 @@ fmt.Println(&quot;Points on map are&quot;, pointsOnMap)
 <img src="https://i.loli.net/2019/09/19/812EwLv3MlPrJuA.png" alt="" /></p>
 
 <h1 id="完整代码">完整代码</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code>package main
-
-import (
-	&quot;container/list&quot;
-	&quot;fmt&quot;
-	&quot;strconv&quot;
-	&quot;strings&quot;
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;container/list&#34;</span>
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;strconv&#34;</span>
+	<span style="color:#e6db74">&#34;strings&#34;</span>
 )
 
-type Point struct {
-	X int
-	Y int
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Point</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">X</span> <span style="color:#66d9ef">int</span>
+	<span style="color:#a6e22e">Y</span> <span style="color:#66d9ef">int</span>
 }
 
-func (p Point) CoordinateSum() int {
-	xNumStrs := strings.Split(strconv.Itoa(p.X), &quot;&quot;)
-	yNumStrs := strings.Split(strconv.Itoa(p.Y), &quot;&quot;)
-	numStrs := append(xNumStrs, yNumStrs...)
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">p</span> <span style="color:#a6e22e">Point</span>) <span style="color:#a6e22e">CoordinateSum</span>() <span style="color:#66d9ef">int</span> {
+	<span style="color:#a6e22e">xNumStrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">X</span>), <span style="color:#e6db74">&#34;&#34;</span>)
+	<span style="color:#a6e22e">yNumStrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">Y</span>), <span style="color:#e6db74">&#34;&#34;</span>)
+	<span style="color:#a6e22e">numStrs</span> <span style="color:#f92672">:=</span> append(<span style="color:#a6e22e">xNumStrs</span>, <span style="color:#a6e22e">yNumStrs</span><span style="color:#f92672">...</span>)
 
-	sum := 0
-	for _, str := range numStrs {
-		num, _ := strconv.ParseInt(str, 10, 32)
-		sum += int(num)
+	<span style="color:#a6e22e">sum</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">str</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">numStrs</span> {
+		<span style="color:#a6e22e">num</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">ParseInt</span>(<span style="color:#a6e22e">str</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">32</span>)
+		<span style="color:#a6e22e">sum</span> <span style="color:#f92672">+=</span> int(<span style="color:#a6e22e">num</span>)
 	}
 
-	return sum
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sum</span>
 }
 
-var checkedPoints map[Point]bool
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">checkedPoints</span> <span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">Point</span>]<span style="color:#66d9ef">bool</span>
 
-func main() {
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
 
-	var toCheckPoints = list.New()
-	checkedPoints = map[Point]bool{}
-	var point = Point{0, 0}
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">toCheckPoints</span> = <span style="color:#a6e22e">list</span>.<span style="color:#a6e22e">New</span>()
+	<span style="color:#a6e22e">checkedPoints</span> = <span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">Point</span>]<span style="color:#66d9ef">bool</span>{}
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">point</span> = <span style="color:#a6e22e">Point</span>{<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>}
 
-	toCheckPoints.PushFront(point)
-	checkedPoints[point] = true
+	<span style="color:#a6e22e">toCheckPoints</span>.<span style="color:#a6e22e">PushFront</span>(<span style="color:#a6e22e">point</span>)
+	<span style="color:#a6e22e">checkedPoints</span>[<span style="color:#a6e22e">point</span>] = <span style="color:#66d9ef">true</span>
 
-	for toCheckPoints.Len() &gt; 0 {
-		element := toCheckPoints.Front()
-		point = toCheckPoints.Remove(element).(Point)
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">toCheckPoints</span>.<span style="color:#a6e22e">Len</span>() &gt; <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">element</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">toCheckPoints</span>.<span style="color:#a6e22e">Front</span>()
+		<span style="color:#a6e22e">point</span> = <span style="color:#a6e22e">toCheckPoints</span>.<span style="color:#a6e22e">Remove</span>(<span style="color:#a6e22e">element</span>).(<span style="color:#a6e22e">Point</span>)
 
-		searchPoint := Point{point.X, point.Y - 1}
-		Search(searchPoint, toCheckPoints)
+		<span style="color:#a6e22e">searchPoint</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Point</span>{<span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">X</span>, <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>}
+		<span style="color:#a6e22e">Search</span>(<span style="color:#a6e22e">searchPoint</span>, <span style="color:#a6e22e">toCheckPoints</span>)
 
-		searchPoint = Point{point.X - 1, point.Y}
-		Search(searchPoint, toCheckPoints)
+		<span style="color:#a6e22e">searchPoint</span> = <span style="color:#a6e22e">Point</span>{<span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">X</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span>}
+		<span style="color:#a6e22e">Search</span>(<span style="color:#a6e22e">searchPoint</span>, <span style="color:#a6e22e">toCheckPoints</span>)
 
-		searchPoint = Point{point.X + 1, point.Y}
-		Search(searchPoint, toCheckPoints)
+		<span style="color:#a6e22e">searchPoint</span> = <span style="color:#a6e22e">Point</span>{<span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">X</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span>}
+		<span style="color:#a6e22e">Search</span>(<span style="color:#a6e22e">searchPoint</span>, <span style="color:#a6e22e">toCheckPoints</span>)
 
-		searchPoint = Point{point.X, point.Y + 1}
-		Search(searchPoint, toCheckPoints)
+		<span style="color:#a6e22e">searchPoint</span> = <span style="color:#a6e22e">Point</span>{<span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">X</span>, <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>}
+		<span style="color:#a6e22e">Search</span>(<span style="color:#a6e22e">searchPoint</span>, <span style="color:#a6e22e">toCheckPoints</span>)
 	}
 
-	//fmt.Println(len(checkedPoints))
-	//fmt.Println(checkedPoints)
+	<span style="color:#75715e">//fmt.Println(len(checkedPoints))
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//fmt.Println(checkedPoints)
+</span><span style="color:#75715e"></span>
+	<span style="color:#a6e22e">pointsOnMap</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">minedPoints</span> = <span style="color:#a6e22e">list</span>.<span style="color:#a6e22e">New</span>()
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">visiblePoints</span> = <span style="color:#a6e22e">list</span>.<span style="color:#a6e22e">New</span>()
 
-	pointsOnMap := 0
-	var minedPoints = list.New()
-	var visiblePoints = list.New()
-
-	for point, visible := range checkedPoints {
-		if visible {
-			if point.X == 0 &amp;&amp; point.Y == 0 {
-				pointsOnMap += 1
-			} else if point.Y == 0 || point.X == point.Y {
-				pointsOnMap += 4
-			} else {
-				pointsOnMap += 8
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">point</span>, <span style="color:#a6e22e">visible</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">checkedPoints</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">visible</span> {
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">X</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+				<span style="color:#a6e22e">pointsOnMap</span> <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+			} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">X</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">point</span>.<span style="color:#a6e22e">Y</span> {
+				<span style="color:#a6e22e">pointsOnMap</span> <span style="color:#f92672">+=</span> <span style="color:#ae81ff">4</span>
+			} <span style="color:#66d9ef">else</span> {
+				<span style="color:#a6e22e">pointsOnMap</span> <span style="color:#f92672">+=</span> <span style="color:#ae81ff">8</span>
 			}
-			visiblePoints.PushFront(point)
-		}else {
-			minedPoints.PushFront(point)
+			<span style="color:#a6e22e">visiblePoints</span>.<span style="color:#a6e22e">PushFront</span>(<span style="color:#a6e22e">point</span>)
+		}<span style="color:#66d9ef">else</span> {
+			<span style="color:#a6e22e">minedPoints</span>.<span style="color:#a6e22e">PushFront</span>(<span style="color:#a6e22e">point</span>)
 		}
 	}
-	fmt.Println(&quot;Points on map are&quot;, pointsOnMap)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;Points on map are&#34;</span>, <span style="color:#a6e22e">pointsOnMap</span>)
 
-	//for e := minedPoints.Front();  e != nil; e = e.Next()  {
-	//	p := e.Value.(Point)
-	//	fmt.Println(&quot;[&quot;, p.X, &quot;,&quot;, p.Y,&quot;],&quot;)
-	//}
-
+	<span style="color:#75715e">//for e := minedPoints.Front();  e != nil; e = e.Next()  {
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//	p := e.Value.(Point)
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//	fmt.Println(&#34;[&#34;, p.X, &#34;,&#34;, p.Y,&#34;],&#34;)
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//}
+</span><span style="color:#75715e"></span>
 }
 
-func Search(searchPoint Point, toCheckPoints *list.List) {
-	if CheckPoint(searchPoint) {
-		checkedPoints[searchPoint] = true
-		toCheckPoints.PushFront(searchPoint)
-	} else {
-		if _, ok := checkedPoints[searchPoint]; !ok {
-			checkedPoints[searchPoint] = false
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Search</span>(<span style="color:#a6e22e">searchPoint</span> <span style="color:#a6e22e">Point</span>, <span style="color:#a6e22e">toCheckPoints</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">list</span>.<span style="color:#a6e22e">List</span>) {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">CheckPoint</span>(<span style="color:#a6e22e">searchPoint</span>) {
+		<span style="color:#a6e22e">checkedPoints</span>[<span style="color:#a6e22e">searchPoint</span>] = <span style="color:#66d9ef">true</span>
+		<span style="color:#a6e22e">toCheckPoints</span>.<span style="color:#a6e22e">PushFront</span>(<span style="color:#a6e22e">searchPoint</span>)
+	} <span style="color:#66d9ef">else</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">checkedPoints</span>[<span style="color:#a6e22e">searchPoint</span>]; !<span style="color:#a6e22e">ok</span> {
+			<span style="color:#a6e22e">checkedPoints</span>[<span style="color:#a6e22e">searchPoint</span>] = <span style="color:#66d9ef">false</span>
 		}
 	}
 }
 
-func CheckPoint(p Point) bool {
-	if _, ok := checkedPoints[p]; ok {
-		return false
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">CheckPoint</span>(<span style="color:#a6e22e">p</span> <span style="color:#a6e22e">Point</span>) <span style="color:#66d9ef">bool</span> {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">checkedPoints</span>[<span style="color:#a6e22e">p</span>]; <span style="color:#a6e22e">ok</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
 	}
 
-	if p.Y &gt; p.X || p.X &lt; 0 || p.Y &lt; 0{
-		return false
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">Y</span> &gt; <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">X</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">X</span> &lt; <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">Y</span> &lt; <span style="color:#ae81ff">0</span>{
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
 	}
 
-	return p.CoordinateSum() &lt;= 21
-}
-
-</code></pre>
-
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">CoordinateSum</span>() <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">21</span>
+}</code></pre></div>
 <p>答案：<strong>287881</strong></p>
 
 <h1 id="后记">后记</h1>

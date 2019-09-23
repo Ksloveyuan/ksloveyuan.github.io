@@ -200,7 +200,7 @@ if (!doNotTrack) {
   <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
   
 </svg>
-<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+<span class='screen-reader-text'> by </span><a href='/authors/%e6%b5%b7%e4%b9%8b%e6%96%b9'>海之方</a></span>
   
 <span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
@@ -231,8 +231,7 @@ One min read
 <p><img src="https://i.loli.net/2019/09/19/G2dXZEFYlCTfmQN.png" alt="" /></p>
 
 <p>就自己定义了一个logstash.yml</p>
-
-<pre><code>input{
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-conf" data-lang="conf">input{
   beats {
     port =&gt; 5044
   }
@@ -240,18 +239,13 @@ One min read
 
 output{
    mongodb {
-    uri =&gt; &quot;mongodb://localhost:27017&quot;
-    database =&gt; &quot;spot_logs&quot;
-    collection =&gt; &quot;raw_data&quot;
+    uri =&gt; &#34;mongodb://localhost:27017&#34;
+    database =&gt; &#34;spot_logs&#34;
+    collection =&gt; &#34;raw_data&#34;
   }
-}
-</code></pre>
-
+}</code></pre></div>
 <p>心想着这样通过volume挂进去就可以用了。</p>
-
-<pre><code>docker run  --rm -it -v ./logstash.yml:/usr/share/logstash/config/logstash.yml docker.elastic.co/logstash/logstash:7.2.0
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run  --rm -it -v ./logstash.yml:/usr/share/logstash/config/logstash.yml docker.elastic.co/logstash/logstash:7.2.0</code></pre></div>
 <p><strong>然后，悲剧开始了</strong>~~~</p>
 
 <p>首先，我定义的其实是一个.<strong>conf</strong>文件，而不是logstash.yml。</p>
@@ -259,10 +253,7 @@ output{
 <p>于是，刚一启动就报错了。</p>
 
 <p>当我经过一番搜索，知道这其实是一个conf文件后,就直接改把它的后缀名改成了.conf,然后执行了</p>
-
-<pre><code>docker run --rm --network host -it -v ./logstash.conf:/usr/share/logstash/config/logstash.conf docker.elastic.co/logstash/logstash:7.2.0
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run --rm --network host -it -v ./logstash.conf:/usr/share/logstash/config/logstash.conf docker.elastic.co/logstash/logstash:7.2.0</code></pre></div>
 <p>然后，“奇迹发生”了~~filebeat发过来日志，logstash都能收到，而且还打印了出来（*好神奇，那可是我第一次跑通filebeat+logstash*），但是还没开心1分钟，就发现mongodb里根本没数据。</p>
 
 <p>然后，没有方向的我，开始了一通乱试（*略去不表，其实都是泪*），白白耗费了一个下午加晚上也没找到原因（*那时真是心情沉重，想着这个sprint估计有点难交差了！*）。</p>
@@ -272,11 +263,8 @@ output{
 <p>查了一下logstash官方的dockerfile也没发现什么，到是在一篇搜索到文章中，发现可能是e受容器里的pipelines.yml的影响。</p>
 
 <p>当我打开容器里的/usr/share/logstash/config/pipelines.yml的时候，看见：</p>
-
-<pre><code>- pipeline.id: main
-  path.config: &quot;/usr/share/logstash/pipeline&quot;
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- pipeline.id: main
+  path.config: <span style="color:#e6db74">&#34;/usr/share/logstash/pipeline&#34;</span></code></pre></div>
 <p>再打开
 /usr/share/logstash/pipeline，看到：</p>
 
@@ -296,12 +284,9 @@ output {
 <p><strong>真是一口老血喷出来~心想好坑呀，隐藏的这么深！</strong></p>
 
 <p>于是，仿造这个pipelines.yml，也写了个pipelines.yml，把config指向自己的配置。</p>
-
-<pre><code>- pipeline.id: main
-  path.config: &quot;/usr/share/logstash/config/logstash.conf&quot;
-  pipeline.workers: 3
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- pipeline.id: main
+  path.config: <span style="color:#e6db74">&#34;/usr/share/logstash/config/logstash.conf&#34;</span>
+  pipeline.workers: <span style="color:#ae81ff">3</span></code></pre></div>
 <p>再挂载进docker启动后，看到mongodb的报错信息后，就知道自己的设置终于生效了。</p>
 
 <p>报错的原因，是因为logstash-output-mongodb这个output默认是没有的，需要自己装好，解决方法也很简单，自定义一个dockerfile，做一个安装好logstash-output-mongodb的镜像就好。</p>
@@ -315,39 +300,30 @@ RUN logstash-plugin install logstash-output-mongodb
 </code></pre>
 
 <p>然后运行：</p>
-
-<pre><code>docker build -f logstash.dockerfile -t mine/logstash:1.0
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker build -f logstash.dockerfile -t mine/logstash:1.0</code></pre></div>
 <p>最后定义了一个docker-compose.logstash.yml文件：</p>
-
-<pre><code>version: '3'
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">version: <span style="color:#e6db74">&#39;3&#39;</span>
 
 services:
   logstash:
-    image: mine/logstash:1.0
+    image: mine/logstash:<span style="color:#ae81ff">1.0</span>
     restart: always
     container_name: finxos_logstash
-    network_mode: 'host'
+    network_mode: <span style="color:#e6db74">&#39;host&#39;</span>
     volumes:
-      - &quot;$PWD/config/logstash.conf:/usr/share/logstash/config/logstash.conf&quot;
+      - <span style="color:#e6db74">&#34;$PWD/config/logstash.conf:/usr/share/logstash/config/logstash.conf&#34;</span>
     depends_on:
       - mongodb
 
   mongodb:
-    image: mongo:4.0
+    image: mongo:<span style="color:#ae81ff">4.0</span>
     restart: always
     container_name: finxos_mongodb
     volumes:
-      - &quot;$PWD/mongodb_data:/data/db&quot;
-    network_mode: 'host'
-</code></pre>
-
+      - <span style="color:#e6db74">&#34;$PWD/mongodb_data:/data/db&#34;</span>
+    network_mode: <span style="color:#e6db74">&#39;host&#39;</span></code></pre></div>
 <p>这样就可以通过下面的命令一键启动了。</p>
-
-<pre><code>docker-compose -f docker-compose.logstash.yml up
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker-compose -f docker-compose.logstash.yml up</code></pre></div>
 <h1 id="写在最后">写在最后</h1>
 
 <p>在下笔前，我是心想着写下自己的踩坑经验，估计会对他人有用。</p>

@@ -200,7 +200,7 @@ if (!doNotTrack) {
   <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
   
 </svg>
-<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+<span class='screen-reader-text'> by </span><a href='/authors/%e6%b5%b7%e4%b9%8b%e6%96%b9'>海之方</a></span>
   
 <span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
@@ -246,29 +246,26 @@ One min read
 <h1 id="排查过程">排查过程</h1>
 
 <p>这是一个查询文章列表的接口，支持分页，最终执行的SQL如下：</p>
-
-<pre><code>SELECT DISTINCT
-    C.*,
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">DISTINCT</span>
+    <span style="color:#66d9ef">C</span>.<span style="color:#f92672">*</span>,
     B.nickname,
     D.feed_id,
     D.home_feed,
     D.read_scope,
     D.publish_time
-FROM
+<span style="color:#66d9ef">FROM</span>
     XXcloud.mp_pubno_info A,
     XXcloud.wechat_pubno B,
-    XXcloud.wechat_article C
-        LEFT JOIN
-    XXcloud.mp_feed_info D ON D.element_id = C.article_id
-        AND D.element_type = 3
-        AND D.valid = 1
-        AND D.app_id = 'pf'
-WHERE
-     A.app_id = 'pf' AND A.pubno = C.pubno AND A.pubno = B.pubno
-ORDER BY C.create_time DESC
-LIMIT 0 , 20
-</code></pre>
-
+    XXcloud.wechat_article <span style="color:#66d9ef">C</span>
+        <span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span>
+    XXcloud.mp_feed_info D <span style="color:#66d9ef">ON</span> D.element_id <span style="color:#f92672">=</span> <span style="color:#66d9ef">C</span>.article_id
+        <span style="color:#66d9ef">AND</span> D.element_type <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>
+        <span style="color:#66d9ef">AND</span> D.<span style="color:#66d9ef">valid</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">AND</span> D.app_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;pf&#39;</span>
+<span style="color:#66d9ef">WHERE</span>
+     A.app_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;pf&#39;</span> <span style="color:#66d9ef">AND</span> A.pubno <span style="color:#f92672">=</span> <span style="color:#66d9ef">C</span>.pubno <span style="color:#66d9ef">AND</span> A.pubno <span style="color:#f92672">=</span> B.pubno
+<span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> <span style="color:#66d9ef">C</span>.create_time <span style="color:#66d9ef">DESC</span>
+<span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">0</span> , <span style="color:#ae81ff">20</span></code></pre></div>
 <p>咋一看这么多表联查，还有一个左联接，心想能快就奇怪了！</p>
 
 <p>一开始真不想理这段sql的业务逻辑，就快速用工具分析了一下查询计划，想着如果是没加索引，那<strong>偷个懒</strong>:）加个索引就好了。</p>
@@ -288,22 +285,19 @@ LIMIT 0 , 20
 <p>突破口就在这里！</p>
 
 <p>当我把sql调整成，</p>
-
-<pre><code>SELECT
-	C.*,
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span>
+	<span style="color:#66d9ef">C</span>.<span style="color:#f92672">*</span>,
 	B.nickname,
 	D.feed_id,
 	D.home_feed,
 	D.read_scope,
 	D.publish_time 
-FROM
-	XXcloud.wechat_article C inner join (select C2.article_id from XXcloud.mp_pubno_info A inner join XXcloud.wechat_article C2 on A.app_id = 'sc' and  A.pubno = C2.pubno order by C2.create_time desc limit 20) ai on C.article_id = ai.article_id
-    inner join XXcloud.wechat_pubno B on C.pubno = B.pubno
-    left join XXcloud.mp_feed_info D ON D.valid = 1 AND D.app_id = 'sc' AND D.element_type = 3 AND  D.element_id = C.article_id
-ORDER BY
-	C.create_time DESC
-</code></pre>
-
+<span style="color:#66d9ef">FROM</span>
+	XXcloud.wechat_article <span style="color:#66d9ef">C</span> <span style="color:#66d9ef">inner</span> <span style="color:#66d9ef">join</span> (<span style="color:#66d9ef">select</span> C2.article_id <span style="color:#66d9ef">from</span> XXcloud.mp_pubno_info A <span style="color:#66d9ef">inner</span> <span style="color:#66d9ef">join</span> XXcloud.wechat_article C2 <span style="color:#66d9ef">on</span> A.app_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;sc&#39;</span> <span style="color:#66d9ef">and</span>  A.pubno <span style="color:#f92672">=</span> C2.pubno <span style="color:#66d9ef">order</span> <span style="color:#66d9ef">by</span> C2.create_time <span style="color:#66d9ef">desc</span> <span style="color:#66d9ef">limit</span> <span style="color:#ae81ff">20</span>) ai <span style="color:#66d9ef">on</span> <span style="color:#66d9ef">C</span>.article_id <span style="color:#f92672">=</span> ai.article_id
+    <span style="color:#66d9ef">inner</span> <span style="color:#66d9ef">join</span> XXcloud.wechat_pubno B <span style="color:#66d9ef">on</span> <span style="color:#66d9ef">C</span>.pubno <span style="color:#f92672">=</span> B.pubno
+    <span style="color:#66d9ef">left</span> <span style="color:#66d9ef">join</span> XXcloud.mp_feed_info D <span style="color:#66d9ef">ON</span> D.<span style="color:#66d9ef">valid</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">AND</span> D.app_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;sc&#39;</span> <span style="color:#66d9ef">AND</span> D.element_type <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span> <span style="color:#66d9ef">AND</span>  D.element_id <span style="color:#f92672">=</span> <span style="color:#66d9ef">C</span>.article_id
+<span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span>
+	<span style="color:#66d9ef">C</span>.create_time <span style="color:#66d9ef">DESC</span></code></pre></div>
 <p>再分析一下查询计划，</p>
 
 <p><img src="https://i.loli.net/2019/09/16/GRHoA4wjfVEih86.png" alt="quick_analysis.png" /></p>
@@ -333,7 +327,7 @@ ORDER BY
   <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
   
 </svg>
-<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/sql%E4%BC%98%E5%8C%96/'>Sql优化</a></div>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/%E7%AC%94%E8%AE%B0/'>笔记</a></div>
 <div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>

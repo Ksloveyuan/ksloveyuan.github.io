@@ -200,7 +200,7 @@ if (!doNotTrack) {
   <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
   
 </svg>
-<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+<span class='screen-reader-text'> by </span><a href='/authors/%e6%b5%b7%e4%b9%8b%e6%96%b9'>海之方</a></span>
   
 <span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
@@ -242,50 +242,47 @@ if (!doNotTrack) {
 <p>++那么如何理解这个让数据流程起来呢？++</p>
 
 <p>假如说你需要对100次请求，做两种比较耗时的操作，然后再统计加权结果，还需要尽可能的并发来提高性能。示例代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">multipleChan</span> = make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">4</span>)
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">minusChan</span> = make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">4</span>)
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">harvestChan</span> = make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">4</span>)
 
-<pre><code>var multipleChan = make(chan int, 4)
-var minusChan = make(chan int, 4)
-var harvestChan = make(chan int, 4)
+<span style="color:#66d9ef">defer</span> close(<span style="color:#a6e22e">multipleChan</span>)
+<span style="color:#66d9ef">defer</span> close(<span style="color:#a6e22e">minusChan</span>)
+<span style="color:#66d9ef">defer</span> close(<span style="color:#a6e22e">harvestChan</span>)
 
-defer close(multipleChan)
-defer close(minusChan)
-defer close(harvestChan)
-
-go func() {
-	for i:=1;i&lt;=100;i++{
-		multipleChan &lt;- i
+<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">:=</span><span style="color:#ae81ff">1</span>;<span style="color:#a6e22e">i</span><span style="color:#f92672">&lt;=</span><span style="color:#ae81ff">100</span>;<span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>{
+		<span style="color:#a6e22e">multipleChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">i</span>
 	}
 }()
 
-for i:=0; i&lt;4; i++{
-	go func() {
-		for data := range multipleChan {
-			minusChan &lt;- data * 2
-			time.Sleep(10* time.Millisecond)
+<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">:=</span><span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span>&lt;<span style="color:#ae81ff">4</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>{
+	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">multipleChan</span> {
+			<span style="color:#a6e22e">minusChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>
+			<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">10</span><span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Millisecond</span>)
 		}
 	}()
 
-	go func() {
-		for data := range minusChan {
-			harvestChan &lt;- data - 1
-			time.Sleep(10* time.Millisecond)
+	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">minusChan</span> {
+			<span style="color:#a6e22e">harvestChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
+			<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">10</span><span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Millisecond</span>)
 		}
 	}()
 }
 
-var sum = 0
-var index = 0
-for data := range harvestChan{
-	sum += data
-	index++
-	if index == 100{
-		break
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">sum</span> = <span style="color:#ae81ff">0</span>
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">index</span> = <span style="color:#ae81ff">0</span>
+<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">harvestChan</span>{
+	<span style="color:#a6e22e">sum</span> <span style="color:#f92672">+=</span> <span style="color:#a6e22e">data</span>
+	<span style="color:#a6e22e">index</span><span style="color:#f92672">++</span>
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">index</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">100</span>{
+		<span style="color:#66d9ef">break</span>
 	}
 }
 
-fmt.Println(sum)
-</code></pre>
-
+<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">sum</span>)</code></pre></div>
 <p>不要笑这段代码简单，如果考虑到错误处理的情况，那还是有些复杂的。比如，某个环节是遇到错误可以忽略，某个环节是遇到要终止所有操作；再加上，有时只关心第一个满足条件的返回值，还需要超时处理。</p>
 
 <p>写一遍也许还可以，要是很多地方都要这样写，那真是头大&gt;_&lt;!!!</p>
@@ -295,25 +292,22 @@ fmt.Println(sum)
 <p>于是，<a href="https://github.com/Ksloveyuan/channelx" target="_blank"><strong>channelx</strong></a>这个库诞生了！</p>
 
 <p>使用了这个库，实现上述同样的功能，代码是这样子的~~</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">sum</span> = <span style="color:#ae81ff">0</span>
 
-<pre><code>var sum = 0
-
-NewChannelStream(func(seedChan chan&lt;- Result, quitChannel chan struct{}) {
-	for i:=1; i&lt;=100;i++{
-		seedChan &lt;- Result{Data:i}
+<span style="color:#a6e22e">NewChannelStream</span>(<span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">seedChan</span> <span style="color:#66d9ef">chan</span><span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">Result</span>, <span style="color:#a6e22e">quitChannel</span> <span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) {
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">:=</span><span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">&lt;=</span><span style="color:#ae81ff">100</span>;<span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>{
+		<span style="color:#a6e22e">seedChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">Result</span>{<span style="color:#a6e22e">Data</span>:<span style="color:#a6e22e">i</span>}
 	}
-	close(seedChan) //记得关闭哦~~~
-}).Pipe(func(result Result) Result {
-	return Result{Data: result.Data.(int) * 2}
-}).Pipe(func(result Result) Result {
-	return Result{Data: result.Data.(int) - 1}
-}).Harvest(func(result Result) {
-	sum += result.Data.(int)
+	close(<span style="color:#a6e22e">seedChan</span>) <span style="color:#75715e">//记得关闭哦~~~
+</span><span style="color:#75715e"></span>}).<span style="color:#a6e22e">Pipe</span>(<span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">result</span> <span style="color:#a6e22e">Result</span>) <span style="color:#a6e22e">Result</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">Result</span>{<span style="color:#a6e22e">Data</span>: <span style="color:#a6e22e">result</span>.<span style="color:#a6e22e">Data</span>.(<span style="color:#66d9ef">int</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>}
+}).<span style="color:#a6e22e">Pipe</span>(<span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">result</span> <span style="color:#a6e22e">Result</span>) <span style="color:#a6e22e">Result</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">Result</span>{<span style="color:#a6e22e">Data</span>: <span style="color:#a6e22e">result</span>.<span style="color:#a6e22e">Data</span>.(<span style="color:#66d9ef">int</span>) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>}
+}).<span style="color:#a6e22e">Harvest</span>(<span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">result</span> <span style="color:#a6e22e">Result</span>) {
+	<span style="color:#a6e22e">sum</span> <span style="color:#f92672">+=</span> <span style="color:#a6e22e">result</span>.<span style="color:#a6e22e">Data</span>.(<span style="color:#66d9ef">int</span>)
 })
 
-fmt.Println(sum)
-</code></pre>
-
+<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">sum</span>)</code></pre></div>
 <p>我喜欢链式风格，所以写成这个样子，你也可以拆开来写的。但重点是代码这样写起来是不是很丝滑，有nodejs stream流的快感呢，嘻嘻~~</p>
 
 <p>除了<strong>Pipe-&gt;Harvest</strong>的组合，还可以实现<strong>Pipe-&gt;Race</strong>, <strong>Pipe-&gt;Drain</strong>, <strong>Pipe-&gt;Cancel</strong>等操作的组合。</p>
@@ -321,118 +315,114 @@ fmt.Println(sum)
 <p>这些复杂的例子，都可以参照<a href="https://github.com/Ksloveyuan/channelx/blob/master/stream_test.go" target="_blank">stream_test.go</a>文件中的单元测试来实现，就不一一贴代码出来了哈。</p>
 
 <p>那么，这个stream又是如何实现的呢？核心就在<strong>NewChannelStream</strong>和<strong>Pipe</strong>这个两个函数里。</p>
-
-<pre><code>func NewChannelStream(seedFunc SeedFunc, optionFuncs ...OptionFunc) *ChannelStream {
-	cs := &amp;ChannelStream{
-		workers:     runtime.NumCPU(),
-		optionFuncs: optionFuncs,
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewChannelStream</span>(<span style="color:#a6e22e">seedFunc</span> <span style="color:#a6e22e">SeedFunc</span>, <span style="color:#a6e22e">optionFuncs</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">OptionFunc</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">ChannelStream</span> {
+	<span style="color:#a6e22e">cs</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">ChannelStream</span>{
+		<span style="color:#a6e22e">workers</span>:     <span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">NumCPU</span>(),
+		<span style="color:#a6e22e">optionFuncs</span>: <span style="color:#a6e22e">optionFuncs</span>,
 	}
 
-	for _, of := range optionFuncs {
-		of(cs)
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">of</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">optionFuncs</span> {
+		<span style="color:#a6e22e">of</span>(<span style="color:#a6e22e">cs</span>)
 	}
 
-	if cs.quitChan == nil {
-		cs.quitChan = make(chan struct{})
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">quitChan</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">quitChan</span> = make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{})
 	}
 
-	cs.dataChannel = make(chan Item, cs.workers)
+	<span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">dataChannel</span> = make(<span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">Item</span>, <span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">workers</span>)
 
-	go func() {
-		inputChan := make(chan Item)
+	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#a6e22e">inputChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">Item</span>)
 
-		go seedFunc(inputChan, cs.quitChan)
+		<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">seedFunc</span>(<span style="color:#a6e22e">inputChan</span>, <span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">quitChan</span>)
 
-	loop:
-		for {
-			select {
-			case &lt;-cs.quitChan:
-				break loop
+	<span style="color:#a6e22e">loop</span>:
+		<span style="color:#66d9ef">for</span> {
+			<span style="color:#66d9ef">select</span> {
+			<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">quitChan</span>:
+				<span style="color:#66d9ef">break</span> <span style="color:#a6e22e">loop</span>
 
-			case res, ok := &lt;-inputChan:
-				if !ok {
-					break loop
+			<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">res</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">inputChan</span>:
+				<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+					<span style="color:#66d9ef">break</span> <span style="color:#a6e22e">loop</span>
 				}
 
-				select {
-				case &lt;-cs.quitChan:
-					break loop
-				default:
+				<span style="color:#66d9ef">select</span> {
+				<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">quitChan</span>:
+					<span style="color:#66d9ef">break</span> <span style="color:#a6e22e">loop</span>
+				<span style="color:#66d9ef">default</span>:
 				}
 
-				if res.Err != nil {
-					cs.errors = append(cs.errors, res.Err)
+				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">Err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+					<span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">errors</span> = append(<span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">errors</span>, <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">Err</span>)
 				}
 
-				if !cs.hasError &amp;&amp; res.Err != nil {
-					cs.hasError = true
-					cs.dataChannel &lt;- res
-					if cs.ape == stop {
-						cs.Cancel()
+				<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">hasError</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">Err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+					<span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">hasError</span> = <span style="color:#66d9ef">true</span>
+					<span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">dataChannel</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">res</span>
+					<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">ape</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">stop</span> {
+						<span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">Cancel</span>()
 					}
-					continue
+					<span style="color:#66d9ef">continue</span>
 				}
 
-				if cs.hasError &amp;&amp; cs.ape == stop {
-					continue
+				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">hasError</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">ape</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">stop</span> {
+					<span style="color:#66d9ef">continue</span>
 				}
 
-				cs.dataChannel &lt;- res
+				<span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">dataChannel</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">res</span>
 			}
 		}
 
-		safeCloseChannel(cs.dataChannel)
+		<span style="color:#a6e22e">safeCloseChannel</span>(<span style="color:#a6e22e">cs</span>.<span style="color:#a6e22e">dataChannel</span>)
 
 	}()
 
-	return cs
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">cs</span>
 }
 
-func (p *ChannelStream) Pipe(dataPipeFunc PipeFunc, optionFuncs ...OptionFunc) *ChannelStream {
-	seedFunc := func(dataPipeChannel chan&lt;- Item, quitChannel chan struct{}) {
-		wg := &amp;sync.WaitGroup{}
-		wg.Add(p.workers)
-		for i := 0; i &lt; p.workers; i++ {
-			go func() {
-				defer wg.Done()
-			loop:
-				for {
-					select {
-					case &lt;-quitChannel:
-						break loop
-					case data, ok := &lt;-p.dataChannel:
-						if !ok {
-							break loop
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">p</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ChannelStream</span>) <span style="color:#a6e22e">Pipe</span>(<span style="color:#a6e22e">dataPipeFunc</span> <span style="color:#a6e22e">PipeFunc</span>, <span style="color:#a6e22e">optionFuncs</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">OptionFunc</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">ChannelStream</span> {
+	<span style="color:#a6e22e">seedFunc</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">dataPipeChannel</span> <span style="color:#66d9ef">chan</span><span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">Item</span>, <span style="color:#a6e22e">quitChannel</span> <span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) {
+		<span style="color:#a6e22e">wg</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
+		<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">workers</span>)
+		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">workers</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+			<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+				<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+			<span style="color:#a6e22e">loop</span>:
+				<span style="color:#66d9ef">for</span> {
+					<span style="color:#66d9ef">select</span> {
+					<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">quitChannel</span>:
+						<span style="color:#66d9ef">break</span> <span style="color:#a6e22e">loop</span>
+					<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">dataChannel</span>:
+						<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+							<span style="color:#66d9ef">break</span> <span style="color:#a6e22e">loop</span>
 						}
 
-						select {
-						case &lt;-quitChannel:
-							break loop
-						default:
+						<span style="color:#66d9ef">select</span> {
+						<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">quitChannel</span>:
+							<span style="color:#66d9ef">break</span> <span style="color:#a6e22e">loop</span>
+						<span style="color:#66d9ef">default</span>:
 						}
 
-						dataPipeChannel &lt;- dataPipeFunc(data)
+						<span style="color:#a6e22e">dataPipeChannel</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">dataPipeFunc</span>(<span style="color:#a6e22e">data</span>)
 					}
 				}
 			}()
 		}
 
-		go func() {
-			wg.Wait()
-			safeCloseChannel(dataPipeChannel)
+		<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+			<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+			<span style="color:#a6e22e">safeCloseChannel</span>(<span style="color:#a6e22e">dataPipeChannel</span>)
 		}()
 	}
 
-	mergeOptionFuncs := make([]OptionFunc, len(p.optionFuncs)+len(optionFuncs)+1)
-	copy(mergeOptionFuncs[0:len(p.optionFuncs)], p.optionFuncs)
-	copy(mergeOptionFuncs[len(p.optionFuncs):], optionFuncs)
-	mergeOptionFuncs[len(p.optionFuncs)+len(optionFuncs)] = passByQuitChan(p.quitChan) //这行保证了整个stream中有一个唯一的quitChan
-
-	return NewChannelStream(seedFunc, mergeOptionFuncs...)
-}
-
-</code></pre>
-
+	<span style="color:#a6e22e">mergeOptionFuncs</span> <span style="color:#f92672">:=</span> make([]<span style="color:#a6e22e">OptionFunc</span>, len(<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">optionFuncs</span>)<span style="color:#f92672">+</span>len(<span style="color:#a6e22e">optionFuncs</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>)
+	copy(<span style="color:#a6e22e">mergeOptionFuncs</span>[<span style="color:#ae81ff">0</span>:len(<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">optionFuncs</span>)], <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">optionFuncs</span>)
+	copy(<span style="color:#a6e22e">mergeOptionFuncs</span>[len(<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">optionFuncs</span>):], <span style="color:#a6e22e">optionFuncs</span>)
+	<span style="color:#a6e22e">mergeOptionFuncs</span>[len(<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">optionFuncs</span>)<span style="color:#f92672">+</span>len(<span style="color:#a6e22e">optionFuncs</span>)] = <span style="color:#a6e22e">passByQuitChan</span>(<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">quitChan</span>) <span style="color:#75715e">//这行保证了整个stream中有一个唯一的quitChan
+</span><span style="color:#75715e"></span>
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">NewChannelStream</span>(<span style="color:#a6e22e">seedFunc</span>, <span style="color:#a6e22e">mergeOptionFuncs</span><span style="color:#f92672">...</span>)
+}</code></pre></div>
 <p>代码看着多，刨除初始化的代码、错误处理和退出处理的代码，核心还是通过channel的数据流动。</p>
 
 <p>首先，NewChannelStream中会新建一个inputChan传入seedFunc，然后数据会通过seedChan(即inputChan)，传到dataChannel。</p>

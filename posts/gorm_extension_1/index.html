@@ -200,7 +200,7 @@ if (!doNotTrack) {
   <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
   
 </svg>
-<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+<span class='screen-reader-text'> by </span><a href='/authors/%e6%b5%b7%e4%b9%8b%e6%96%b9'>海之方</a></span>
   
 <span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
@@ -248,13 +248,10 @@ if (!doNotTrack) {
 <h1 id="准备">准备</h1>
 
 <p>为了兼容gorm的使用方法，我使用了内嵌类型来扩展。 定义如下：</p>
-
-<pre><code>type DBExtension struct {
-	*gorm.DB
-	logger DBLogger
-}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">DBExtension</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#f92672">*</span><span style="color:#a6e22e">gorm</span>.<span style="color:#a6e22e">DB</span>
+	<span style="color:#a6e22e">logger</span> <span style="color:#a6e22e">DBLogger</span>
+}</code></pre></div>
 <p>这样子定义的wrapper对象是最小侵入式的扩展，不仅可以直接点出gorm的原有方法，也可以点出扩展的方法。</p>
 
 <h1 id="新增">新增</h1>
@@ -266,19 +263,16 @@ if (!doNotTrack) {
 <p>请再次注意：默认值是否生效在gorm的不同方法中处理的方式是不一样的，需要非常小心才行。</p>
 
 <p>举个例子，如果你定义了一个User的结构体，里面有个Age的字段类型是int。（*注：以后的例子，都默认已定义这个结构体*）</p>
-
-<pre><code>type User struct {
-	Id           int     `gorm:&quot;column:id; type:int(11);primary_key&quot;`
-	Name         string  `gorm:&quot;column:name; type:varchar(32);&quot;`
-	Age          int     `gorm:&quot;column:age; type:int(11);&quot;`
-	Description  string  `gorm:&quot;column:description; type:varchar(512);&quot;`
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">User</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">Id</span>           <span style="color:#66d9ef">int</span>     <span style="color:#e6db74">`gorm:&#34;column:id; type:int(11);primary_key&#34;`</span>
+	<span style="color:#a6e22e">Name</span>         <span style="color:#66d9ef">string</span>  <span style="color:#e6db74">`gorm:&#34;column:name; type:varchar(32);&#34;`</span>
+	<span style="color:#a6e22e">Age</span>          <span style="color:#66d9ef">int</span>     <span style="color:#e6db74">`gorm:&#34;column:age; type:int(11);&#34;`</span>
+	<span style="color:#a6e22e">Description</span>  <span style="color:#66d9ef">string</span>  <span style="color:#e6db74">`gorm:&#34;column:description; type:varchar(512);&#34;`</span>
 }
 
-func (User) TableName() string {
-	return &quot;test.user&quot;
-}
-</code></pre>
-
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">User</span>) <span style="color:#a6e22e">TableName</span>() <span style="color:#66d9ef">string</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;test.user&#34;</span>
+}</code></pre></div>
 <p>++请特别注意Id的定义中的<strong>primary_key</strong>, 如果没有加个这个Save方法是无法正常工作的。++</p>
 
 <p>如果在定义时，没有给Age赋值，那么这条数据的Age将被置为0。</p>
@@ -290,48 +284,34 @@ func (User) TableName() string {
 <p>简单来说，不用显示的判断是新增数据和更新数据，可以让代码更加简洁，利大于弊，不是吗？</p>
 
 <p>扩展代码如下,增加了一些错误判断和日志：</p>
-
-<pre><code>type TableNameAble interface {
-	TableName() string
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">TableNameAble</span> <span style="color:#66d9ef">interface</span> {
+	<span style="color:#a6e22e">TableName</span>() <span style="color:#66d9ef">string</span>
 }
 
-// Update All Fields
-func (dw *DBExtension) SaveOne(value TableNameAble) error {
-	tableNameAble, ok := value.(TableNameAble)
-	if !ok {
-		return errors.New(&quot;value doesn't implement TableNameAble&quot;)
+<span style="color:#75715e">// Update All Fields
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dw</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DBExtension</span>) <span style="color:#a6e22e">SaveOne</span>(<span style="color:#a6e22e">value</span> <span style="color:#a6e22e">TableNameAble</span>) <span style="color:#66d9ef">error</span> {
+	<span style="color:#a6e22e">tableNameAble</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">value</span>.(<span style="color:#a6e22e">TableNameAble</span>)
+	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;value doesn&#39;t implement TableNameAble&#34;</span>)
 	}
 
-	var err error
-	if err = dw.Save(value).Error; err != nil {
-		dw.logger.LogErrorc(&quot;mysql&quot;, err, fmt.Sprintf(&quot;Failed to save %s, the value is %+v&quot;, tableNameAble.TableName(), value))
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Save</span>(<span style="color:#a6e22e">value</span>).<span style="color:#a6e22e">Error</span>; <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">LogErrorc</span>(<span style="color:#e6db74">&#34;mysql&#34;</span>, <span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;Failed to save %s, the value is %+v&#34;</span>, <span style="color:#a6e22e">tableNameAble</span>.<span style="color:#a6e22e">TableName</span>(), <span style="color:#a6e22e">value</span>))
 	}
-	return err
-}
-</code></pre>
-
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+}</code></pre></div>
 <p>使用代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">user1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Id</span>:<span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">Name</span>:<span style="color:#e6db74">&#34;Jeremy&#34;</span>, <span style="color:#a6e22e">Age</span>: <span style="color:#ae81ff">30</span>, <span style="color:#a6e22e">Description</span>: <span style="color:#e6db74">&#34;A gopher&#34;</span>}
 
-<pre><code>
-user1 := User{Id:1, Name:&quot;Jeremy&quot;, Age: 30, Description: &quot;A gopher&quot;}
-
-if err := dw.SaveOne(&amp;instInfo); err != nil{
-    // error handling
-    return err
-}
-
-</code></pre>
-
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">SaveOne</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">instInfo</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+    <span style="color:#75715e">// error handling
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+}</code></pre></div>
 <p>当记录不存在时，执行的Sql语句是：</p>
-
-<pre><code>insert into test.user(id ,name, age, description) values(1, &quot;Jeremy&quot;, 30, &quot;A gopher&quot;)
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> test.<span style="color:#66d9ef">user</span>(id ,name, age, description) <span style="color:#66d9ef">values</span>(<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;Jeremy&#34;</span>, <span style="color:#ae81ff">30</span>, <span style="color:#e6db74">&#34;A gopher&#34;</span>)</code></pre></div>
 <p>当记录存在时，执行的语句就是：</p>
-
-<pre><code>update test.user set name = &quot;Jeremy&quot;, age = 30, description = &quot;A gohper&quot; where id = 1
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Jeremy&#34;</span>, age <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>, description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A gohper&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span></code></pre></div>
 <p>这样写新建，还兼顾了全字段更新的情况，是不是一举两得呢？</p>
 
 <p>PS: 如果主键Id是一个自增列，在新建时，可以不用给Id赋值。当数据成功插入后，这条数据的Id还会自动更新到Id字段，这个特性在一些场景下特别有用。</p>
@@ -349,145 +329,126 @@ if err := dw.SaveOne(&amp;instInfo); err != nil{
 <p>SaveOne方法是<strong>全量更新</strong>，但大部分情况是，可能只是更新某条数据的部分字段，又或者是只想更新改过的字段。关于这部分操作，gorm虽然提供了很多操作方法，但也是最让人困惑的。</p>
 
 <p>在这种场景我常用的处理方式有两种，一是定义一个专门的结构体，如：</p>
-
-<pre><code>type UserDesc struct {
-	Id           int     `gorm:&quot;column:id; type:int(11);primary_key&quot;`
-	Description  string  `gorm:&quot;column:description; type:varchar(512);&quot;`
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">UserDesc</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">Id</span>           <span style="color:#66d9ef">int</span>     <span style="color:#e6db74">`gorm:&#34;column:id; type:int(11);primary_key&#34;`</span>
+	<span style="color:#a6e22e">Description</span>  <span style="color:#66d9ef">string</span>  <span style="color:#e6db74">`gorm:&#34;column:description; type:varchar(512);&#34;`</span>
 }
 
-func (UserDesc) TableName() string {
-	return &quot;test.user&quot;
-}
-
-</code></pre>
-
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">UserDesc</span>) <span style="color:#a6e22e">TableName</span>() <span style="color:#66d9ef">string</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;test.user&#34;</span>
+}</code></pre></div>
 <p>这时就可以使用SaveOne方法，用如下方式更新：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">userDesc</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">UserDesc</span>{<span style="color:#a6e22e">Id</span>:<span style="color:#ae81ff">1</span>,  <span style="color:#a6e22e">Description</span>: <span style="color:#e6db74">&#34;A programmer&#34;</span>}
 
-<pre><code>
-userDesc := UserDesc{Id:1,  Description: &quot;A programmer&quot;}
-
-if err := dw.SaveOne(&amp;userDesc); err != nil{
-    // error handling
-    return err
-}
-
-</code></pre>
-
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">SaveOne</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">userDesc</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+    <span style="color:#75715e">// error handling
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+}</code></pre></div>
 <p>执行的sql语句是：</p>
-
-<pre><code>update test.user set description = &quot;A programmer&quot; where id = 1
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A programmer&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span></code></pre></div>
 <h2 id="条件更新">条件更新</h2>
 
 <p>但是更多的时候，是想按匹配条件更新的匹配的数据，这时SaveOne就无法满足了。于是，我做了如下扩展：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">table_name</span> =  <span style="color:#e6db74">&#34;$Table_Name$&#34;</span>
 
-<pre><code>const table_name =  &quot;$Table_Name$&quot;
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">UpdateAttrs</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">interface</span>{}
 
-type UpdateAttrs map[string]interface{}
-
-func NewUpdateAttrs(tableName string) UpdateAttrs  {
-	attrMap := make(map[string]interface{})
-	attrMap[table_name] = tableName
-	return attrMap
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewUpdateAttrs</span>(<span style="color:#a6e22e">tableName</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">UpdateAttrs</span>  {
+	<span style="color:#a6e22e">attrMap</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">interface</span>{})
+	<span style="color:#a6e22e">attrMap</span>[<span style="color:#a6e22e">table_name</span>] = <span style="color:#a6e22e">tableName</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">attrMap</span>
 }
 
-// Update selected Fields, if attrs is an object, it will ignore default value field; if attrs is map, it will ignore unchanged field.
-func (dw *DBExtension) Update(attrs interface{}, query interface{}, args ...interface{}) error {
-	var (
-		tableNameAble TableNameAble
-		ok            bool
-		tableName     string
+<span style="color:#75715e">// Update selected Fields, if attrs is an object, it will ignore default value field; if attrs is map, it will ignore unchanged field.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dw</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DBExtension</span>) <span style="color:#a6e22e">Update</span>(<span style="color:#a6e22e">attrs</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">query</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">error</span> {
+	<span style="color:#66d9ef">var</span> (
+		<span style="color:#a6e22e">tableNameAble</span> <span style="color:#a6e22e">TableNameAble</span>
+		<span style="color:#a6e22e">ok</span>            <span style="color:#66d9ef">bool</span>
+		<span style="color:#a6e22e">tableName</span>     <span style="color:#66d9ef">string</span>
 	)
 
-	if tableNameAble, ok = query.(TableNameAble); ok {
-		tableName = tableNameAble.TableName()
-	}else if tableNameAble, ok = attrs.(TableNameAble); ok {
-		tableName = tableNameAble.TableName()
-	} else if attrMap, isUpdateAttrs := attrs.(UpdateAttrs); isUpdateAttrs {
-		tableName = attrMap[table_name].(string)
-		delete(attrMap, table_name)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">tableNameAble</span>, <span style="color:#a6e22e">ok</span> = <span style="color:#a6e22e">query</span>.(<span style="color:#a6e22e">TableNameAble</span>); <span style="color:#a6e22e">ok</span> {
+		<span style="color:#a6e22e">tableName</span> = <span style="color:#a6e22e">tableNameAble</span>.<span style="color:#a6e22e">TableName</span>()
+	}<span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">tableNameAble</span>, <span style="color:#a6e22e">ok</span> = <span style="color:#a6e22e">attrs</span>.(<span style="color:#a6e22e">TableNameAble</span>); <span style="color:#a6e22e">ok</span> {
+		<span style="color:#a6e22e">tableName</span> = <span style="color:#a6e22e">tableNameAble</span>.<span style="color:#a6e22e">TableName</span>()
+	} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">attrMap</span>, <span style="color:#a6e22e">isUpdateAttrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">attrs</span>.(<span style="color:#a6e22e">UpdateAttrs</span>); <span style="color:#a6e22e">isUpdateAttrs</span> {
+		<span style="color:#a6e22e">tableName</span> = <span style="color:#a6e22e">attrMap</span>[<span style="color:#a6e22e">table_name</span>].(<span style="color:#66d9ef">string</span>)
+		delete(<span style="color:#a6e22e">attrMap</span>, <span style="color:#a6e22e">table_name</span>)
 	}
 
-	if tableName == &quot;&quot; {
-		return errors.New(&quot;can't get table name from both attrs and query&quot;)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">tableName</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;can&#39;t get table name from both attrs and query&#34;</span>)
 	}
 
-	var err error
-	db := dw.Table(tableName).Where(query, args...).Update(attrs)
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+	<span style="color:#a6e22e">db</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Table</span>(<span style="color:#a6e22e">tableName</span>).<span style="color:#a6e22e">Where</span>(<span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>).<span style="color:#a6e22e">Update</span>(<span style="color:#a6e22e">attrs</span>)
 
-	if err = db.Error; err != nil {
-		dw.logger.LogErrorc(&quot;mysql&quot;, err, fmt.Sprintf(&quot;failed to update %s, query is %+v, args are %+v, attrs is %+v&quot;, tableName, query, args, attrs))
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">Error</span>; <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">LogErrorc</span>(<span style="color:#e6db74">&#34;mysql&#34;</span>, <span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;failed to update %s, query is %+v, args are %+v, attrs is %+v&#34;</span>, <span style="color:#a6e22e">tableName</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">args</span>, <span style="color:#a6e22e">attrs</span>))
 	}
 
-	if db.RowsAffected == 0 {
-		dw.logger.LogWarnc(&quot;mysql&quot;,nil, fmt.Sprintf(&quot;No rows is updated.For %s, query is %+v, args are %+v, attrs is %+v&quot;, tableName, query, args, attrs))
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">RowsAffected</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">LogWarnc</span>(<span style="color:#e6db74">&#34;mysql&#34;</span>,<span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;No rows is updated.For %s, query is %+v, args are %+v, attrs is %+v&#34;</span>, <span style="color:#a6e22e">tableName</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">args</span>, <span style="color:#a6e22e">attrs</span>))
 	}
 
-	return err
-}
-</code></pre>
-
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+}</code></pre></div>
 <p>下面，我将结合Sql语句，逐一解释如何使用。</p>
 
 <p>还是先以要执行下面这条语句为例：</p>
-
-<pre><code>update test.user set description = &quot;A programmer&quot; where id = 1
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A programmer&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span></code></pre></div>
 <p>现在，可以有如下几种实现方式</p>
 
 <ul>
-<li><p>写法一</p>
-
-<pre><code>udateAttrs := User{Description: &quot;A programmer&quot;}
-condition := User{Id: 1}
-if err := dw.Update(&amp;udateAttrs, condition); err != nil{
-// error handling
-return err
-}
-</code></pre></li>
-
+<li>写法一</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">udateAttrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Description</span>: <span style="color:#e6db74">&#34;A programmer&#34;</span>}
+<span style="color:#a6e22e">condition</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Id</span>: <span style="color:#ae81ff">1</span>}
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Update</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">udateAttrs</span>, <span style="color:#a6e22e">condition</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+    <span style="color:#75715e">// error handling
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+}</code></pre></div>
+<ul>
 <li><p>写法二</p>
-
-<pre><code>udateAttrs := User{Description: &quot;A programmer&quot;}
-if err := dw.Update(&amp;udateAttrs, &quot;id = ?&quot;, 1); err != nil{
-// error handling
-return err
-}
-</code></pre></li>
-
-<li><p>写法三</p>
-
-<pre><code>udateAttrs := NewUpdateAttrs(&quot;test.user&quot;)
-udateAttrs[&quot;description&quot;] = &quot;A programmer&quot;
-
-if err := dw.Update(&amp;udateAttrs, &quot;id = ?&quot;, 1); err != nil{
-// error handling
-return err
-}
-</code></pre></li>
-
-<li><p>写法四</p>
-
-<pre><code>udateAttrs := NewUpdateAttrs(&quot;test.user&quot;)
-udateAttrs[&quot;description&quot;] = &quot;A programmer&quot;
-condition := User{Id: 1}
-
-if err := dw.Update(&amp;udateAttrs, condition); err != nil{
-// error handling
-return err
-}
-</code></pre></li>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">udateAttrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Description</span>: <span style="color:#e6db74">&#34;A programmer&#34;</span>}
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Update</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">udateAttrs</span>, <span style="color:#e6db74">&#34;id = ?&#34;</span>, <span style="color:#ae81ff">1</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+<span style="color:#75715e">// error handling
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+}</code></pre></div>
+<ul>
+<li>写法三
+```go
+udateAttrs := NewUpdateAttrs(&ldquo;test.user&rdquo;)
+udateAttrs[&ldquo;description&rdquo;] = &ldquo;A programmer&rdquo;</li>
 </ul>
 
-<p>咋一看，四种写法很相似。那么，为什么要搞这么多种写法呢？</p>
+<p>if err := dw.Update(&amp;udateAttrs, &ldquo;id = ?&rdquo;, 1); err != nil{
+// error handling
+return err
+}
+```</p></li>
 
-<p>这可是不是为了炫耀回字的几种写法, 而是因为gorm原生的Update方法对于struct的参数是会忽略默认值的。</p>
+<li><p>写法四
+```go
+udateAttrs := NewUpdateAttrs(&ldquo;test.user&rdquo;)
+udateAttrs[&ldquo;description&rdquo;] = &ldquo;A programmer&rdquo;
+condition := User{Id: 1}</p></li>
+</ul>
 
-<p>比如说，如果你想把descritpion清空，如果像下面这样写：</p>
+<p>if err := dw.Update(&amp;udateAttrs, condition); err != nil{
+    // error handling
+    return err
+}</p>
 
-<pre><code>udateAttrs := User{Description: &quot;&quot;}
+<pre><code>
+咋一看，四种写法很相似。那么，为什么要搞这么多种写法呢？
+
+这可是不是为了炫耀回字的几种写法, 而是因为gorm原生的Update方法对于struct的参数是会忽略默认值的。
+
+比如说，如果你想把descritpion清空，如果像下面这样写：
+
+```go
+udateAttrs := User{Description: &quot;&quot;}
 condition := User{Id: 1}
 if err := dw.Update(&amp;udateAttrs, condition); err != nil{
     // error handling
@@ -496,35 +457,23 @@ if err := dw.Update(&amp;udateAttrs, condition); err != nil{
 </code></pre>
 
 <p>descritpion是不会被更新的，这是就需要写法三或者写法四了，以写法四为例</p>
-
-<pre><code>udateAttrs := NewUpdateAttrs(&quot;test.user&quot;)
-udateAttrs[&quot;description&quot;] = &quot;&quot;
-condition := User{Id: 1}
-if err := dw.Update(&amp;udateAttrs, condition); err != nil{
-    // error handling
-    return err
-}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">udateAttrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewUpdateAttrs</span>(<span style="color:#e6db74">&#34;test.user&#34;</span>)
+<span style="color:#a6e22e">udateAttrs</span>[<span style="color:#e6db74">&#34;description&#34;</span>] = <span style="color:#e6db74">&#34;&#34;</span>
+<span style="color:#a6e22e">condition</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Id</span>: <span style="color:#ae81ff">1</span>}
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Update</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">udateAttrs</span>, <span style="color:#a6e22e">condition</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+    <span style="color:#75715e">// error handling
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+}</code></pre></div>
 <p>才会如愿执行：</p>
-
-<pre><code>update test.user set description = &quot;&quot; where id = 1
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span></code></pre></div>
 <p>而写法二（三）的强大之处在于可以更自由的指定匹配条件，比如：</p>
-
-<pre><code>udateAttrs := User{Description: &quot;A programmer&quot;}
-if err := dw.Update(&amp;udateAttrs, &quot;id in (?) and age &gt; ? and description != ?&quot;, []int{1,2}, 30, &quot;&quot;); err != nil{
-    // error handling
-    return err
-}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">udateAttrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Description</span>: <span style="color:#e6db74">&#34;A programmer&#34;</span>}
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Update</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">udateAttrs</span>, <span style="color:#e6db74">&#34;id in (?) and age &gt; ? and description != ?&#34;</span>, []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>}, <span style="color:#ae81ff">30</span>, <span style="color:#e6db74">&#34;&#34;</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+    <span style="color:#75715e">// error handling
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+}</code></pre></div>
 <p>执行的sql是：</p>
-
-<pre><code>update test.user set description = &quot;A programmer&quot; where id in (1,2) and age &gt; 30 and description != ''
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A programmer&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#66d9ef">in</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">and</span> age <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">30</span> <span style="color:#66d9ef">and</span> description <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;&#39;</span></code></pre></div>
 <p>未完待续……</p>
 
 <p>代码地址：<a href="https://github.com/Ksloveyuan/gorm-ex" target="_blank">Github:Ksloveyuan/gorm-ex</a></p>

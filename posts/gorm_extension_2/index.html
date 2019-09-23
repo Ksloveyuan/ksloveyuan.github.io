@@ -200,7 +200,7 @@ if (!doNotTrack) {
   <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
   
 </svg>
-<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+<span class='screen-reader-text'> by </span><a href='/authors/%e6%b5%b7%e4%b9%8b%e6%96%b9'>海之方</a></span>
   
 <span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
@@ -264,163 +264,144 @@ if (!doNotTrack) {
 <p><em>ps：以下例子均以假定已定义user对象</em></p>
 
 <h2 id="查询一个">查询一个</h2>
-
-<pre><code>func (dw *DBExtension) GetOne(result interface{}, query interface{}, args ...interface{}) (found bool, err error) {
-	var (
-		tableNameAble TableNameAble
-		ok            bool
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dw</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DBExtension</span>) <span style="color:#a6e22e">GetOne</span>(<span style="color:#a6e22e">result</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">query</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) (<span style="color:#a6e22e">found</span> <span style="color:#66d9ef">bool</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+	<span style="color:#66d9ef">var</span> (
+		<span style="color:#a6e22e">tableNameAble</span> <span style="color:#a6e22e">TableNameAble</span>
+		<span style="color:#a6e22e">ok</span>            <span style="color:#66d9ef">bool</span>
 	)
 
-	if tableNameAble, ok = query.(TableNameAble); !ok {
-		if tableNameAble, ok = result.(TableNameAble); !ok {
-			return false, errors.New(&quot;neither the query nor result implement TableNameAble&quot;)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">tableNameAble</span>, <span style="color:#a6e22e">ok</span> = <span style="color:#a6e22e">query</span>.(<span style="color:#a6e22e">TableNameAble</span>); !<span style="color:#a6e22e">ok</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">tableNameAble</span>, <span style="color:#a6e22e">ok</span> = <span style="color:#a6e22e">result</span>.(<span style="color:#a6e22e">TableNameAble</span>); !<span style="color:#a6e22e">ok</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;neither the query nor result implement TableNameAble&#34;</span>)
 		}
 	}
 
-	err = dw.Table(tableNameAble.TableName()).Where(query, args...).First(result).Error
+	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Table</span>(<span style="color:#a6e22e">tableNameAble</span>.<span style="color:#a6e22e">TableName</span>()).<span style="color:#a6e22e">Where</span>(<span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>).<span style="color:#a6e22e">First</span>(<span style="color:#a6e22e">result</span>).<span style="color:#a6e22e">Error</span>
 
-	if err == gorm.ErrRecordNotFound {
-		dw.logger.LogInfoc(&quot;mysql&quot;, fmt.Sprintf(&quot;record not found for query %s, the query is %+v, args are %+v&quot;, tableNameAble.TableName(), query, args))
-		return false, nil
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">gorm</span>.<span style="color:#a6e22e">ErrRecordNotFound</span> {
+		<span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">LogInfoc</span>(<span style="color:#e6db74">&#34;mysql&#34;</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;record not found for query %s, the query is %+v, args are %+v&#34;</span>, <span style="color:#a6e22e">tableNameAble</span>.<span style="color:#a6e22e">TableName</span>(), <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">args</span>))
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">nil</span>
 	}
 
-	if err != nil {
-		dw.logger.LogErrorc(&quot;mysql&quot;, err, fmt.Sprintf(&quot;failed to query %s, the query is %+v, args are %+v&quot;, tableNameAble.TableName(), query, args))
-		return false, err
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">LogErrorc</span>(<span style="color:#e6db74">&#34;mysql&#34;</span>, <span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;failed to query %s, the query is %+v, args are %+v&#34;</span>, <span style="color:#a6e22e">tableNameAble</span>.<span style="color:#a6e22e">TableName</span>(), <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">args</span>))
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">err</span>
 	}
 
-	return true, nil
-}
-</code></pre>
-
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
+}</code></pre></div>
 <p>这段值得说明的就是对查询不到数据时的处理，gorm是报了<strong>gorm.ErrRecordNotFound</strong>的error, 我是对这个错误做了特殊处理，用found这个boolean值表述这个特殊状态。</p>
 
 <p>调用代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">condition</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Id</span>:<span style="color:#ae81ff">1</span>}
+<span style="color:#a6e22e">result</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{}
 
-<pre><code>condition := User{Id:1}
-result := User{}
-
-if  found, err := dw.GetOne(&amp;result, condition); !found {
-	//not found
-    if err != nil {
-    	// has error
-        return err
+<span style="color:#66d9ef">if</span>  <span style="color:#a6e22e">found</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">GetOne</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">result</span>, <span style="color:#a6e22e">condition</span>); !<span style="color:#a6e22e">found</span> {
+	<span style="color:#75715e">//not found
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+    	<span style="color:#75715e">// has error
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
     }
     
-}
-</code></pre>
-
+}</code></pre></div>
 <p>也可以这样写，更加灵活的指定的查询条件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">result</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{}
 
-<pre><code>result := User{}
-
-if  found, err := dw.GetOne(&amp;result, &quot;id = ？&quot;， 1); !found {
-	//not found
-    if err != nil {
-    	// has error
-        return err
+<span style="color:#66d9ef">if</span>  <span style="color:#a6e22e">found</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">GetOne</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">result</span>, <span style="color:#e6db74">&#34;id = ？&#34;</span><span style="color:#960050;background-color:#1e0010">，</span> <span style="color:#ae81ff">1</span>); !<span style="color:#a6e22e">found</span> {
+	<span style="color:#75715e">//not found
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+    	<span style="color:#75715e">// has error
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
     }
     
-}
-</code></pre>
-
+}</code></pre></div>
 <p>两种写法执行的语句都是：</p>
-
-<pre><code>select * from test.user where id = 1
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span></code></pre></div>
 <h2 id="范围查询">范围查询</h2>
 
 <p>针对四种范国查询，我做了如下封装：</p>
-
-<pre><code>
-func (dw *DBExtension) GetList(result interface{}, query interface{}, args ...interface{}) error {
-	return dw.getListCore(result, &quot;&quot;, 0, 0, query, args)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dw</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DBExtension</span>) <span style="color:#a6e22e">GetList</span>(<span style="color:#a6e22e">result</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">query</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">error</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">getListCore</span>(<span style="color:#a6e22e">result</span>, <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">args</span>)
 }
 
-func (dw *DBExtension) GetOrderedList(result interface{}, order string, query interface{}, args ...interface{}) error {
-	return dw.getListCore(result, order, 0, 0, query, args)
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dw</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DBExtension</span>) <span style="color:#a6e22e">GetOrderedList</span>(<span style="color:#a6e22e">result</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">order</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">query</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">error</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">getListCore</span>(<span style="color:#a6e22e">result</span>, <span style="color:#a6e22e">order</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">args</span>)
 }
 
-func (dw *DBExtension) GetFirstNRecords(result interface{}, order string, limit int, query interface{}, args ...interface{}) error {
-	return dw.getListCore(result, order, limit, 0, query, args)
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dw</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DBExtension</span>) <span style="color:#a6e22e">GetFirstNRecords</span>(<span style="color:#a6e22e">result</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">order</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">limit</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">query</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">error</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">getListCore</span>(<span style="color:#a6e22e">result</span>, <span style="color:#a6e22e">order</span>, <span style="color:#a6e22e">limit</span>, <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">args</span>)
 }
 
-func (dw *DBExtension) GetPageRangeList(result interface{}, order string, limit, offset int, query interface{}, args ...interface{}) error {
-	return dw.getListCore(result, order, limit, offset, query, args)
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dw</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DBExtension</span>) <span style="color:#a6e22e">GetPageRangeList</span>(<span style="color:#a6e22e">result</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">order</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">limit</span>, <span style="color:#a6e22e">offset</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">query</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">error</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">getListCore</span>(<span style="color:#a6e22e">result</span>, <span style="color:#a6e22e">order</span>, <span style="color:#a6e22e">limit</span>, <span style="color:#a6e22e">offset</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">args</span>)
 }
 
-func (dw *DBExtension) getListCore(result interface{}, order string, limit, offset int, query interface{}, args []interface{}) error {
-	var (
-		tableNameAble TableNameAble
-		ok            bool
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dw</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DBExtension</span>) <span style="color:#a6e22e">getListCore</span>(<span style="color:#a6e22e">result</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">order</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">limit</span>, <span style="color:#a6e22e">offset</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">query</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">args</span> []<span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">error</span> {
+	<span style="color:#66d9ef">var</span> (
+		<span style="color:#a6e22e">tableNameAble</span> <span style="color:#a6e22e">TableNameAble</span>
+		<span style="color:#a6e22e">ok</span>            <span style="color:#66d9ef">bool</span>
 	)
 
-	if tableNameAble, ok = query.(TableNameAble); !ok {
-		// type Result []*Item{}
-		// result := &amp;Result{}
-		resultType := reflect.TypeOf(result)
-		if resultType.Kind() != reflect.Ptr {
-			return errors.New(&quot;result is not a pointer&quot;)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">tableNameAble</span>, <span style="color:#a6e22e">ok</span> = <span style="color:#a6e22e">query</span>.(<span style="color:#a6e22e">TableNameAble</span>); !<span style="color:#a6e22e">ok</span> {
+		<span style="color:#75715e">// type Result []*Item{}
+</span><span style="color:#75715e"></span>		<span style="color:#75715e">// result := &amp;Result{}
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">resultType</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">result</span>)
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">resultType</span>.<span style="color:#a6e22e">Kind</span>() <span style="color:#f92672">!=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Ptr</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;result is not a pointer&#34;</span>)
 		}
 
-		sliceType := resultType.Elem()
-		if sliceType.Kind() != reflect.Slice {
-			return errors.New(&quot;result doesn't point to a slice&quot;)
+		<span style="color:#a6e22e">sliceType</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">resultType</span>.<span style="color:#a6e22e">Elem</span>()
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">sliceType</span>.<span style="color:#a6e22e">Kind</span>() <span style="color:#f92672">!=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Slice</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;result doesn&#39;t point to a slice&#34;</span>)
 		}
-		// *Item
-		itemPtrType := sliceType.Elem()
-		// Item
-		itemType := itemPtrType.Elem()
+		<span style="color:#75715e">// *Item
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">itemPtrType</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sliceType</span>.<span style="color:#a6e22e">Elem</span>()
+		<span style="color:#75715e">// Item
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">itemType</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">itemPtrType</span>.<span style="color:#a6e22e">Elem</span>()
 
-		elemValue := reflect.New(itemType)
-		elemValueType := reflect.TypeOf(elemValue)
-		tableNameAbleType := reflect.TypeOf((*TableNameAble)(nil)).Elem()
+		<span style="color:#a6e22e">elemValue</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">itemType</span>)
+		<span style="color:#a6e22e">elemValueType</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">elemValue</span>)
+		<span style="color:#a6e22e">tableNameAbleType</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>((<span style="color:#f92672">*</span><span style="color:#a6e22e">TableNameAble</span>)(<span style="color:#66d9ef">nil</span>)).<span style="color:#a6e22e">Elem</span>()
 
-		if elemValueType.Implements(tableNameAbleType) {
-			return errors.New(&quot;neither the query nor result implement TableNameAble&quot;)
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">elemValueType</span>.<span style="color:#a6e22e">Implements</span>(<span style="color:#a6e22e">tableNameAbleType</span>) {
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;neither the query nor result implement TableNameAble&#34;</span>)
 		}
 
-		tableNameAble = elemValue.Interface().(TableNameAble)
+		<span style="color:#a6e22e">tableNameAble</span> = <span style="color:#a6e22e">elemValue</span>.<span style="color:#a6e22e">Interface</span>().(<span style="color:#a6e22e">TableNameAble</span>)
 	}
 
-	db := dw.Table(tableNameAble.TableName()).Where(query, args...)
-	if len(order) != 0 {
-		db = db.Order(order)
+	<span style="color:#a6e22e">db</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Table</span>(<span style="color:#a6e22e">tableNameAble</span>.<span style="color:#a6e22e">TableName</span>()).<span style="color:#a6e22e">Where</span>(<span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">order</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">db</span> = <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">Order</span>(<span style="color:#a6e22e">order</span>)
 	}
 
-	if offset &gt; 0 {
-		db = db.Offset(offset)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">offset</span> &gt; <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">db</span> = <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">Offset</span>(<span style="color:#a6e22e">offset</span>)
 	}
 
-	if limit &gt; 0 {
-		db = db.Limit(limit)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">limit</span> &gt; <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">db</span> = <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">Limit</span>(<span style="color:#a6e22e">limit</span>)
 	}
 
-	if err := db.Find(result).Error; err != nil {
-		dw.logger.LogErrorc(&quot;mysql&quot;, err, fmt.Sprintf(&quot;failed to query %s, query is %+v, args are %+v, order is %s, limit is %d&quot;, tableNameAble.TableName(), query, args, order, limit))
-		return err
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">Find</span>(<span style="color:#a6e22e">result</span>).<span style="color:#a6e22e">Error</span>; <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">LogErrorc</span>(<span style="color:#e6db74">&#34;mysql&#34;</span>, <span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;failed to query %s, query is %+v, args are %+v, order is %s, limit is %d&#34;</span>, <span style="color:#a6e22e">tableNameAble</span>.<span style="color:#a6e22e">TableName</span>(), <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">args</span>, <span style="color:#a6e22e">order</span>, <span style="color:#a6e22e">limit</span>))
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
 	}
 
-	return nil
-}
-</code></pre>
-
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+}</code></pre></div>
 <p>为了减少冗余的代码，通用的逻辑写在<strong>getListCore</strong>函数里，里面用到了一些golang反射的知识。</p>
 
 <p>但只要记得golang的反射和其它语言的反射最大的不同，是<strong>golang的反射是基本值而不是类型的</strong>，一切就好理解了。</p>
 
 <p>其中的一个小技巧是如何判断一个类型是否实现了某个接口，用到了指向nil的指针。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">elemValue</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">itemType</span>)
+	<span style="color:#a6e22e">elemValueType</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">elemValue</span>)
+	<span style="color:#a6e22e">tableNameAbleType</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>((<span style="color:#f92672">*</span><span style="color:#a6e22e">TableNameAble</span>)(<span style="color:#66d9ef">nil</span>)).<span style="color:#a6e22e">Elem</span>()
 
-<pre><code>	elemValue := reflect.New(itemType)
-	elemValueType := reflect.TypeOf(elemValue)
-	tableNameAbleType := reflect.TypeOf((*TableNameAble)(nil)).Elem()
-
-	if elemValueType.Implements(tableNameAbleType) {
-		return errors.New(&quot;neither the query nor result implement TableNameAble&quot;)
-	}
-</code></pre>
-
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">elemValueType</span>.<span style="color:#a6e22e">Implements</span>(<span style="color:#a6e22e">tableNameAbleType</span>) {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;neither the query nor result implement TableNameAble&#34;</span>)
+	}</code></pre></div>
 <p>关于具体的使用，就不再一一举例子了，熟悉gorm api的同学可以一眼看出。</p>
 
 <h1 id="多表查询">多表查询</h1>
@@ -432,111 +413,107 @@ func (dw *DBExtension) getListCore(result interface{}, order string, limit, offs
 <h2 id="一个复杂的例子">一个复杂的例子</h2>
 
 <p>这段代码是从埋点数据的中间表，为了用通用的代码实现不同展示场景下的查询，代码设计的比较灵活，其中涉及了关联多表的查询，按查询条件动态过滤和聚合，还有分页查询的逻辑。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">buildCommonStatisticQuery</span>(<span style="color:#a6e22e">tableName</span>, <span style="color:#a6e22e">startDate</span>, <span style="color:#a6e22e">endDate</span> <span style="color:#66d9ef">string</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">gorm</span>.<span style="color:#a6e22e">DB</span> {
+	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">models</span>.<span style="color:#a6e22e">DB</span>().<span style="color:#a6e22e">Table</span>(<span style="color:#a6e22e">tableName</span>)
 
-<pre><code>func buildCommonStatisticQuery(tableName, startDate, endDate string) *gorm.DB {
-	query := models.DB().Table(tableName)
-
-	if startDate == endDate || endDate == &quot;&quot; {
-		query = query.Where(&quot;date = ?&quot;, startDate)
-	} else {
-		query = query.Where(&quot;date &gt;= ? and date &lt;= ?&quot;, startDate, endDate)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">startDate</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">endDate</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">endDate</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Where</span>(<span style="color:#e6db74">&#34;date = ?&#34;</span>, <span style="color:#a6e22e">startDate</span>)
+	} <span style="color:#66d9ef">else</span> {
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Where</span>(<span style="color:#e6db74">&#34;date &gt;= ? and date &lt;= ?&#34;</span>, <span style="color:#a6e22e">startDate</span>, <span style="color:#a6e22e">endDate</span>)
 	}
 
-	return query
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">query</span>
 }
 
-func buildElementsStatisticQuery(startDate, endDate,  elemId string,  elemType int32) *gorm.DB {
-	query := buildCommonStatisticQuery(&quot;spotanalysis.element_statistics&quot;, startDate, endDate)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">buildElementsStatisticQuery</span>(<span style="color:#a6e22e">startDate</span>, <span style="color:#a6e22e">endDate</span>,  <span style="color:#a6e22e">elemId</span> <span style="color:#66d9ef">string</span>,  <span style="color:#a6e22e">elemType</span> <span style="color:#66d9ef">int32</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">gorm</span>.<span style="color:#a6e22e">DB</span> {
+	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">buildCommonStatisticQuery</span>(<span style="color:#e6db74">&#34;spotanalysis.element_statistics&#34;</span>, <span style="color:#a6e22e">startDate</span>, <span style="color:#a6e22e">endDate</span>)
 
-	if elemId != &quot;&quot; &amp;&amp; elemType != 0 {
-		query = query.Where(&quot;element_id = ? and element_type = ?&quot;, elemId, elemType)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">elemId</span> <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">elemType</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Where</span>(<span style="color:#e6db74">&#34;element_id = ? and element_type = ?&#34;</span>, <span style="color:#a6e22e">elemId</span>, <span style="color:#a6e22e">elemType</span>)
 	}
 
-	return query
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">query</span>
 }
 
-func CountElementsStatistics(count *int32, startDate, endDate, instId, appId, elemId string, elemType int32, groupFields []string ) error {
-	query := buildElementsStatisticQuery(startDate, endDate,  elemId, elemType)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">CountElementsStatistics</span>(<span style="color:#a6e22e">count</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">int32</span>, <span style="color:#a6e22e">startDate</span>, <span style="color:#a6e22e">endDate</span>, <span style="color:#a6e22e">instId</span>, <span style="color:#a6e22e">appId</span>, <span style="color:#a6e22e">elemId</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">elemType</span> <span style="color:#66d9ef">int32</span>, <span style="color:#a6e22e">groupFields</span> []<span style="color:#66d9ef">string</span> ) <span style="color:#66d9ef">error</span> {
+	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">buildElementsStatisticQuery</span>(<span style="color:#a6e22e">startDate</span>, <span style="color:#a6e22e">endDate</span>,  <span style="color:#a6e22e">elemId</span>, <span style="color:#a6e22e">elemType</span>)
 
-	query = whereInstAndApp(query, instId, appId)
+	<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">whereInstAndApp</span>(<span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">instId</span>, <span style="color:#a6e22e">appId</span>)
 
-	if len(groupFields) != 0 {
-		query = query.Select(fmt.Sprintf(&quot;count(distinct(concat(%s)))&quot;, strings.Join(groupFields, &quot;,&quot;)))
-	} else {
-		query = query.Select(&quot;count(id)&quot;)
+	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">groupFields</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Select</span>(<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;count(distinct(concat(%s)))&#34;</span>, <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Join</span>(<span style="color:#a6e22e">groupFields</span>, <span style="color:#e6db74">&#34;,&#34;</span>)))
+	} <span style="color:#66d9ef">else</span> {
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Select</span>(<span style="color:#e6db74">&#34;count(id)&#34;</span>)
 	}
 
-	query = query.Count(count)
-	return query.Error
+	<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Count</span>(<span style="color:#a6e22e">count</span>)
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Error</span>
 }
 
 
-func GetElementsStatistics(result interface{}, startDate, endDate, instId, appId, elemId string, elemType int32, groupFields []string, orderBy string, ascOrder bool, limit, offset int32) error {
-	query := buildElementsStatisticQuery(startDate, endDate, elemId, elemType)
-	if len(groupFields) != 0 {
-		groupBy := strings.Join(groupFields, &quot;`,`&quot;)
-		groupBy = &quot;`&quot; + groupBy + &quot;`&quot;
-		query = query.Group(groupBy)
-		query = havingInstAndApp(query, instId, appId)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">GetElementsStatistics</span>(<span style="color:#a6e22e">result</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">startDate</span>, <span style="color:#a6e22e">endDate</span>, <span style="color:#a6e22e">instId</span>, <span style="color:#a6e22e">appId</span>, <span style="color:#a6e22e">elemId</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">elemType</span> <span style="color:#66d9ef">int32</span>, <span style="color:#a6e22e">groupFields</span> []<span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">orderBy</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">ascOrder</span> <span style="color:#66d9ef">bool</span>, <span style="color:#a6e22e">limit</span>, <span style="color:#a6e22e">offset</span> <span style="color:#66d9ef">int32</span>) <span style="color:#66d9ef">error</span> {
+	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">buildElementsStatisticQuery</span>(<span style="color:#a6e22e">startDate</span>, <span style="color:#a6e22e">endDate</span>, <span style="color:#a6e22e">elemId</span>, <span style="color:#a6e22e">elemType</span>)
+	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">groupFields</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">groupBy</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Join</span>(<span style="color:#a6e22e">groupFields</span>, <span style="color:#e6db74">&#34;`,`&#34;</span>)
+		<span style="color:#a6e22e">groupBy</span> = <span style="color:#e6db74">&#34;`&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">groupBy</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;`&#34;</span>
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Group</span>(<span style="color:#a6e22e">groupBy</span>)
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">havingInstAndApp</span>(<span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">instId</span>, <span style="color:#a6e22e">appId</span>)
 
-		sumFields := strings.Join([]string{
-			&quot;SUM(`element_statistics`.`mp_count`) AS `mp_count`&quot;,
-			&quot;SUM(`element_statistics`.`h5_count`) AS `h5_count`&quot;,
-			&quot;SUM(`element_statistics`.`total_count`) AS `total_count`&quot;,
-			&quot;SUM(`element_statistics`.`collection_count`) AS `collection_count`&quot;,
-			&quot;SUM(`element_statistics`.`mp_share_count`) AS `mp_share_count`&quot;,
-			&quot;SUM(`element_statistics`.`h5_share_count`) AS `h5_share_count`&quot;,
-			&quot;SUM(`element_statistics`.`poster_share_count`) AS `poster_share_count`&quot;,
-			&quot;SUM(`element_statistics`.`total_share_count`) AS `total_share_count`&quot;,
-		}, &quot;,&quot;)
+		<span style="color:#a6e22e">sumFields</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Join</span>([]<span style="color:#66d9ef">string</span>{
+			<span style="color:#e6db74">&#34;SUM(`element_statistics`.`mp_count`) AS `mp_count`&#34;</span>,
+			<span style="color:#e6db74">&#34;SUM(`element_statistics`.`h5_count`) AS `h5_count`&#34;</span>,
+			<span style="color:#e6db74">&#34;SUM(`element_statistics`.`total_count`) AS `total_count`&#34;</span>,
+			<span style="color:#e6db74">&#34;SUM(`element_statistics`.`collection_count`) AS `collection_count`&#34;</span>,
+			<span style="color:#e6db74">&#34;SUM(`element_statistics`.`mp_share_count`) AS `mp_share_count`&#34;</span>,
+			<span style="color:#e6db74">&#34;SUM(`element_statistics`.`h5_share_count`) AS `h5_share_count`&#34;</span>,
+			<span style="color:#e6db74">&#34;SUM(`element_statistics`.`poster_share_count`) AS `poster_share_count`&#34;</span>,
+			<span style="color:#e6db74">&#34;SUM(`element_statistics`.`total_share_count`) AS `total_share_count`&#34;</span>,
+		}, <span style="color:#e6db74">&#34;,&#34;</span>)
 
-		query = query.Select(groupBy + &quot;,&quot; + sumFields)
-	} else {
-		query = whereInstAndApp(query, instId, appId)
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Select</span>(<span style="color:#a6e22e">groupBy</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;,&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">sumFields</span>)
+	} <span style="color:#66d9ef">else</span> {
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">whereInstAndApp</span>(<span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">instId</span>, <span style="color:#a6e22e">appId</span>)
 	}
 
-	query = getPagedList(query, orderBy, ascOrder, limit, offset)
+	<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">getPagedList</span>(<span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">orderBy</span>, <span style="color:#a6e22e">ascOrder</span>, <span style="color:#a6e22e">limit</span>, <span style="color:#a6e22e">offset</span>)
 
-	return query.Find(result).Error
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Find</span>(<span style="color:#a6e22e">result</span>).<span style="color:#a6e22e">Error</span>
 }
 
-func getPagedList(query *gorm.DB, orderBy string, ascOrder bool, limit , offset int32) *gorm.DB {
-	if orderBy != &quot;&quot; {
-		if ascOrder {
-			orderBy += &quot; asc&quot;
-		} else {
-			orderBy += &quot; desc&quot;
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getPagedList</span>(<span style="color:#a6e22e">query</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">gorm</span>.<span style="color:#a6e22e">DB</span>, <span style="color:#a6e22e">orderBy</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">ascOrder</span> <span style="color:#66d9ef">bool</span>, <span style="color:#a6e22e">limit</span> , <span style="color:#a6e22e">offset</span> <span style="color:#66d9ef">int32</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">gorm</span>.<span style="color:#a6e22e">DB</span> {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">orderBy</span> <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;&#34;</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ascOrder</span> {
+			<span style="color:#a6e22e">orderBy</span> <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34; asc&#34;</span>
+		} <span style="color:#66d9ef">else</span> {
+			<span style="color:#a6e22e">orderBy</span> <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34; desc&#34;</span>
 		}
-		query = query.Order(orderBy)
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Order</span>(<span style="color:#a6e22e">orderBy</span>)
 	}
 
-	if offset != 0 {
-		query = query.Offset(offset)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">offset</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Offset</span>(<span style="color:#a6e22e">offset</span>)
 	}
-	if limit != 0 {
-		query = query.Limit(limit)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">limit</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Limit</span>(<span style="color:#a6e22e">limit</span>)
 	}
-	return query
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">query</span>
 }
 
-func whereInstAndApp(query *gorm.DB, instId string, appId string) *gorm.DB {
-	query = query.Where(&quot;inst_id = ?&quot;, instId)
-	if appId != &quot;&quot; {
-		query = query.Where(&quot;app_id = ?&quot;, appId)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">whereInstAndApp</span>(<span style="color:#a6e22e">query</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">gorm</span>.<span style="color:#a6e22e">DB</span>, <span style="color:#a6e22e">instId</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">appId</span> <span style="color:#66d9ef">string</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">gorm</span>.<span style="color:#a6e22e">DB</span> {
+	<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Where</span>(<span style="color:#e6db74">&#34;inst_id = ?&#34;</span>, <span style="color:#a6e22e">instId</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">appId</span> <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;&#34;</span> {
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Where</span>(<span style="color:#e6db74">&#34;app_id = ?&#34;</span>, <span style="color:#a6e22e">appId</span>)
 	}
-	return query
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">query</span>
 }
 
-func havingInstAndApp(query *gorm.DB, instId string, appId string) *gorm.DB {
-	query = query.Having(&quot;inst_id = ?&quot;, instId)
-	if appId != &quot;&quot; {
-		query = query.Having(&quot;app_id = ?&quot;, appId)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">havingInstAndApp</span>(<span style="color:#a6e22e">query</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">gorm</span>.<span style="color:#a6e22e">DB</span>, <span style="color:#a6e22e">instId</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">appId</span> <span style="color:#66d9ef">string</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">gorm</span>.<span style="color:#a6e22e">DB</span> {
+	<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Having</span>(<span style="color:#e6db74">&#34;inst_id = ?&#34;</span>, <span style="color:#a6e22e">instId</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">appId</span> <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;&#34;</span> {
+		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Having</span>(<span style="color:#e6db74">&#34;app_id = ?&#34;</span>, <span style="color:#a6e22e">appId</span>)
 	}
-	return query
-}
-
-</code></pre>
-
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">query</span>
+}</code></pre></div>
 <p>感谢各位看官耐心看完，如果本文对你有用，请点个赞~~~</p>
 
 <p>如果能到代码仓库：<a href="https://github.com/Ksloveyuan/gorm-ex" target="_blank">Github:Ksloveyuan/gorm-ex</a> 给个✩star✩, 楼主就更加感谢了！</p>

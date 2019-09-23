@@ -200,7 +200,7 @@ if (!doNotTrack) {
   <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
   
 </svg>
-<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+<span class='screen-reader-text'> by </span><a href='/authors/%e6%b5%b7%e4%b9%8b%e6%96%b9'>海之方</a></span>
   
 <span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
@@ -247,13 +247,12 @@ One min read
 <h1 id="搭建步骤">搭建步骤</h1>
 
 <ol>
-<li><p>首先拉取镜像</p>
-
-<pre><code>docker pull timoschwarzer/gitlab-monitor
-</code></pre></li>
-
-<li><p>获得gitlab的access token。登录gitlab后，进入用户设置，点击左侧菜单的Access Token，可以看到如下的页面。
-<img src="https://i.loli.net/2019/08/23/4oXwGz3bTO7D92f.png" alt="Personal Access Tokens · User Settings · GitLab.png" /></p></li>
+<li>首先拉取镜像</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker pull timoschwarzer/gitlab-monitor</code></pre></div>
+<ol>
+<li>获得gitlab的access token。登录gitlab后，进入用户设置，点击左侧菜单的Access Token，可以看到如下的页面。
+<img src="https://i.loli.net/2019/08/23/4oXwGz3bTO7D92f.png" alt="Personal Access Tokens · User Settings · GitLab.png" /></li>
 </ol>
 
 <p>然后，输入个名字，设置过期时间，勾选API和Read Repository，就可以创建一个token。
@@ -266,23 +265,17 @@ One min read
 </ol>
 
 <p>我根据自己的偏好，设置如下。</p>
-
-<pre><code>{
-    &quot;gitlabApi&quot;: &quot;https://gitlab.******.com/api/v4&quot;,
-    &quot;privateToken&quot;: &quot;*********&quot;,
-    &quot;showStagesNames&quot;: true,
-    &quot;fetchCount&quot;: 40,
-    &quot;pipelinesOnly&quot;: true,
-    &quot;showUsers&quot;: true,
-    &quot;pollingIntervalMultiplier&quot;: 0.2
-}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;gitlabApi&#34;</span>: <span style="color:#e6db74">&#34;https://gitlab.******.com/api/v4&#34;</span>,
+    <span style="color:#f92672">&#34;privateToken&#34;</span>: <span style="color:#e6db74">&#34;*********&#34;</span>,
+    <span style="color:#f92672">&#34;showStagesNames&#34;</span>: <span style="color:#66d9ef">true</span>,
+    <span style="color:#f92672">&#34;fetchCount&#34;</span>: <span style="color:#ae81ff">40</span>,
+    <span style="color:#f92672">&#34;pipelinesOnly&#34;</span>: <span style="color:#66d9ef">true</span>,
+    <span style="color:#f92672">&#34;showUsers&#34;</span>: <span style="color:#66d9ef">true</span>,
+    <span style="color:#f92672">&#34;pollingIntervalMultiplier&#34;</span>: <span style="color:#ae81ff">0.2</span>
+}</code></pre></div>
 <p>这个参数可以通过环境变量<strong>GITLAB_MONITOR_CONFIG</strong>传入，于是启动docker的命令如下:</p>
-
-<pre><code>docker run -d -p 11080:80 -e GITLAB_MONITOR_CONFIG='{&quot;gitlabApi&quot;: &quot;https://gitlab.*****.com/api/v4&quot;,&quot;privateToken&quot;: &quot;********&quot;,&quot;showStagesNames&quot;: true,&quot;fetchCount&quot;: 40, &quot;pipelinesOnly&quot;: true, &quot;showUsers&quot;: true,&quot;pollingIntervalMultiplier&quot;: 0.2}'  --name=gitlab-monitor timoschwarzer/gitlab-monitor:latest
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run -d -p <span style="color:#ae81ff">11080</span>:80 -e GITLAB_MONITOR_CONFIG<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{&#34;gitlabApi&#34;: &#34;https://gitlab.*****.com/api/v4&#34;,&#34;privateToken&#34;: &#34;********&#34;,&#34;showStagesNames&#34;: true,&#34;fetchCount&#34;: 40, &#34;pipelinesOnly&#34;: true, &#34;showUsers&#34;: true,&#34;pollingIntervalMultiplier&#34;: 0.2}&#39;</span>  --name<span style="color:#f92672">=</span>gitlab-monitor timoschwarzer/gitlab-monitor:latest</code></pre></div>
 <ol>
 <li>最后一步，在浏览器里输入localhost:11080就好了。</li>
 </ol>

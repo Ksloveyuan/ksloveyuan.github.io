@@ -202,7 +202,7 @@ if (!doNotTrack) {
   <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
   
 </svg>
-<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+<span class='screen-reader-text'> by </span><a href='/authors/%e6%b5%b7%e4%b9%8b%e6%96%b9'>海之方</a></span>
   
 <span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
@@ -257,20 +257,17 @@ One min read
 <h1 id="分析">分析</h1>
 
 <p>一开始我是没什么头绪，顺着CTO提供的线索，搜索了一些<strong>runtime.futex</strong>的文章，几乎所有文章都会提到以下可能会使CPU占用率高的示例代码：</p>
-
-<pre><code>  var ticker = time.NewTicker(100 * time.Millisecond)
-    defer ticker.Stop()
-    var counter = 0
-    for {
-        select {
-        case &lt;-serverDone:
-            return
-        case &lt;-ticker.C:
-            counter += 1
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">ticker</span> = <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">NewTicker</span>(<span style="color:#ae81ff">100</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Millisecond</span>)
+    <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">ticker</span>.<span style="color:#a6e22e">Stop</span>()
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">counter</span> = <span style="color:#ae81ff">0</span>
+    <span style="color:#66d9ef">for</span> {
+        <span style="color:#66d9ef">select</span> {
+        <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">serverDone</span>:
+            <span style="color:#66d9ef">return</span>
+        <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">ticker</span>.<span style="color:#a6e22e">C</span>:
+            <span style="color:#a6e22e">counter</span> <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
         }
-    }
-</code></pre>
-
+    }</code></pre></div>
 <p>这段代码给我指明了一些方向，我开始全局搜索一些time.NewTicker的代码。</p>
 
 <p>巧的是，还真让我搜到了一些，其中一个ticker的时间设置的很有问题。</p>
