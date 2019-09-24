@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>channelx on 稀里稀里哗啦啦</title>
+    <link>http://www.example.com/series/channelx/</link>
+    <description>Recent content in channelx on 稀里稀里哗啦啦</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Fri, 13 Sep 2019 23:43:24 +0800</lastBuildDate>
+    
+	<atom:link href="http://www.example.com/series/channelx/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>如何把Golang的channel用的如nodejs的stream一样丝滑</title>
+      <link>http://www.example.com/posts/channelx_stream/</link>
+      <pubDate>Fri, 13 Sep 2019 23:43:24 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/channelx_stream/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

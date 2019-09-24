@@ -5,10 +5,48 @@
     <link>http://www.example.com/tags/%E7%AC%94%E8%AE%B0/</link>
     <description>Recent content in 笔记 on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 12 Aug 2019 23:48:17 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 24 Sep 2019 21:58:12 +0800</lastBuildDate>
     
 	<atom:link href="http://www.example.com/tags/%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>用Nginx配置https证书，你绝对不能忽略这一点！</title>
+      <link>http://www.example.com/posts/nginx_https_ssl/</link>
+      <pubDate>Tue, 24 Sep 2019 21:58:12 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/nginx_https_ssl/</guid>
+      <description> 前言 话说，刚刚过去的周六下午（ 我们是调休，可不是996哦 ），测试同学突然大叫，
+ 网站、小程序，怎么所有的功能都不work了!
+ 当时，那可是真的慌呀 &amp;gt;_&amp;lt;!!
+还好强大的chrome第一时间提示，网站的SSL证书过期了。赶紧第一时间联系CTO，给证书绪个费。然后运维同学依次给服务器、CDN服务更新了证书，看到网站和小程序又可以访问了，大家都松了一口气，吐槽了一番，就开心过周末去了。
+哪知道，周一刚回来，就听到运营的同学说有的客户反应一些爬虫和客户端服务程序都不工作了。
+排查 几位后端的同学赶紧查了一通日志，发现很多后台的长驻服务，以及客户端的程序都是在调用登录接口的时候失败。
+奇怪的是同样的https接口，浏览器中的前端程序调用就没问题，后端同学用postman调用就是失败的。根据postman的提示，把ssl关了一切就又好了。
+一时间，大家都有些懵，虽说直觉告诉我一定和证书过期有关系，但是该更新的地方都更新了，问题会出在哪了？是不是有地方忘记更新了？
+整个上午，百度、bing、google，搜索了大量nginx+https的文章，却大同小异。
+话说该配置的都配置了，会不会是证书有问题呢？这个想法一闪而过的瞬间，下意识的 ll ，让我注意到了新的证书和备份的旧证书文件大小差了5kb。3kb VS 8kb，这个差距可不能忽略！
+赶紧找运维同学重新下载了证书文件。
+++咦？惊喜的发现第二个文件和第三个文件加起了不正好是8kb吗，这应该不是巧合。++
+心想死马当活马医吧，把两文件一合并，扔到了服务上。nginx -s reload一敲，困扰了一上午的问题竟然好了！
+之前做过区块链项目，有些密码学的基本知识，让我知道，这个大小5kb的文件应该是中间证书。（背景知识：根证书和中间证书的区别）
+用这个中间证书+nginx+https来搜索，让我很快的找到了原因。
+原来，如果在Apache中配置证书时，是有certificate chain这个属性来指定中间证书的。
+Nginx没有Certificat Chain这个参数，如果有中间证书，需要把域名证书和中间证书合并，然后指定给ssl_certificate才行。
+重要的事情再说一遍， &amp;gt; 用Nginx配置https证书，如果有中间证书，一定要和域名证书合并, 再指定给ssl_certificate。
+话说，我司的证书是在Go Daddy上买的，下载时没有nginx的选项，所以选择了Apache，中间证书是分开的，就踩了这个坑。如果证书厂商提供了nginx下载选项，那么下载的证书应是合并后的，就应该没有这个问题了.
+总结和反思 虽说，这个问题是有惊无险的解决了，但值得反思和总结的是：
+ 公司创立刚满一年，很多机制还是不够健全，证书是到过期了才发现，没有事先的提醒。 在服务器操作配置文件，一定要备份，关键时刻比较文件大小也有奇效！:) 最后，用Nginx配置https证书时，中间证书一定要和域名证书合并！  </description>
+    </item>
+    
+    <item>
+      <title>为什么所有的查询条件都命中索引还是那么慢？记一次慢查询优化过程</title>
+      <link>http://www.example.com/posts/slow_sql_analysis_1/</link>
+      <pubDate>Thu, 19 Sep 2019 23:46:57 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/slow_sql_analysis_1/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>记一次golang程序CPU高的排查过程</title>

@@ -4,27 +4,56 @@
   
   <url>
     <loc>http://www.example.com/</loc>
-    <lastmod>2019-09-19T23:46:57+08:00</lastmod>
+    <lastmod>2019-09-24T21:58:12+08:00</lastmod>
   </url>
   
   <url>
     <loc>http://www.example.com/posts/</loc>
-    <lastmod>2019-09-19T23:46:57+08:00</lastmod>
+    <lastmod>2019-09-24T21:58:12+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://www.example.com/me/</loc>
+    <loc>http://www.example.com/authors/me/</loc>
   </url>
   
   <url>
     <loc>http://www.example.com/categories/</loc>
-    <lastmod>2019-09-19T23:46:57+08:00</lastmod>
+    <lastmod>2019-09-24T21:58:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/tags/https/</loc>
+    <lastmod>2019-09-24T21:58:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/tags/nginx/</loc>
+    <lastmod>2019-09-24T21:58:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://www.example.com/tags/</loc>
-    <lastmod>2019-09-19T23:46:57+08:00</lastmod>
+    <lastmod>2019-09-24T21:58:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/posts/nginx_https_ssl/</loc>
+    <lastmod>2019-09-24T21:58:12+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/tags/%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2019-09-24T21:58:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/categories/%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2019-09-24T21:58:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -46,13 +75,19 @@
   </url>
   
   <url>
-    <loc>http://www.example.com/categories/%E7%AC%94%E8%AE%B0/</loc>
-    <lastmod>2019-09-19T23:46:57+08:00</lastmod>
+    <loc>http://www.example.com/series/</loc>
+    <lastmod>2019-07-18T23:47:04+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://www.example.com/tags/channel/</loc>
+    <lastmod>2019-03-19T23:43:24+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/series/channelx/</loc>
     <lastmod>2019-03-19T23:43:24+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -109,12 +144,6 @@
   </url>
   
   <url>
-    <loc>http://www.example.com/tags/%E7%AC%94%E8%AE%B0/</loc>
-    <lastmod>2019-08-12T23:48:17+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://www.example.com/posts/golang_high_cpu/</loc>
     <lastmod>2019-08-12T23:48:17+08:00</lastmod>
   </url>
@@ -131,13 +160,13 @@
   </url>
   
   <url>
-    <loc>http://www.example.com/categories/%E9%9D%A2%E8%AF%95/</loc>
+    <loc>http://www.example.com/tags/%E9%9D%A2%E8%AF%95/</loc>
     <lastmod>2019-07-28T23:21:16+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://www.example.com/tags/%E9%9D%A2%E8%AF%95/</loc>
+    <loc>http://www.example.com/categories/%E9%9D%A2%E8%AF%95/</loc>
     <lastmod>2019-07-28T23:21:16+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -145,6 +174,18 @@
   <url>
     <loc>http://www.example.com/posts/gorm_extension_2/</loc>
     <lastmod>2019-07-18T23:47:04+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/tags/gorm/</loc>
+    <lastmod>2019-07-18T23:47:04+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/series/gorm/</loc>
+    <lastmod>2019-07-18T23:47:04+08:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -186,11 +227,6 @@
   
   <url>
     <loc>http://www.example.com/search/</loc>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/series/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
