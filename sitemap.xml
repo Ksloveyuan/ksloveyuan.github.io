@@ -182,13 +182,13 @@
   </url>
   
   <url>
-    <loc>http://www.example.com/tags/gorm/</loc>
+    <loc>http://www.example.com/series/gorm/</loc>
     <lastmod>2019-07-18T23:47:04+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://www.example.com/series/gorm/</loc>
+    <loc>http://www.example.com/tags/gorm/</loc>
     <lastmod>2019-07-18T23:47:04+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -218,11 +218,6 @@
   <url>
     <loc>http://www.example.com/categories/%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2019-06-29T00:43:12+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/</loc>
     <priority>0</priority>
   </url>
   
