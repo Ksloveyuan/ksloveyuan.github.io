@@ -5,7 +5,7 @@
     <link>http://www.example.com/</link>
     <description>Recent content in Home on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 24 Sep 2019 21:58:12 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 26 Sep 2019 23:25:47 +0800</lastBuildDate>
     
 	<atom:link href="http://www.example.com/index.xml" rel="self" type="application/rss+xml" />
     
@@ -21,6 +21,20 @@
  相信
  自律给我自由。
  </description>
+    </item>
+    
+    <item>
+      <title>如何用Golang的channel实现消息的批量处理</title>
+      <link>http://www.example.com/posts/channelx_aggregator/</link>
+      <pubDate>Thu, 26 Sep 2019 23:25:47 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/channelx_aggregator/</guid>
+      <description>引言 话说，有这样一个场景，就是客户送不断发送消息，需要服务端异步处理。
+一个一个的处理未免有些浪费资源，更好的方法是批量处理。
+当消息量特别大时，使用kafka之类的message queue自然是首选，但更多的时候，我们想用更加轻量的方案来解决这个问题。
+下面来详细分析一下技术需求，这个方案需要实现以下几点： - 消息聚合后处理（最大条数为BatchSize） - 延迟处理（延迟时间为LingerTime） - 自定义错误处理 - 并发处理
+实现 基于这样的需求，我快速的实现了第一步，消息聚合后处理。
+var ( eventQueue = make(chan interface{}, 4) batchSize = 8 workers = 2 batchProcessor = func(messages []interface{}) { fmt.Printf(&amp;#34;%+v \n&amp;#34;, messages) } ) for i := 0; i &amp;lt; workers; i++ { go func() { var batch []interface{} for { msg := &amp;lt;-eventQueue batch = append(batch, msg) if len(batch) == batchSize { batchProcessor(batch) batch = make([]interface{}, 0) } } }() } for i := 0; i &amp;lt; 100; i++ { eventQueue &amp;lt;- i } 代码虽然简单，但是核心已经有了。 - 带buffer的channel相当于一个FIFO的队列 - 多个常驻的goroutine来提高并发 - goroutine之间是并行的，但每个goroutine内是串行的，所以对batch操作是不用加锁的。</description>
     </item>
     
     <item>
@@ -130,6 +144,15 @@ Nginx没有Certificat Chain这个参数，如果有中间证书，需要把域�
       <pubDate>Sat, 29 Jun 2019 00:43:12 +0800</pubDate>
       
       <guid>http://www.example.com/posts/logstash_docker_note/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://www.example.com/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://www.example.com/</guid>
       <description></description>
     </item>
     

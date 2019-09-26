@@ -4,12 +4,12 @@
   
   <url>
     <loc>http://www.example.com/</loc>
-    <lastmod>2019-09-24T21:58:12+08:00</lastmod>
+    <lastmod>2019-09-26T23:25:47+08:00</lastmod>
   </url>
   
   <url>
     <loc>http://www.example.com/posts/</loc>
-    <lastmod>2019-09-24T21:58:12+08:00</lastmod>
+    <lastmod>2019-09-26T23:25:47+08:00</lastmod>
   </url>
   
   <url>
@@ -18,8 +18,49 @@
   
   <url>
     <loc>http://www.example.com/categories/</loc>
-    <lastmod>2019-09-24T21:58:12+08:00</lastmod>
+    <lastmod>2019-09-26T23:25:47+08:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/series/</loc>
+    <lastmod>2019-09-26T23:25:47+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/tags/</loc>
+    <lastmod>2019-09-26T23:25:47+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/tags/channel/</loc>
+    <lastmod>2019-09-26T23:25:47+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/series/channelx/</loc>
+    <lastmod>2019-09-26T23:25:47+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/tags/golang/</loc>
+    <lastmod>2019-09-26T23:25:47+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/categories/toolkit/</loc>
+    <lastmod>2019-09-26T23:25:47+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/posts/channelx_aggregator/</loc>
+    <lastmod>2019-09-26T23:25:47+08:00</lastmod>
   </url>
   
   <url>
@@ -35,24 +76,18 @@
   </url>
   
   <url>
-    <loc>http://www.example.com/tags/</loc>
-    <lastmod>2019-09-24T21:58:12+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://www.example.com/posts/nginx_https_ssl/</loc>
     <lastmod>2019-09-24T21:58:12+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://www.example.com/tags/%E7%AC%94%E8%AE%B0/</loc>
+    <loc>http://www.example.com/categories/%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2019-09-24T21:58:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://www.example.com/categories/%E7%AC%94%E8%AE%B0/</loc>
+    <loc>http://www.example.com/tags/%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2019-09-24T21:58:12+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -71,36 +106,6 @@
   <url>
     <loc>http://www.example.com/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</loc>
     <lastmod>2019-09-19T23:46:57+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/series/</loc>
-    <lastmod>2019-07-18T23:47:04+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/tags/channel/</loc>
-    <lastmod>2019-03-19T23:43:24+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/series/channelx/</loc>
-    <lastmod>2019-03-19T23:43:24+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/tags/golang/</loc>
-    <lastmod>2019-08-12T23:48:17+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/categories/toolkit/</loc>
-    <lastmod>2019-08-26T23:39:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -160,13 +165,13 @@
   </url>
   
   <url>
-    <loc>http://www.example.com/tags/%E9%9D%A2%E8%AF%95/</loc>
+    <loc>http://www.example.com/categories/%E9%9D%A2%E8%AF%95/</loc>
     <lastmod>2019-07-28T23:21:16+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://www.example.com/categories/%E9%9D%A2%E8%AF%95/</loc>
+    <loc>http://www.example.com/tags/%E9%9D%A2%E8%AF%95/</loc>
     <lastmod>2019-07-28T23:21:16+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -213,6 +218,11 @@
   <url>
     <loc>http://www.example.com/categories/%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/</loc>
     <lastmod>2019-06-29T00:43:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/</loc>
     <priority>0</priority>
   </url>
   

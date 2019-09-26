@@ -5,7 +5,7 @@
     <link>http://www.example.com/series/</link>
     <description>Recent content in Series on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 13 Sep 2019 23:43:24 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 26 Sep 2019 23:25:47 +0800</lastBuildDate>
     
 	<atom:link href="http://www.example.com/series/index.xml" rel="self" type="application/rss+xml" />
     
@@ -13,7 +13,7 @@
     <item>
       <title>channelx</title>
       <link>http://www.example.com/series/channelx/</link>
-      <pubDate>Fri, 13 Sep 2019 23:43:24 +0800</pubDate>
+      <pubDate>Thu, 26 Sep 2019 23:25:47 +0800</pubDate>
       
       <guid>http://www.example.com/series/channelx/</guid>
       <description></description>
