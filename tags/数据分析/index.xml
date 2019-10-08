@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>数据分析 on 稀里稀里哗啦啦</title>
+    <link>http://www.example.com/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/</link>
+    <description>Recent content in 数据分析 on 稀里稀里哗啦啦</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Tue, 08 Oct 2019 21:12:52 +0800</lastBuildDate>
+    
+	<atom:link href="http://www.example.com/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>pandas&#43;pyecharts实践笔记：比特币价格分析</title>
+      <link>http://www.example.com/posts/btc_price_analysis/</link>
+      <pubDate>Tue, 08 Oct 2019 21:12:52 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/btc_price_analysis/</guid>
+      <description>tl;dr：眼下极有可能是本年度第二个最佳定投区间
+ 引言 我的签名是： &amp;gt; 会点前端的后端开发，偏偏对区块链最感兴趣。
+虽然上一份从事区块链相关的工作无疾而终，但我还一直在关注区块链行业的发展。
+区块链行业的龙头老大是非比特币莫属。除了技术以外，估计大家更关心的是它的价格。 恰巧最近读了九神《屯比特币》的系列文章，其中的一篇寻找合适的够买时机分享了关于定投择时的策略，核心观点是:
+ 那么，具体在什么区间内购买比特币最划算呢？同时满足两个条件：
+比特币价格低于200日定投平均成本，意味着在这个时候买币，可以跑赢定投的人。
+比特币价格低于指数增长模型的估值，意味着在这个时候，币价被低估了。
+ 我读下来觉得遗憾的地方在于，这篇文章是成文于2018-10-07，转眼一年过去了，而由于文中的相关图表是图片，没有持续更新，那么眼下这个时间点时否满足九神提出的两个条件呢？
+正好我缺一个机会践习python的数据分析，于是，就开始边搜边学边试的摸索之路。
+实现步骤 第一步，自然是要获取数据。先是搜索了一番没找到合适的地方直接下载，只能转换思路去爬取。目标有两个，要么是交易所;要么是行情类网站。
+我选择了非小号这个平台，因为有历史数据页面。
+通过浏览器的开发工具，很容易就可以通过get请求获得数据并解析。因为代码过于简单就不贴出来，有兴趣的朋友，可以点击btc_price_analyzer查看。
+第二步，是计量200日的定投平均成本（*即几何平均数*）及价格比例，这正是pandas所擅长的。但当时的我完全没有经验，磕磕绊绊才写出了下面的代码。
+def close_ratio(close, base): return close * 1.0 / base ma_list = [100, 200] //不知道为什么九神选择了200日均线，这里我把100日均线也打出来做对比。 for ma in ma_list: ma_str = str(ma) price_data[&amp;#39;GMA_&amp;#39; + ma_str] = price_data[&amp;#39;closeprice&amp;#39;].rolling( window=ma, min_periods=1).apply(gmean, raw=True) for ma in ma_list: ma_str = str(ma) price_data[&amp;#34;GMA_Ratio_&amp;#34; + ma_str] = price_data.apply( lambda x: close_ratio(x[&amp;#39;closeprice&amp;#39;], x[&amp;#39;GMA_&amp;#39; + ma_str]), axis=1) 唯一值得说明的是，pandas的rolling函数只有mean方法，而没有gmean的。我是引用了scipy包实现的。</description>
+    </item>
+    
+  </channel>
+</rss>
