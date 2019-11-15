@@ -79,7 +79,7 @@ def close_ratio(close, base): return close * 1.0 / base ma_list = [100, 200] //ä
       <pubDate>Mon, 07 Oct 2019 17:29:00 +0800</pubDate>
       
       <guid>http://www.example.com/page/btc_price_analyzer/</guid>
-      <description>.tab { overflow: hidden; border: 1px solid #ccc; background-color: #f1f1f1; } .tab button { background-color: inherit; float: left; border: none; outline: none; cursor: pointer; padding: 12px 16px; transition: 0.3s; } .tab button:hover { background-color: #ddd; } .tab button.active { background-color: #ccc; } .chart-container { display: none; padding: 6px 12px; border-top: none; }  overall ratio distribution    var chart_eaa7a41397084ffd83f4656409033276 = echarts.init( document.</description>
+      <description>Awesome-pyecharts     .tab { overflow: hidden; border: 1px solid #ccc; background-color: #f1f1f1; } .tab button { background-color: inherit; float: left; border: none; outline: none; cursor: pointer; padding: 12px 16px; transition: 0.3s; } .tab button:hover { background-color: #ddd; } .tab button.active { background-color: #ccc; } .chart-container { display: none; padding: 6px 12px; border-top: none; }  overall ratio distribution    var chart_f1c05403063e4a17820fd54cb873c898 = echarts.init( document.</description>
     </item>
     
     <item>
