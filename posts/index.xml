@@ -5,10 +5,38 @@
     <link>http://www.example.com/posts/</link>
     <description>Recent content in Posts on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 08 Oct 2019 21:12:52 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 15 Nov 2019 11:23:48 +0800</lastBuildDate>
     
 	<atom:link href="http://www.example.com/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>原来，这才是html&#43;css导出word最佳方式！</title>
+      <link>http://www.example.com/posts/html_to_word/</link>
+      <pubDate>Fri, 15 Nov 2019 11:23:48 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/html_to_word/</guid>
+      <description>转个word很难吗？ 对于任何一个在线富文本写作产品，导出功能是必不可少的，其中导出word是其中最常见的选项，但是很多产品导出的word，比如说Jira，格式就有不同程度的失真.
+仔细分析下来，解决这个思路的主要有两种：
+ 硬转：使用OpenXml的SDK，逐一匹配html标签和样式css，相当于用OpenXml实现了一个html+css的渲染层。 偷懒：想办法把html+css的内容当成word的一部分，相当于用web视图打开。  当时，我花了一定的时间，在两个方向上分别做了调研。
+硬转的思路，直觉上工作量就极大，而且很容易出Bug，毕竟那么多组合情况需要考虑。值得参考的项目是html2openxml，但1W多行只能实现html的转换，还不包括css。
+不是没想过，限制输出html的排版，比如用固定的id代表固定的部分，css样式也只支持特定的几种，但后来讨论下来，觉得这种方法，需要前后端确定好规则，而在当时快速迭代的时期，这无疑会增加开发成本。
+而偷懒这条路，能够搜索到项目，都是借用了word中altchunks的特性，比如:html-docx-js、html2docx。
+问题也很明显，
+ 不支持float之类的样式，对图片的支持也需要自己写代码转base64，然后嵌进标签里。这些虽然麻烦些，但是还是可以tweak。 最麻烦的是，这种格式的word，兼容性很差，在微信中、mac上打不开。  于是，我一度卡在这里很久，直到我发现……
+原来，word才是转word的最佳工具 转机来的也很突然，就是我发现用word打开一个带html+css的文件后，再另存成word，不仅格式得到了保留，图片也在，而且兼容性也还不错！真是
+ 踏破铁鞋无觅处，得来全不费工夫。
+ 问题来了，怎么把这一步程序化呢？
+这下终于可以用上过去.net的开发经验了，C#是可以通过com组件的方式操作word，但前提是运行程序的机器上必须装word才行。
+核心代码，也是非常的简单：
+首先引用Microsoft.Office.Interop.Word，调用的代码如下:
+var word = new Application {Visible = false}; var doc = word.Documents.Open(htmlFilePath, Format: WdOpenFormat.wdOpenFormatWebPages,ReadOnly: false); doc.SaveAs2000(wordFilePath, WdSaveFormat.wdFormatDocumentDefault,ReadOnlyRecommended: false); doc.Close(); word.quit()  是不是很简单呢？
+而这里唯一还需要处理的就是图片，如果不做处理，图片还是以链接的方式存储的。
+一方面，每次打开的时候需要重复下载，好处是word文件比较小，但缺点是受限于网速，可能会出现图片加载不出来的情况;
+另一方面时，如果图片没有指定宽度和高度，当图片的尺寸大于文档的尺寸时，显示的效果就很差。
+估化的思路很简单，即强行把图片的尺寸拉伸到一页可以显示下，同时将图片链接转成内嵌的图片。
+foreach (InlineShape s in doc.InlineShapes) { var inlineShape = s; if (inlineShape.Type != WdInlineShapeType.wdInlineShapePicture &amp;amp;&amp;amp; inlineShape.Type != WdInlineShapeType.</description>
+    </item>
     
     <item>
       <title>pandas&#43;pyecharts实践笔记：比特币价格分析</title>
