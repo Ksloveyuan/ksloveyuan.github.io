@@ -4,12 +4,12 @@
   
   <url>
     <loc>http://www.example.com/</loc>
-    <lastmod>2019-11-15T11:23:48+08:00</lastmod>
+    <lastmod>2019-11-28T23:25:20+08:00</lastmod>
   </url>
   
   <url>
     <loc>http://www.example.com/posts/</loc>
-    <lastmod>2019-11-15T11:23:48+08:00</lastmod>
+    <lastmod>2019-11-28T23:25:20+08:00</lastmod>
   </url>
   
   <url>
@@ -18,18 +18,35 @@
   
   <url>
     <loc>http://www.example.com/categories/</loc>
-    <lastmod>2019-11-15T11:23:48+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/tags/html/</loc>
-    <lastmod>2019-11-15T11:23:48+08:00</lastmod>
+    <lastmod>2019-11-28T23:25:20+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://www.example.com/tags/</loc>
+    <lastmod>2019-11-28T23:25:20+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/tags/%E9%9D%A2%E8%AF%95/</loc>
+    <lastmod>2019-11-28T23:25:20+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/categories/%E9%9D%A2%E8%AF%95/</loc>
+    <lastmod>2019-11-28T23:25:20+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/posts/interview_tree_1/</loc>
+    <lastmod>2019-11-28T23:25:20+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/tags/html/</loc>
     <lastmod>2019-11-15T11:23:48+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -211,26 +228,8 @@
   </url>
   
   <url>
-    <loc>http://www.example.com/tags/bft/</loc>
-    <lastmod>2019-07-28T23:21:16+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://www.example.com/posts/interview_bft_1/</loc>
     <lastmod>2019-07-28T23:21:16+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/tags/%E9%9D%A2%E8%AF%95/</loc>
-    <lastmod>2019-07-28T23:21:16+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/categories/%E9%9D%A2%E8%AF%95/</loc>
-    <lastmod>2019-07-28T23:21:16+08:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>

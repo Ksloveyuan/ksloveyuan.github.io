@@ -5,7 +5,7 @@
     <link>http://www.example.com/</link>
     <description>Recent content in Home on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 15 Nov 2019 11:23:48 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 28 Nov 2019 23:25:20 +0800</lastBuildDate>
     
 	<atom:link href="http://www.example.com/index.xml" rel="self" type="application/rss+xml" />
     
@@ -21,6 +21,29 @@
  相信
  自律给我自由。
  </description>
+    </item>
+    
+    <item>
+      <title>面试回顾与解析：在O(logN)时间复杂度下求二叉树中序后继</title>
+      <link>http://www.example.com/posts/interview_tree_1/</link>
+      <pubDate>Thu, 28 Nov 2019 23:25:20 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/interview_tree_1/</guid>
+      <description>回顾 话说，一多个月前，那时我刚刚开始找工作，对猎头推的一家跨境电商w**h很感兴趣，大有志在必得的兴致。
+猎头和我打过招呼，这家公司算法必考，无奈只有一周时间复习的我，按照自己的猜测，在leetcode上重点的刷了下字符串、动态规划之类的题。
+可惜压题失败，真正面试时，面试官考的是二叉树中序后继。唉，当场先是有些失落，接着就是一点小紧张。
+ 回想起来，幸亏面试是通过牛客网做的远程面试，要不这些情绪变化一定落在的面试官眼里。
+ 心神不宁的我，又偏偏遇上了一个较真的面试官，非让我和他说清楚思路再开始写……
+当场我是没有完全写出来，但心中确是很不服气，毕竟已经写出大半。于是，面试完又努力了一下，把代码完整的写了出来，发给HR。心想着如果转给面试官看一看，也许还有一线生机，但最终还是跪了……
+回顾完了面试过程，下面进入正题。
+题目 给一个二叉树，以及一个节点(此节点在二叉树中一定存在)，求该节点的中序遍历后继，如果没有返回null
+树节点的定义如下：
+type TreeNode struct { Val int Parent *TreeNode Left *TreeNode Right *TreeNode } 思路分析 首先，树的中序遍历是遵循（左）-（根）-（右）的顺序依次输出树的节点。
+于是，要想知道当前节点的中序后继是什么，首先要知道当前节点在它的父节点的左侧还是右侧。
+如果它是在其父节点的左侧，那就简单了，直接返回它的父节点就好。
+如果它是在其父节点的右侧，情况又分为以下两种： 1. 如果它有右侧的子节点，那么下一个节点就是以它右侧子节点为根的子树的最左侧节点。 2. 如果它没有右侧子节点，需要向上回溯它的父节点，然后用这个父节点为新的当前节点，在排除已经访问过的节点的前提下，重复上述的判断过程。
+根据这个思路，我写了下面的解法。
+解法 func FindNext(root, toFind *TreeNode) *TreeNode { tmpCurr := toFind paths := []*TreeNode {tmpCurr} for tmpCurr.Parent != nil{ paths = append(paths, tmpCurr.Parent) tmpCurr = tmpCurr.Parent } tmpCurr = paths[0] leftRights := []bool{} for i:=1; i&amp;lt;len(paths); i++{ parent := paths[i] if parent.</description>
     </item>
     
     <item>

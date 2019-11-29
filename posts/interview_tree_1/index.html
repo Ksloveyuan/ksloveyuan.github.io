@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='回顾 话说，一多个月前，那时我刚刚开始找工作，对猎头推的一家跨境电商w**h很感兴趣，大有志在必得的兴致。
+猎头和我打过招呼，这家公司算法必考，无奈只有一周时间复习的我，按照自己的猜测，在leetcode上重点的刷了下字符串、动态规划之类的题。
+可惜压题失败，真正面试时，面试官考的是二叉树中序后继。唉，当场先是有些失落，接着就是一点小紧张。
+ 回想起来，幸亏面试是通过牛客网做的远程面试，要不这些情绪变化一定落在的面试官眼里。
+ 心神不宁的我，又偏偏遇上了一个较真的面试官，非让我和他说清楚思路再开始写……
+当场我是没有完全写出来，但心中确是很不服气，毕竟已经写出大半。于是，面试完又努力了一下，把代码完整的写了出来，发给HR。心想着如果转给面试官看一看，也许还有一线生机，但最终还是跪了……
+回顾完了面试过程，下面进入正题。
+题目 给一个二叉树，以及一个节点(此节点在二叉树中一定存在)，求该节点的中序遍历后继，如果没有返回null
+树节点的定义如下：
+type TreeNode struct { Val int Parent *TreeNode Left *TreeNode Right *TreeNode } 思路分析 首先，树的中序遍历是遵循（左）-（根）-（右）的顺序依次输出树的节点。
+于是，要想知道当前节点的中序后继是什么，首先要知道当前节点在它的父节点的左侧还是右侧。
+如果它是在其父节点的左侧，那就简单了，直接返回它的父节点就好。
+如果它是在其父节点的右侧，情况又分为以下两种： 1. 如果它有右侧的子节点，那么下一个节点就是以它右侧子节点为根的子树的最左侧节点。 2. 如果它没有右侧子节点，需要向上回溯它的父节点，然后用这个父节点为新的当前节点，在排除已经访问过的节点的前提下，重复上述的判断过程。
+根据这个思路，我写了下面的解法。
+解法 func FindNext(root, toFind *TreeNode) *TreeNode { tmpCurr := toFind paths := []*TreeNode {tmpCurr} for tmpCurr.Parent != nil{ paths = append(paths, tmpCurr.Parent) tmpCurr = tmpCurr.Parent } tmpCurr = paths[0] leftRights := []bool{} for i:=1; i&lt;len(paths); i&#43;&#43;{ parent := paths[i] if parent.'>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='面试回顾与解析：在O(logN)时间复杂度下求二叉树中序后继 • 海之方'>
+<meta property='og:description' content='回顾 话说，一多个月前，那时我刚刚开始找工作，对猎头推的一家跨境电商w**h很感兴趣，大有志在必得的兴致。
+猎头和我打过招呼，这家公司算法必考，无奈只有一周时间复习的我，按照自己的猜测，在leetcode上重点的刷了下字符串、动态规划之类的题。
+可惜压题失败，真正面试时，面试官考的是二叉树中序后继。唉，当场先是有些失落，接着就是一点小紧张。
+ 回想起来，幸亏面试是通过牛客网做的远程面试，要不这些情绪变化一定落在的面试官眼里。
+ 心神不宁的我，又偏偏遇上了一个较真的面试官，非让我和他说清楚思路再开始写……
+当场我是没有完全写出来，但心中确是很不服气，毕竟已经写出大半。于是，面试完又努力了一下，把代码完整的写了出来，发给HR。心想着如果转给面试官看一看，也许还有一线生机，但最终还是跪了……
+回顾完了面试过程，下面进入正题。
+题目 给一个二叉树，以及一个节点(此节点在二叉树中一定存在)，求该节点的中序遍历后继，如果没有返回null
+树节点的定义如下：
+type TreeNode struct { Val int Parent *TreeNode Left *TreeNode Right *TreeNode } 思路分析 首先，树的中序遍历是遵循（左）-（根）-（右）的顺序依次输出树的节点。
+于是，要想知道当前节点的中序后继是什么，首先要知道当前节点在它的父节点的左侧还是右侧。
+如果它是在其父节点的左侧，那就简单了，直接返回它的父节点就好。
+如果它是在其父节点的右侧，情况又分为以下两种： 1. 如果它有右侧的子节点，那么下一个节点就是以它右侧子节点为根的子树的最左侧节点。 2. 如果它没有右侧子节点，需要向上回溯它的父节点，然后用这个父节点为新的当前节点，在排除已经访问过的节点的前提下，重复上述的判断过程。
+根据这个思路，我写了下面的解法。
+解法 func FindNext(root, toFind *TreeNode) *TreeNode { tmpCurr := toFind paths := []*TreeNode {tmpCurr} for tmpCurr.Parent != nil{ paths = append(paths, tmpCurr.Parent) tmpCurr = tmpCurr.Parent } tmpCurr = paths[0] leftRights := []bool{} for i:=1; i&lt;len(paths); i&#43;&#43;{ parent := paths[i] if parent.'>
+<meta property='og:url' content='http://www.example.com/posts/interview_tree_1/'>
+<meta property='og:site_name' content='稀里稀里哗啦啦'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='面试'><meta property='article:published_time' content='2019-11-28T23:25:20&#43;08:00'/><meta property='article:modified_time' content='2019-11-28T23:25:20&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+  <title>面试回顾与解析：在O(logN)时间复杂度下求二叉树中序后继 • 海之方</title>
+  <link rel='canonical' href='http://www.example.com/posts/interview_tree_1/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-145633116-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      稀里稀里哗啦啦
+      </a>
+    </h2>
+    <div class='desc'>
+    代码代码快发芽
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts/'>Posts</a></li><li class='item'>
+  <a href='/authors/me/'>About Me</a></li><li class='item has-children'>
+  <a href=''>Other Blogs</a><button class='sub-menu-toggler'>
+    <span class='screen-reader-text'>expand sub menu</span>
+    <span class='sign'></span>
+  </button>
+
+  <ul class='sub-menu'><li class='item'>
+  <a href='https://www.jianshu.com/u/7838dc3b4190'>简书</a></li><li class='item'>
+  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/channel/' style='font-size:1.25em'>channel</a>
+      </li><li>
+        <a href='/tags/ci/' style='font-size:1em'>CI</a>
+      </li><li>
+        <a href='/tags/elk/' style='font-size:1em'>ELK</a>
+      </li><li>
+        <a href='/tags/golang/' style='font-size:2em'>golang</a>
+      </li><li>
+        <a href='/tags/gorm/' style='font-size:1.25em'>gorm</a>
+      </li><li>
+        <a href='/tags/html/' style='font-size:1em'>Html</a>
+      </li><li>
+        <a href='/tags/https/' style='font-size:1em'>Https</a>
+      </li><li>
+        <a href='/tags/nginx/' style='font-size:1em'>Nginx</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/sql/' style='font-size:1em'>sql</a>
+      </li><li>
+        <a href='/tags/%E5%AE%89%E5%85%A8/' style='font-size:1em'>安全</a>
+      </li><li>
+        <a href='/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/' style='font-size:1em'>性能优化</a>
+      </li><li>
+        <a href='/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/' style='font-size:1em'>数据分析</a>
+      </li><li>
+        <a href='/tags/%E7%AC%94%E8%AE%B0/' style='font-size:1.75em'>笔记</a>
+      </li><li>
+        <a href='/tags/%E9%9D%A2%E8%AF%95/' style='font-size:1.25em'>面试</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><nav id='main-menu' class='menu main-menu' aria-label='Main Menu'>
+  <div class='container'>
+    <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+    <ul><li class='item'>
+        <a href='/page/btc_price_analyzer'>BTC price analyzer</a>
+      </li><li class='item'>
+        <a href='https://github.com/Ksloveyuan/channelx'>channelx</a>
+      </li><li class='item'>
+        <a href='https://github.com/Ksloveyuan/gorm-ex'>gorm-ex</a>
+      </li></ul>
+  </div>
+</nav><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>稀里稀里哗啦啦</p><p class='desc site-desc'>代码代码快发芽</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>面试回顾与解析：在O(logN)时间复杂度下求二叉树中序后继</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2019-11-28T23:25:20&#43;08:00'>2019, Nov 28</time>
+</span>
+
+  <span class='byline'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M21,21V20c0-2.76-4-5-9-5s-9,2.24-9,5v1"/>
+  <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
+  
+</svg>
+<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+2 mins read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  
+
+<h1 id="回顾">回顾</h1>
+
+<p>话说，一多个月前，那时我刚刚开始找工作，对猎头推的一家跨境电商w**h很感兴趣，大有志在必得的兴致。</p>
+
+<p>猎头和我打过招呼，这家公司算法必考，无奈只有一周时间复习的我，按照自己的猜测，在leetcode上重点的刷了下字符串、动态规划之类的题。</p>
+
+<p>可惜压题失败，真正面试时，面试官考的是二叉树中序后继。唉，当场先是有些失落，接着就是一点小紧张。</p>
+
+<blockquote>
+<p>回想起来，幸亏面试是通过牛客网做的远程面试，要不这些情绪变化一定落在的面试官眼里。</p>
+</blockquote>
+
+<p>心神不宁的我，又偏偏遇上了一个较真的面试官，非让我和他说清楚思路再开始写……</p>
+
+<p>当场我是没有完全写出来，但心中确是很不服气，毕竟已经写出大半。于是，面试完又努力了一下，把代码完整的写了出来，发给HR。心想着如果转给面试官看一看，也许还有一线生机，但最终还是跪了……</p>
+
+<p>回顾完了面试过程，下面进入正题。</p>
+
+<h1 id="题目">题目</h1>
+
+<p>给一个二叉树，以及一个节点(<em>此节点在二叉树中一定存在</em>)，求该节点的中序遍历后继，如果没有返回null</p>
+
+<p>树节点的定义如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">TreeNode</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">Val</span> <span style="color:#66d9ef">int</span>
+	<span style="color:#a6e22e">Parent</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">TreeNode</span>
+	<span style="color:#a6e22e">Left</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">TreeNode</span>
+	<span style="color:#a6e22e">Right</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">TreeNode</span>
+}</code></pre></div>
+<h1 id="思路分析">思路分析</h1>
+
+<p>首先，树的中序遍历是遵循<code>（左）-（根）-（右）</code>的顺序依次输出树的节点。</p>
+
+<p>于是，要想知道当前节点的中序后继是什么，首先要知道当前节点在它的父节点的左侧还是右侧。</p>
+
+<p>如果它是在其父节点的左侧，那就简单了，直接返回它的父节点就好。</p>
+
+<p>如果它是在其父节点的右侧，情况又分为以下两种：
+1. 如果它有右侧的子节点，那么下一个节点就是以它右侧子节点为根的子树的最左侧节点。
+2. 如果它没有右侧子节点，需要向上回溯它的父节点，然后用这个父节点为新的当前节点，在排除已经访问过的节点的前提下，重复上述的判断过程。</p>
+
+<p>根据这个思路，我写了下面的解法。</p>
+
+<h1 id="解法">解法</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">FindNext</span>(<span style="color:#a6e22e">root</span>, <span style="color:#a6e22e">toFind</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">TreeNode</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">TreeNode</span>  {
+	<span style="color:#a6e22e">tmpCurr</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">toFind</span>
+	<span style="color:#a6e22e">paths</span> <span style="color:#f92672">:=</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">TreeNode</span> {<span style="color:#a6e22e">tmpCurr</span>}
+
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Parent</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+		<span style="color:#a6e22e">paths</span> = append(<span style="color:#a6e22e">paths</span>, <span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Parent</span>)
+		<span style="color:#a6e22e">tmpCurr</span> = <span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Parent</span>
+	}
+
+	<span style="color:#a6e22e">tmpCurr</span> = <span style="color:#a6e22e">paths</span>[<span style="color:#ae81ff">0</span>]
+	<span style="color:#a6e22e">leftRights</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">bool</span>{}
+
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">:=</span><span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">i</span>&lt;len(<span style="color:#a6e22e">paths</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>{
+		<span style="color:#a6e22e">parent</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">paths</span>[<span style="color:#a6e22e">i</span>]
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">parent</span>.<span style="color:#a6e22e">Left</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">tmpCurr</span>{
+			<span style="color:#a6e22e">leftRights</span> = append(<span style="color:#a6e22e">leftRights</span>, <span style="color:#66d9ef">true</span>)
+		}<span style="color:#66d9ef">else</span> {
+			<span style="color:#a6e22e">leftRights</span> = append(<span style="color:#a6e22e">leftRights</span>, <span style="color:#66d9ef">false</span>)
+		}
+		<span style="color:#a6e22e">tmpCurr</span> = <span style="color:#a6e22e">parent</span>
+	}
+
+	<span style="color:#a6e22e">visitedMap</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#f92672">*</span><span style="color:#a6e22e">TreeNode</span>]<span style="color:#66d9ef">struct</span>{})
+	<span style="color:#a6e22e">tmpCurr</span> = <span style="color:#a6e22e">toFind</span>
+
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">:=</span><span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span>&lt;len(<span style="color:#a6e22e">leftRights</span>); {
+		<span style="color:#a6e22e">onLeft</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">leftRights</span>[<span style="color:#a6e22e">i</span>]
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">onLeft</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Parent</span>
+		} <span style="color:#66d9ef">else</span> {
+			<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">visited</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">visitedMap</span>[<span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Right</span>]
+			<span style="color:#a6e22e">visitedMap</span>[<span style="color:#a6e22e">tmpCurr</span>] = <span style="color:#66d9ef">struct</span>{ }{}
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Right</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>  <span style="color:#f92672">&amp;&amp;</span> !<span style="color:#a6e22e">visited</span> {
+				<span style="color:#a6e22e">newRoot</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Right</span>
+				<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">newRoot</span>.<span style="color:#a6e22e">Left</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+					<span style="color:#a6e22e">newRoot</span> = <span style="color:#a6e22e">newRoot</span>.<span style="color:#a6e22e">Left</span>
+				}
+				<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">newRoot</span>
+			} <span style="color:#66d9ef">else</span> {
+				<span style="color:#a6e22e">tmpCurr</span> = <span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Parent</span>
+				<span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>
+			}
+		}
+	}
+
+	<span style="color:#66d9ef">return</span>  <span style="color:#66d9ef">nil</span>
+}</code></pre></div>
+<p>当时的测试用例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">tn11</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TreeNode</span>{<span style="color:#a6e22e">Val</span>:<span style="color:#ae81ff">11</span>}
+	<span style="color:#a6e22e">tn12</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TreeNode</span>{<span style="color:#a6e22e">Val</span>:<span style="color:#ae81ff">12</span>}
+
+	<span style="color:#a6e22e">tn8</span><span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TreeNode</span>{<span style="color:#a6e22e">Val</span>:<span style="color:#ae81ff">8</span>, <span style="color:#a6e22e">Left</span>: <span style="color:#a6e22e">tn11</span>, <span style="color:#a6e22e">Right</span>: <span style="color:#a6e22e">tn12</span>}
+	<span style="color:#a6e22e">tn11</span>.<span style="color:#a6e22e">Parent</span> = <span style="color:#a6e22e">tn8</span>
+	<span style="color:#a6e22e">tn12</span>.<span style="color:#a6e22e">Parent</span> = <span style="color:#a6e22e">tn8</span>
+
+	<span style="color:#a6e22e">tn5</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TreeNode</span>{<span style="color:#a6e22e">Val</span>:<span style="color:#ae81ff">5</span>, <span style="color:#a6e22e">Right</span>:<span style="color:#a6e22e">tn8</span>}
+	<span style="color:#a6e22e">tn8</span>.<span style="color:#a6e22e">Parent</span> = <span style="color:#a6e22e">tn5</span>
+
+	<span style="color:#a6e22e">tn4</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TreeNode</span>{<span style="color:#a6e22e">Val</span>:<span style="color:#ae81ff">4</span>}
+
+	<span style="color:#a6e22e">tn2</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TreeNode</span>{<span style="color:#a6e22e">Val</span>:<span style="color:#ae81ff">2</span>, <span style="color:#a6e22e">Left</span>:<span style="color:#a6e22e">tn4</span>, <span style="color:#a6e22e">Right</span>:<span style="color:#a6e22e">tn5</span>}
+	<span style="color:#a6e22e">tn4</span>.<span style="color:#a6e22e">Parent</span> = <span style="color:#a6e22e">tn2</span>
+	<span style="color:#a6e22e">tn5</span>.<span style="color:#a6e22e">Parent</span> = <span style="color:#a6e22e">tn2</span>
+
+	<span style="color:#a6e22e">tn9</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TreeNode</span>{<span style="color:#a6e22e">Val</span>:<span style="color:#ae81ff">9</span>}
+
+	<span style="color:#a6e22e">tn6</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TreeNode</span>{<span style="color:#a6e22e">Val</span>:<span style="color:#ae81ff">6</span>, <span style="color:#a6e22e">Right</span>:<span style="color:#a6e22e">tn9</span>}
+	<span style="color:#a6e22e">tn9</span>.<span style="color:#a6e22e">Parent</span> = <span style="color:#a6e22e">tn6</span>
+
+	<span style="color:#a6e22e">tn10</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TreeNode</span>{<span style="color:#a6e22e">Val</span>:<span style="color:#ae81ff">10</span>}
+
+	<span style="color:#a6e22e">tn7</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TreeNode</span>{<span style="color:#a6e22e">Val</span>:<span style="color:#ae81ff">7</span>, <span style="color:#a6e22e">Left</span>:<span style="color:#a6e22e">tn10</span>}
+	<span style="color:#a6e22e">tn10</span>.<span style="color:#a6e22e">Parent</span> = <span style="color:#a6e22e">tn7</span>
+
+	<span style="color:#a6e22e">tn3</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TreeNode</span>{<span style="color:#a6e22e">Val</span>:<span style="color:#ae81ff">3</span>, <span style="color:#a6e22e">Left</span>:<span style="color:#a6e22e">tn6</span>, <span style="color:#a6e22e">Right</span>:<span style="color:#a6e22e">tn7</span>}
+	<span style="color:#a6e22e">tn6</span>.<span style="color:#a6e22e">Parent</span> = <span style="color:#a6e22e">tn3</span>
+	<span style="color:#a6e22e">tn7</span>.<span style="color:#a6e22e">Parent</span> = <span style="color:#a6e22e">tn3</span>
+
+	<span style="color:#a6e22e">tn1</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TreeNode</span>{<span style="color:#a6e22e">Val</span>:<span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">Left</span>:<span style="color:#a6e22e">tn2</span>, <span style="color:#a6e22e">Right</span>:<span style="color:#a6e22e">tn3</span>}
+	<span style="color:#a6e22e">tn2</span>.<span style="color:#a6e22e">Parent</span> = <span style="color:#a6e22e">tn1</span>
+	<span style="color:#a6e22e">tn3</span>.<span style="color:#a6e22e">Parent</span> = <span style="color:#a6e22e">tn1</span>
+
+<span style="color:#75715e">/**树的样子如图
+</span><span style="color:#75715e">				      1
+</span><span style="color:#75715e">				  /  	 \
+</span><span style="color:#75715e">				 2   	  3
+</span><span style="color:#75715e">				/ \  	/   \
+</span><span style="color:#75715e">			   4   5 	6    7
+</span><span style="color:#75715e">					\    \   /
+</span><span style="color:#75715e">					  8   9  10
+</span><span style="color:#75715e">					 / \
+</span><span style="color:#75715e">					11 12
+</span><span style="color:#75715e">							                      **/</span>
+
+	<span style="color:#a6e22e">res</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">FindNext</span>(<span style="color:#a6e22e">tn1</span>, <span style="color:#a6e22e">tn8</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">res</span>)
+
+	<span style="color:#a6e22e">res</span> = <span style="color:#a6e22e">FindNext</span>(<span style="color:#a6e22e">tn1</span>, <span style="color:#a6e22e">tn12</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">res</span>)
+
+	<span style="color:#a6e22e">res</span> = <span style="color:#a6e22e">FindNext</span>(<span style="color:#a6e22e">tn1</span>, <span style="color:#a6e22e">tn9</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">res</span>)
+}</code></pre></div>
+<h2 id="存在的问题">存在的问题</h2>
+
+<p>写文章时，我才发现，这个解法有一个bug，是判断根的节点的下一个节点时，永远都返回nil，这是不对的。</p>
+
+<p>这个坑也是自己挖的，上面的代码在一开始时就计处当前节点回溯到根节点的路径，一方面这不是必须提前全部算好;另一方面，也忽略了当前节点是根节点的边界状态。</p>
+
+<h2 id="改进的解法">改进的解法</h2>
+
+<p>其实，改进也很简单，一方面，使用双指针，一个代表当前节点，另一个代表它的父节点，即可以不必提前算出当下节点到根节点的路径; 另一方面，需要对根节点是当前的节点的情况做些特殊处理，让程序“误以为”当前节点在根节点的右侧，这样后面的逻辑就能对得上了。</p>
+
+<p>改进后的代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">FindNext</span>(<span style="color:#a6e22e">root</span>, <span style="color:#a6e22e">toFind</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">TreeNode</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">TreeNode</span>  {
+	<span style="color:#a6e22e">tmpCurr</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">toFind</span>
+	<span style="color:#a6e22e">tmpParent</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">toFind</span>.<span style="color:#a6e22e">Parent</span>
+
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">toFind</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">root</span> {
+		<span style="color:#a6e22e">tmpParent</span> = <span style="color:#a6e22e">root</span> <span style="color:#75715e">// cheat the parent nil check, and it will go to the right child branch
+</span><span style="color:#75715e"></span>	}
+
+	<span style="color:#a6e22e">visitedMap</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#f92672">*</span><span style="color:#a6e22e">TreeNode</span>]<span style="color:#66d9ef">struct</span>{})
+
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">tmpParent</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">tmpParent</span>.<span style="color:#a6e22e">Left</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">tmpCurr</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">tmpParent</span>
+		} <span style="color:#66d9ef">else</span> { 
+			<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">visited</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">visitedMap</span>[<span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Right</span>]
+			<span style="color:#a6e22e">visitedMap</span>[<span style="color:#a6e22e">tmpCurr</span>] = <span style="color:#66d9ef">struct</span>{ }{}
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Right</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>  <span style="color:#f92672">&amp;&amp;</span> !<span style="color:#a6e22e">visited</span>{
+				<span style="color:#a6e22e">tmpCurr</span> = <span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Right</span>
+				<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Left</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+					<span style="color:#a6e22e">tmpCurr</span> = <span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Left</span>
+				}
+				<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">tmpCurr</span>
+			} <span style="color:#66d9ef">else</span> {
+				<span style="color:#a6e22e">tmpCurr</span> = <span style="color:#a6e22e">tmpParent</span>
+				<span style="color:#a6e22e">tmpParent</span> = <span style="color:#a6e22e">tmpCurr</span>.<span style="color:#a6e22e">Parent</span>
+			}
+		}
+	}
+
+	<span style="color:#66d9ef">return</span>  <span style="color:#66d9ef">nil</span>
+}</code></pre></div>
+<h1 id="总结">总结</h1>
+
+<p>关于面试是否要考纯算法题，一直众说纷纭。</p>
+
+<p>反对者说，工作中大都是写业务代码，哪有需要用到算法的地方，能有机会写个递归就顶天了。</p>
+
+<p>支持者说，算法题可以考查候选人的逻辑能力和编码的严谨性，逻辑能力强、编码严谨的工程师做业务开发也一定不会差呀！</p>
+
+<p>其实，说到底考算法只是企业筛选候选人的一种方式。如果企业品牌在外，根本不差候选人，自然可以大浪淘沙，不求合适，但求最好，算法不行，一律pass。否则的话，还是需要多方面考虑，合适最重要。</p>
+
+<p>从面试者的角度来看，遇到不熟悉算法题也不要慌，一般面试时考察的算法不会太冷门，只要基础扎实，冷静分析，即使做不能完全做出来，也能写出个大概来。至于能不能通过面试，那就不好说啦。</p>
+
+<p>如果真不想在算法题上吃亏，请出门左拐，leetcode刷题去吧。除了刷题，好像也没啥好办法，谁让你想进大厂呢？</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/%E9%9D%A2%E8%AF%95/'>面试</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/%E9%9D%A2%E8%AF%95/'>面试</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/html_to_word/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>原来，这才是html&#43;css导出word最佳方式！</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>All rights reserved by &copy; 2019 海之方 </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script>
+
+</body>
+
+</html>
+
