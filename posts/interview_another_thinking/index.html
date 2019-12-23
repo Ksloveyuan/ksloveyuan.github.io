@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='引言 话说距离上次写的关于面试的换位思考已过去一个半月有余，这段时间，我不仅找到了下一份工作，并且在入职又成为了面试官。目前负责从头开始组建上海开发团队，面试可是头一次成为我工作的重心。
+谈起面试，这两年我是没少折腾，工作换了三次，大大小小面试下来估计有30次，好像比我面试别人的次数都多。
+自己的面试策略基本是“以赛代练”，通常不断的面试，找到自己的薄弱之处，然后做针对性的加强。
+如何面试候选人 但是，换个位置，身为面试官，应该如何制定自己的考察策略呢？
+“攻防同源”，从具体问题出发，我回想之前面试过的公司，后端面试的问题基本上可以分为以下几类： 1. 纯算法或者数据结构 2. 编程语言特性。比如： golang的GPM，js的delete操作符。 3. Redis的使用。高并发下缓存的设计和分布式锁问的最的次数最多。 4. MySql的索引和锁（这个基本上是必问）。 5. 项目经验（*貌似项目经验的问题比较少，一方面，也许是很难有同样的项目，可以直接复用经验；另一方面，需要面试官从你的描述中甄别出你实际贡献的价值，对面试官何尝不是一种考验*） 6. 线下大作业（talk is cheap, show me the code。 说不定这是最好的方式，只是需要候选人花更多的时间）
+在上一篇文章中，我认为1-4的考查方式是基于易量化、易衡量的角度，这种简单又直接的考察对“买方”市场，即不差人来面试的大厂不失为一种好方法。毕竟如果一天要面5、6个人，没个模板辅助，实在是没精力一个个问下来。（*于是，现在流行面试也是可以背过的*）
+那如果没那么多人来面试，是不是就要以项目经验为主呢？（*一定不能非黑即白*）
+这点还真是有待考虑的，有的人是做了很多但却说不出来；或者是说的很“*简单*”，让你丝毫感觉不到价值；但最怕的是，一个人说的天花烂醉，实际确眼高手低，入职后，还是个害群之马。
+Best Fit优于Best Engineer 想来想去，如果真有什么策略的话，我觉得就一个，找合适的。
+这还真不是费话！很久之前（*估计三年前吧*）， 身为工程师的我一度认为招人一定要招Best Engineer，当自己的职位变成team lead后，需要考虑更多的角度，取舍平衡后，要找的是Best Fit！
+这个Fit的程度，一方面取决于具体的技能要求；另一方面，也受招聘团队的现有人员组成、职位预算、招聘的不同阶段、管理成本甚至是三观是否一致而定。
+所以，如果你曾经遇到过聊的很好，但却没收到offer的情况，那可能真的不是你实力不行，更可能是在其它方面，你很可惜，不是最合适的（*想到这，不禁释怀过去没能拿到offer的几次面试*）。
+而我现在公司thunes上海团队开放的职位有两个，全栈开发（vueJs&#43;python或golang）和后端开发golang。
+考虑到马上要开始的新项目，自己的技术栈储备，眼下对我来说，招一个全栈开发，或者产前端实力优于后端的开发是最符合我眼下需求的。我们的面试主要以大作业为主，更看重候选人的工程能力。欢迎大家自荐和推荐。简历请发送邮箱jeremy.liu@thunes.com。
+话说，怎么写着写着就成招聘贴了……'>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='关于面试，我有话说 • 海之方'>
+<meta property='og:description' content='引言 话说距离上次写的关于面试的换位思考已过去一个半月有余，这段时间，我不仅找到了下一份工作，并且在入职又成为了面试官。目前负责从头开始组建上海开发团队，面试可是头一次成为我工作的重心。
+谈起面试，这两年我是没少折腾，工作换了三次，大大小小面试下来估计有30次，好像比我面试别人的次数都多。
+自己的面试策略基本是“以赛代练”，通常不断的面试，找到自己的薄弱之处，然后做针对性的加强。
+如何面试候选人 但是，换个位置，身为面试官，应该如何制定自己的考察策略呢？
+“攻防同源”，从具体问题出发，我回想之前面试过的公司，后端面试的问题基本上可以分为以下几类： 1. 纯算法或者数据结构 2. 编程语言特性。比如： golang的GPM，js的delete操作符。 3. Redis的使用。高并发下缓存的设计和分布式锁问的最的次数最多。 4. MySql的索引和锁（这个基本上是必问）。 5. 项目经验（*貌似项目经验的问题比较少，一方面，也许是很难有同样的项目，可以直接复用经验；另一方面，需要面试官从你的描述中甄别出你实际贡献的价值，对面试官何尝不是一种考验*） 6. 线下大作业（talk is cheap, show me the code。 说不定这是最好的方式，只是需要候选人花更多的时间）
+在上一篇文章中，我认为1-4的考查方式是基于易量化、易衡量的角度，这种简单又直接的考察对“买方”市场，即不差人来面试的大厂不失为一种好方法。毕竟如果一天要面5、6个人，没个模板辅助，实在是没精力一个个问下来。（*于是，现在流行面试也是可以背过的*）
+那如果没那么多人来面试，是不是就要以项目经验为主呢？（*一定不能非黑即白*）
+这点还真是有待考虑的，有的人是做了很多但却说不出来；或者是说的很“*简单*”，让你丝毫感觉不到价值；但最怕的是，一个人说的天花烂醉，实际确眼高手低，入职后，还是个害群之马。
+Best Fit优于Best Engineer 想来想去，如果真有什么策略的话，我觉得就一个，找合适的。
+这还真不是费话！很久之前（*估计三年前吧*）， 身为工程师的我一度认为招人一定要招Best Engineer，当自己的职位变成team lead后，需要考虑更多的角度，取舍平衡后，要找的是Best Fit！
+这个Fit的程度，一方面取决于具体的技能要求；另一方面，也受招聘团队的现有人员组成、职位预算、招聘的不同阶段、管理成本甚至是三观是否一致而定。
+所以，如果你曾经遇到过聊的很好，但却没收到offer的情况，那可能真的不是你实力不行，更可能是在其它方面，你很可惜，不是最合适的（*想到这，不禁释怀过去没能拿到offer的几次面试*）。
+而我现在公司thunes上海团队开放的职位有两个，全栈开发（vueJs&#43;python或golang）和后端开发golang。
+考虑到马上要开始的新项目，自己的技术栈储备，眼下对我来说，招一个全栈开发，或者产前端实力优于后端的开发是最符合我眼下需求的。我们的面试主要以大作业为主，更看重候选人的工程能力。欢迎大家自荐和推荐。简历请发送邮箱jeremy.liu@thunes.com。
+话说，怎么写着写着就成招聘贴了……'>
+<meta property='og:url' content='http://www.example.com/posts/interview_another_thinking/'>
+<meta property='og:site_name' content='稀里稀里哗啦啦'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='面试'><meta property='article:tag' content='Thinking'><meta property='article:published_time' content='2019-12-16T22:46:01&#43;08:00'/><meta property='article:modified_time' content='2019-12-16T22:46:01&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+  <title>关于面试，我有话说 • 海之方</title>
+  <link rel='canonical' href='http://www.example.com/posts/interview_another_thinking/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-145633116-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      稀里稀里哗啦啦
+      </a>
+    </h2>
+    <div class='desc'>
+    代码代码快发芽
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts/'>Posts</a></li><li class='item'>
+  <a href='/authors/me/'>About Me</a></li><li class='item has-children'>
+  <a href=''>Other Blogs</a><button class='sub-menu-toggler'>
+    <span class='screen-reader-text'>expand sub menu</span>
+    <span class='sign'></span>
+  </button>
+
+  <ul class='sub-menu'><li class='item'>
+  <a href='https://www.jianshu.com/u/7838dc3b4190'>简书</a></li><li class='item'>
+  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/channel/' style='font-size:1.25em'>channel</a>
+      </li><li>
+        <a href='/tags/ci/' style='font-size:1em'>CI</a>
+      </li><li>
+        <a href='/tags/elk/' style='font-size:1em'>ELK</a>
+      </li><li>
+        <a href='/tags/golang/' style='font-size:2em'>golang</a>
+      </li><li>
+        <a href='/tags/gorm/' style='font-size:1.25em'>gorm</a>
+      </li><li>
+        <a href='/tags/html/' style='font-size:1em'>Html</a>
+      </li><li>
+        <a href='/tags/https/' style='font-size:1em'>Https</a>
+      </li><li>
+        <a href='/tags/nginx/' style='font-size:1em'>Nginx</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/sql/' style='font-size:1em'>sql</a>
+      </li><li>
+        <a href='/tags/thinking/' style='font-size:1.25em'>Thinking</a>
+      </li><li>
+        <a href='/tags/%E5%AE%89%E5%85%A8/' style='font-size:1em'>安全</a>
+      </li><li>
+        <a href='/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/' style='font-size:1em'>性能优化</a>
+      </li><li>
+        <a href='/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/' style='font-size:1em'>数据分析</a>
+      </li><li>
+        <a href='/tags/%E7%AC%94%E8%AE%B0/' style='font-size:1.75em'>笔记</a>
+      </li><li>
+        <a href='/tags/%E9%9D%A2%E8%AF%95/' style='font-size:1.75em'>面试</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><nav id='main-menu' class='menu main-menu' aria-label='Main Menu'>
+  <div class='container'>
+    <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+    <ul><li class='item'>
+        <a href='/page/btc_price_analyzer'>BTC price analyzer</a>
+      </li><li class='item'>
+        <a href='https://github.com/Ksloveyuan/channelx'>channelx</a>
+      </li><li class='item'>
+        <a href='https://github.com/Ksloveyuan/gorm-ex'>gorm-ex</a>
+      </li></ul>
+  </div>
+</nav><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>稀里稀里哗啦啦</p><p class='desc site-desc'>代码代码快发芽</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>关于面试，我有话说</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2019-12-16T22:46:01&#43;08:00'>2019, Dec 16</time>
+</span>
+
+  <span class='byline'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M21,21V20c0-2.76-4-5-9-5s-9,2.24-9,5v1"/>
+  <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
+  
+</svg>
+<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+One min read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  
+
+<h1 id="引言">引言</h1>
+
+<p>话说距离上次写的<a href="http://ksloveyuan.github.io/posts/interview_reverse_thinking、" target="_blank">关于面试的换位思考</a>已过去一个半月有余，这段时间，我不仅找到了下一份工作，并且在入职又成为了面试官。目前负责从头开始组建上海开发团队，面试可是头一次成为我工作的重心。</p>
+
+<p>谈起面试，这两年我是没少折腾，工作换了三次，大大小小面试下来估计有30次，好像比我面试别人的次数都多。</p>
+
+<p>自己的面试策略基本是“<strong>以赛代练</strong>”，通常不断的面试，找到自己的薄弱之处，然后做针对性的加强。</p>
+
+<h1 id="如何面试候选人">如何面试候选人</h1>
+
+<p>但是，换个位置，<strong>身为面试官，应该如何制定自己的考察策略呢？</strong></p>
+
+<p>“攻防同源”，从具体问题出发，我回想之前面试过的公司，后端面试的问题基本上可以分为以下几类：
+1. 纯算法或者数据结构
+2. 编程语言特性。比如： golang的GPM，js的delete操作符。
+3. Redis的使用。高并发下缓存的设计和分布式锁问的最的次数最多。
+4. MySql的索引和锁（<strong>这个基本上是必问</strong>）。
+5. 项目经验（*貌似项目经验的问题比较少，一方面，也许是很难有同样的项目，可以直接复用经验；另一方面，需要面试官从你的描述中甄别出你实际贡献的价值，对面试官何尝不是一种考验*）
+6. 线下大作业（<em>talk is cheap, show me the code。</em> 说不定这是最好的方式，只是需要候选人花更多的时间）</p>
+
+<p>在上一篇文章中，我认为1-4的考查方式是基于易量化、易衡量的角度，这种简单又直接的考察对“买方”市场，即不差人来面试的大厂不失为一种好方法。毕竟如果一天要面5、6个人，没个模板辅助，实在是没精力一个个问下来。（*于是，现在流行面试也是可以背过的*）</p>
+
+<p>那如果没那么多人来面试，是不是就要以项目经验为主呢？（*一定不能非黑即白*）</p>
+
+<p>这点还真是有待考虑的，有的人是做了很多但却说不出来；或者是说的很“*简单*”，让你丝毫感觉不到价值；但最怕的是，一个人说的天花烂醉，实际确眼高手低，入职后，还是个害群之马。</p>
+
+<h1 id="best-fit优于best-engineer">Best Fit优于Best Engineer</h1>
+
+<p>想来想去，如果真有什么策略的话，我觉得就一个，<strong>找合适的</strong>。</p>
+
+<p>这还真不是费话！很久之前（*估计三年前吧*）， 身为工程师的我一度认为招人一定要招Best Engineer，当自己的职位变成team lead后，需要考虑更多的角度，取舍平衡后，要找的是Best Fit！</p>
+
+<p>这个Fit的程度，一方面取决于具体的技能要求；另一方面，也受招聘团队的现有人员组成、职位预算、招聘的不同阶段、管理成本甚至是三观是否一致而定。</p>
+
+<p>所以，如果你曾经遇到过聊的很好，但却没收到offer的情况，那可能真的不是你实力不行，更可能是在其它方面，你很可惜，不是最合适的（*想到这，不禁释怀过去没能拿到offer的几次面试*）。</p>
+
+<p>而我现在公司<a href="https://www.thunes.com/" target="_blank"><strong>thunes</strong></a>上海团队开放的职位有两个，<a href="https://thunes.bamboohr.com/jobs/view.php?id=127" target="_blank">全栈开发</a>（vueJs+python或golang）和<a href="https://thunes.bamboohr.com/jobs/view.php?id=128" target="_blank">后端开发</a>golang。</p>
+
+<p>考虑到马上要开始的新项目，自己的技术栈储备，眼下对我来说，招一个全栈开发，或者产前端实力优于后端的开发是最符合我眼下需求的。我们的面试主要以<strong>大作业</strong>为主，更<strong>看重候选人的工程能力</strong>。欢迎大家自荐和推荐。简历请发送邮箱jeremy.liu@thunes.com。</p>
+
+<p>话说，怎么写着写着就成招聘贴了……</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/%E9%9D%A2%E8%AF%95/'>面试</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/%E9%9D%A2%E8%AF%95/'>面试</a>, <a class='tag' href='/tags/thinking/'>Thinking</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/interview_tree_1/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>面试回顾与解析：在O(logN)时间复杂度下求二叉树中序后继</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>All rights reserved by &copy; 2019 海之方 </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script>
+
+</body>
+
+</html>
+

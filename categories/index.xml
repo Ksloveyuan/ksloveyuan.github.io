@@ -5,7 +5,7 @@
     <link>http://www.example.com/categories/</link>
     <description>Recent content in Categories on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 28 Nov 2019 23:25:20 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 16 Dec 2019 22:46:01 +0800</lastBuildDate>
     
 	<atom:link href="http://www.example.com/categories/index.xml" rel="self" type="application/rss+xml" />
     
@@ -13,7 +13,7 @@
     <item>
       <title>面试</title>
       <link>http://www.example.com/categories/%E9%9D%A2%E8%AF%95/</link>
-      <pubDate>Thu, 28 Nov 2019 23:25:20 +0800</pubDate>
+      <pubDate>Mon, 16 Dec 2019 22:46:01 +0800</pubDate>
       
       <guid>http://www.example.com/categories/%E9%9D%A2%E8%AF%95/</guid>
       <description></description>
