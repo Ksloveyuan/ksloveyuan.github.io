@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='引言 前段时间，小孩生病，前前后后去了好多次医院，在排队等候之余，不禁想到，这可以类比IO调度。
+同步阻塞IO 那个周五，我下班回到家后，发现小孩又发烧了，当即决定去儿童医学中心看看。
+晚上，只能挂急诊（*那时现场人数多的可以堪比春运火车站*）。挂完号了，虽然前面也有许多人，但因为心里着急，就在现场盯着叫号的屏幕慢慢的等，而且大半夜的也无处可去。
+这不就是同步IO吗？（*请不要抬杠说，我可以边看手机边等*）
+同步非阻塞 急诊看完后的第二天，小孩要接着挂水，但却要重新挂号。这时也不能提前预约，其中一个原因是，必须要等16个小时后才能第二次挂水。
+当时，没有经验我们，卡着时间去门诊挂的号，却发现门诊也是人满为患。但天色还早，于是就在附近逛着玩，每过一会儿就去看看快到自己了不。
+是不是很像轮询，也就是同步非阻塞IO了。
+IO多路复用 第三次去医院的时候，有了新的发现，原来绑定了医保卡后，可以在医院的微信公众号里看到排队的情况。
+虽然那日依旧等了3、4个小时，但是因为不用在医院时不时的看下排队进展，于是在一定程度上解放了我们。我们是在商场里玩了好久，等到快到的时候才去，也正好赶上轮到我们。
+那为什么这样是IO多路复用呢？
+原因是我们没有自己在医院盯着屏幕看自己的排队进展，而是由医院的排队系统在帮所有人盯着。（*不知道这样理解有没有问题*）
+但医院的这个排队系统，不如美味不用等的系统，它不能做到，快到你的号时候，发通知给你，它是把进展通知给所有人，再由接收的人自己判断处理。所以如果说美味不用等的通知模式像epoll了，那么使用医院的排队系统，可以勉强说成是poll了。
+异步IO 话说，久病成医。医院去的次数多了，也让我发现了医院排队系统的一个空子，那就是只要挂号后在诊室签过到，那么即使你到时过号了，只要补签就可以插队到前5%左右，这时等不了几个人就可以轮到你了。
+于是，后面就是上午我先一个人跑去先挂个号，在诊室前签完到后，就该干吗干吗去了。然后，等到下午，上午的病人基本上看的差不多了，再带着娃去。虽然已经过号，但补签后还是可以很快的轮到。
+这个小技巧虽说不能做到100%的异步IO，即最后还是要等一会儿的，而不是到了就可以直接找医生看病，但是已经极大的提升了我们作为个体的排队体验。（*这么做有个副作用是，因为叫到这个号，患者一时间没到，医生是要多次叫号确认的，也就增加了医生的空档时长，在一定程度上降低了医生的效率。只好自我欺骗一下，这也算是给医生增加一段休息时间吗？*）
+话说回来，即使是提前预约，到了也是要再等会儿的。对公立医院来说，想要体验“异步IO”，难哦！
+后记 自己是因医院排队，有感而发，文中有不准确的地方，欢迎指正。
+之前看过漫谈五种IO模型（主讲IO多路复用）, 我觉得这篇文章里的例子更容易理解，推荐大家看看。'>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='从医院排队浅谈IO调度模型 • 海之方'>
+<meta property='og:description' content='引言 前段时间，小孩生病，前前后后去了好多次医院，在排队等候之余，不禁想到，这可以类比IO调度。
+同步阻塞IO 那个周五，我下班回到家后，发现小孩又发烧了，当即决定去儿童医学中心看看。
+晚上，只能挂急诊（*那时现场人数多的可以堪比春运火车站*）。挂完号了，虽然前面也有许多人，但因为心里着急，就在现场盯着叫号的屏幕慢慢的等，而且大半夜的也无处可去。
+这不就是同步IO吗？（*请不要抬杠说，我可以边看手机边等*）
+同步非阻塞 急诊看完后的第二天，小孩要接着挂水，但却要重新挂号。这时也不能提前预约，其中一个原因是，必须要等16个小时后才能第二次挂水。
+当时，没有经验我们，卡着时间去门诊挂的号，却发现门诊也是人满为患。但天色还早，于是就在附近逛着玩，每过一会儿就去看看快到自己了不。
+是不是很像轮询，也就是同步非阻塞IO了。
+IO多路复用 第三次去医院的时候，有了新的发现，原来绑定了医保卡后，可以在医院的微信公众号里看到排队的情况。
+虽然那日依旧等了3、4个小时，但是因为不用在医院时不时的看下排队进展，于是在一定程度上解放了我们。我们是在商场里玩了好久，等到快到的时候才去，也正好赶上轮到我们。
+那为什么这样是IO多路复用呢？
+原因是我们没有自己在医院盯着屏幕看自己的排队进展，而是由医院的排队系统在帮所有人盯着。（*不知道这样理解有没有问题*）
+但医院的这个排队系统，不如美味不用等的系统，它不能做到，快到你的号时候，发通知给你，它是把进展通知给所有人，再由接收的人自己判断处理。所以如果说美味不用等的通知模式像epoll了，那么使用医院的排队系统，可以勉强说成是poll了。
+异步IO 话说，久病成医。医院去的次数多了，也让我发现了医院排队系统的一个空子，那就是只要挂号后在诊室签过到，那么即使你到时过号了，只要补签就可以插队到前5%左右，这时等不了几个人就可以轮到你了。
+于是，后面就是上午我先一个人跑去先挂个号，在诊室前签完到后，就该干吗干吗去了。然后，等到下午，上午的病人基本上看的差不多了，再带着娃去。虽然已经过号，但补签后还是可以很快的轮到。
+这个小技巧虽说不能做到100%的异步IO，即最后还是要等一会儿的，而不是到了就可以直接找医生看病，但是已经极大的提升了我们作为个体的排队体验。（*这么做有个副作用是，因为叫到这个号，患者一时间没到，医生是要多次叫号确认的，也就增加了医生的空档时长，在一定程度上降低了医生的效率。只好自我欺骗一下，这也算是给医生增加一段休息时间吗？*）
+话说回来，即使是提前预约，到了也是要再等会儿的。对公立医院来说，想要体验“异步IO”，难哦！
+后记 自己是因医院排队，有感而发，文中有不准确的地方，欢迎指正。
+之前看过漫谈五种IO模型（主讲IO多路复用）, 我觉得这篇文章里的例子更容易理解，推荐大家看看。'>
+<meta property='og:url' content='http://www.example.com/posts/hospital_queueing_verse_io_model/'>
+<meta property='og:site_name' content='稀里稀里哗啦啦'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='thinking'><meta property='article:published_time' content='2020-01-16T22:40:17&#43;08:00'/><meta property='article:modified_time' content='2020-01-16T22:40:17&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+  <title>从医院排队浅谈IO调度模型 • 海之方</title>
+  <link rel='canonical' href='http://www.example.com/posts/hospital_queueing_verse_io_model/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-145633116-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      稀里稀里哗啦啦
+      </a>
+    </h2>
+    <div class='desc'>
+    代码代码快发芽
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts/'>Posts</a></li><li class='item'>
+  <a href='/authors/me/'>About Me</a></li><li class='item has-children'>
+  <a href=''>Other Blogs</a><button class='sub-menu-toggler'>
+    <span class='screen-reader-text'>expand sub menu</span>
+    <span class='sign'></span>
+  </button>
+
+  <ul class='sub-menu'><li class='item'>
+  <a href='https://www.jianshu.com/u/7838dc3b4190'>简书</a></li><li class='item'>
+  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/channel/' style='font-size:1.25em'>channel</a>
+      </li><li>
+        <a href='/tags/ci/' style='font-size:1em'>CI</a>
+      </li><li>
+        <a href='/tags/elk/' style='font-size:1em'>ELK</a>
+      </li><li>
+        <a href='/tags/golang/' style='font-size:2em'>golang</a>
+      </li><li>
+        <a href='/tags/gorm/' style='font-size:1.25em'>gorm</a>
+      </li><li>
+        <a href='/tags/html/' style='font-size:1em'>Html</a>
+      </li><li>
+        <a href='/tags/https/' style='font-size:1em'>Https</a>
+      </li><li>
+        <a href='/tags/nginx/' style='font-size:1em'>Nginx</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/sql/' style='font-size:1em'>sql</a>
+      </li><li>
+        <a href='/tags/thinking/' style='font-size:1.5em'>thinking</a>
+      </li><li>
+        <a href='/tags/vue.js/' style='font-size:1em'>Vue.js</a>
+      </li><li>
+        <a href='/tags/%E5%AE%89%E5%85%A8/' style='font-size:1em'>安全</a>
+      </li><li>
+        <a href='/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/' style='font-size:1em'>性能优化</a>
+      </li><li>
+        <a href='/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/' style='font-size:1em'>数据分析</a>
+      </li><li>
+        <a href='/tags/%E7%AC%94%E8%AE%B0/' style='font-size:1.75em'>笔记</a>
+      </li><li>
+        <a href='/tags/%E9%9D%A2%E8%AF%95/' style='font-size:1.75em'>面试</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><nav id='main-menu' class='menu main-menu' aria-label='Main Menu'>
+  <div class='container'>
+    <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+    <ul><li class='item'>
+        <a href='https://github.com/Ksloveyuan/channelx'>channelx</a>
+      </li><li class='item'>
+        <a href='https://github.com/Ksloveyuan/gorm-ex'>gorm-ex</a>
+      </li><li class='item'>
+        <a href='https://ksloveyuan.gitbook.io/vue-code-snippet/'>Vue code snippet</a>
+      </li><li class='item'>
+        <a href='/page/btc_price_analyzer'>BTC price analyzer</a>
+      </li></ul>
+  </div>
+</nav><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>稀里稀里哗啦啦</p><p class='desc site-desc'>代码代码快发芽</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>从医院排队浅谈IO调度模型</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2020-01-16T22:40:17&#43;08:00'>2020, Jan 16</time>
+</span>
+
+  <span class='byline'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M21,21V20c0-2.76-4-5-9-5s-9,2.24-9,5v1"/>
+  <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
+  
+</svg>
+<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+One min read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  
+
+<h1 id="引言">引言</h1>
+
+<p>前段时间，小孩生病，前前后后去了好多次医院，在排队等候之余，不禁想到，这可以类比IO调度。</p>
+
+<h1 id="同步阻塞io">同步阻塞IO</h1>
+
+<p>那个周五，我下班回到家后，发现小孩又发烧了，当即决定去<strong>儿童医学中心</strong>看看。</p>
+
+<p>晚上，只能挂急诊（*那时现场人数多的可以堪比春运火车站*）。挂完号了，虽然前面也有许多人，但因为心里着急，就在现场盯着叫号的屏幕慢慢的等，而且大半夜的也无处可去。</p>
+
+<p>这不就是同步IO吗？（*请不要抬杠说，我可以边看手机边等*）</p>
+
+<h1 id="同步非阻塞">同步非阻塞</h1>
+
+<p>急诊看完后的第二天，小孩要接着挂水，但却要重新挂号。这时也不能提前预约，其中一个原因是，必须要等16个小时后才能第二次挂水。</p>
+
+<p>当时，没有经验我们，卡着时间去门诊挂的号，却发现门诊也是人满为患。但天色还早，于是就在附近逛着玩，每过一会儿就去看看快到自己了不。</p>
+
+<p>是不是很像<strong>轮询</strong>，也就是同步非阻塞IO了。</p>
+
+<h1 id="io多路复用">IO多路复用</h1>
+
+<p>第三次去医院的时候，有了新的发现，原来绑定了医保卡后，可以在医院的微信公众号里看到排队的情况。</p>
+
+<p>虽然那日依旧等了3、4个小时，但是因为不用在医院时不时的看下排队进展，于是在一定程度上解放了我们。我们是在商场里玩了好久，等到快到的时候才去，也正好赶上轮到我们。</p>
+
+<p>那为什么这样是IO多路复用呢？</p>
+
+<p>原因是我们没有自己在医院盯着屏幕看自己的排队进展，而是由医院的排队系统在帮所有人盯着。（*不知道这样理解有没有问题*）</p>
+
+<p>但医院的这个排队系统，不如美味不用等的系统，它不能做到，快到你的号时候，发通知给你，它是把进展通知给所有人，再由接收的人自己判断处理。所以如果说美味不用等的通知模式像epoll了，那么使用医院的排队系统，可以勉强说成是poll了。</p>
+
+<h1 id="异步io">异步IO</h1>
+
+<p>话说，久病成医。医院去的次数多了，也让我发现了医院排队系统的一个<strong>空子</strong>，那就是只要挂号后在诊室签过到，那么即使你到时过号了，只要补签就可以插队到前5%左右，这时等不了几个人就可以轮到你了。</p>
+
+<p>于是，后面就是上午我先一个人跑去先挂个号，在诊室前签完到后，就该干吗干吗去了。然后，等到下午，上午的病人基本上看的差不多了，再带着娃去。虽然已经过号，但补签后还是可以很快的轮到。</p>
+
+<p>这个小技巧虽说不能做到100%的异步IO，即最后还是要等一会儿的，而不是到了就可以直接找医生看病，但是已经极大的提升了我们作为个体的排队体验。（*这么做有个副作用是，因为叫到这个号，患者一时间没到，医生是要多次叫号确认的，也就增加了医生的空档时长，在一定程度上降低了医生的效率。只好自我欺骗一下，这也算是给医生增加一段休息时间吗？*）</p>
+
+<p>话说回来，即使是提前预约，到了也是要再等会儿的。对公立医院来说，想要体验“异步IO”，难哦！</p>
+
+<h1 id="后记">后记</h1>
+
+<p>自己是因医院排队，有感而发，文中有不准确的地方，欢迎指正。</p>
+
+<p>之前看过<a href="https://www.jianshu.com/p/6a6845464770" target="_blank">漫谈五种IO模型（主讲IO多路复用）</a>, 我觉得这篇文章里的例子更容易理解，推荐大家看看。</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/%E9%9A%8F%E6%83%B3/'>随想</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/thinking/'>thinking</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/pass-slots-from-parent-to-child-components/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>[翻译] VUE：如何把slot从父组件传到子组件</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>All rights reserved by &copy; 2019-2020 海之方 </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script>
+
+</body>
+
+</html>
+

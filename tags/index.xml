@@ -5,17 +5,26 @@
     <link>http://www.example.com/tags/</link>
     <description>Recent content in Tags on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 16 Dec 2019 22:46:01 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 16 Jan 2020 22:40:17 +0800</lastBuildDate>
     
 	<atom:link href="http://www.example.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Thinking</title>
+      <title>thinking</title>
       <link>http://www.example.com/tags/thinking/</link>
-      <pubDate>Mon, 16 Dec 2019 22:46:01 +0800</pubDate>
+      <pubDate>Thu, 16 Jan 2020 22:40:17 +0800</pubDate>
       
       <guid>http://www.example.com/tags/thinking/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Vue.js</title>
+      <link>http://www.example.com/tags/vue.js/</link>
+      <pubDate>Mon, 13 Jan 2020 22:42:15 +0800</pubDate>
+      
+      <guid>http://www.example.com/tags/vue.js/</guid>
       <description></description>
     </item>
     

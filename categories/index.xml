@@ -5,10 +5,28 @@
     <link>http://www.example.com/categories/</link>
     <description>Recent content in Categories on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 16 Dec 2019 22:46:01 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 16 Jan 2020 22:40:17 +0800</lastBuildDate>
     
 	<atom:link href="http://www.example.com/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>随想</title>
+      <link>http://www.example.com/categories/%E9%9A%8F%E6%83%B3/</link>
+      <pubDate>Thu, 16 Jan 2020 22:40:17 +0800</pubDate>
+      
+      <guid>http://www.example.com/categories/%E9%9A%8F%E6%83%B3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>前端</title>
+      <link>http://www.example.com/categories/%E5%89%8D%E7%AB%AF/</link>
+      <pubDate>Mon, 13 Jan 2020 22:42:15 +0800</pubDate>
+      
+      <guid>http://www.example.com/categories/%E5%89%8D%E7%AB%AF/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>面试</title>

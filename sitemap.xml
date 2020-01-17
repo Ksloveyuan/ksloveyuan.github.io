@@ -4,12 +4,12 @@
   
   <url>
     <loc>http://www.example.com/</loc>
-    <lastmod>2019-12-16T22:46:01+08:00</lastmod>
+    <lastmod>2020-01-16T22:40:17+08:00</lastmod>
   </url>
   
   <url>
     <loc>http://www.example.com/posts/</loc>
-    <lastmod>2019-12-16T22:46:01+08:00</lastmod>
+    <lastmod>2020-01-16T22:40:17+08:00</lastmod>
   </url>
   
   <url>
@@ -18,19 +18,47 @@
   
   <url>
     <loc>http://www.example.com/categories/</loc>
-    <lastmod>2019-12-16T22:46:01+08:00</lastmod>
+    <lastmod>2020-01-16T22:40:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://www.example.com/tags/</loc>
-    <lastmod>2019-12-16T22:46:01+08:00</lastmod>
+    <lastmod>2020-01-16T22:40:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://www.example.com/tags/thinking/</loc>
-    <lastmod>2019-12-16T22:46:01+08:00</lastmod>
+    <lastmod>2020-01-16T22:40:17+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/posts/hospital_queueing_verse_io_model/</loc>
+    <lastmod>2020-01-16T22:40:17+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/categories/%E9%9A%8F%E6%83%B3/</loc>
+    <lastmod>2020-01-16T22:40:17+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/tags/vue.js/</loc>
+    <lastmod>2020-01-13T22:42:15+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/posts/pass-slots-from-parent-to-child-components/</loc>
+    <lastmod>2020-01-13T22:42:15+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/categories/%E5%89%8D%E7%AB%AF/</loc>
+    <lastmod>2020-01-13T22:42:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -254,13 +282,13 @@
   </url>
   
   <url>
-    <loc>http://www.example.com/tags/gorm/</loc>
+    <loc>http://www.example.com/series/gorm/</loc>
     <lastmod>2019-07-18T23:47:04+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://www.example.com/series/gorm/</loc>
+    <loc>http://www.example.com/tags/gorm/</loc>
     <lastmod>2019-07-18T23:47:04+08:00</lastmod>
     <priority>0</priority>
   </url>

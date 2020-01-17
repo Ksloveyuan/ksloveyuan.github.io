@@ -5,7 +5,7 @@
     <link>http://www.example.com/</link>
     <description>Recent content in Home on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 16 Dec 2019 22:46:01 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 16 Jan 2020 22:40:17 +0800</lastBuildDate>
     
 	<atom:link href="http://www.example.com/index.xml" rel="self" type="application/rss+xml" />
     
@@ -21,6 +21,46 @@
  相信
  自律给我自由。
  </description>
+    </item>
+    
+    <item>
+      <title>从医院排队浅谈IO调度模型</title>
+      <link>http://www.example.com/posts/hospital_queueing_verse_io_model/</link>
+      <pubDate>Thu, 16 Jan 2020 22:40:17 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/hospital_queueing_verse_io_model/</guid>
+      <description>引言 前段时间，小孩生病，前前后后去了好多次医院，在排队等候之余，不禁想到，这可以类比IO调度。
+同步阻塞IO 那个周五，我下班回到家后，发现小孩又发烧了，当即决定去儿童医学中心看看。
+晚上，只能挂急诊（*那时现场人数多的可以堪比春运火车站*）。挂完号了，虽然前面也有许多人，但因为心里着急，就在现场盯着叫号的屏幕慢慢的等，而且大半夜的也无处可去。
+这不就是同步IO吗？（*请不要抬杠说，我可以边看手机边等*）
+同步非阻塞 急诊看完后的第二天，小孩要接着挂水，但却要重新挂号。这时也不能提前预约，其中一个原因是，必须要等16个小时后才能第二次挂水。
+当时，没有经验我们，卡着时间去门诊挂的号，却发现门诊也是人满为患。但天色还早，于是就在附近逛着玩，每过一会儿就去看看快到自己了不。
+是不是很像轮询，也就是同步非阻塞IO了。
+IO多路复用 第三次去医院的时候，有了新的发现，原来绑定了医保卡后，可以在医院的微信公众号里看到排队的情况。
+虽然那日依旧等了3、4个小时，但是因为不用在医院时不时的看下排队进展，于是在一定程度上解放了我们。我们是在商场里玩了好久，等到快到的时候才去，也正好赶上轮到我们。
+那为什么这样是IO多路复用呢？
+原因是我们没有自己在医院盯着屏幕看自己的排队进展，而是由医院的排队系统在帮所有人盯着。（*不知道这样理解有没有问题*）
+但医院的这个排队系统，不如美味不用等的系统，它不能做到，快到你的号时候，发通知给你，它是把进展通知给所有人，再由接收的人自己判断处理。所以如果说美味不用等的通知模式像epoll了，那么使用医院的排队系统，可以勉强说成是poll了。
+异步IO 话说，久病成医。医院去的次数多了，也让我发现了医院排队系统的一个空子，那就是只要挂号后在诊室签过到，那么即使你到时过号了，只要补签就可以插队到前5%左右，这时等不了几个人就可以轮到你了。
+于是，后面就是上午我先一个人跑去先挂个号，在诊室前签完到后，就该干吗干吗去了。然后，等到下午，上午的病人基本上看的差不多了，再带着娃去。虽然已经过号，但补签后还是可以很快的轮到。
+这个小技巧虽说不能做到100%的异步IO，即最后还是要等一会儿的，而不是到了就可以直接找医生看病，但是已经极大的提升了我们作为个体的排队体验。（*这么做有个副作用是，因为叫到这个号，患者一时间没到，医生是要多次叫号确认的，也就增加了医生的空档时长，在一定程度上降低了医生的效率。只好自我欺骗一下，这也算是给医生增加一段休息时间吗？*）
+话说回来，即使是提前预约，到了也是要再等会儿的。对公立医院来说，想要体验“异步IO”，难哦！
+后记 自己是因医院排队，有感而发，文中有不准确的地方，欢迎指正。
+之前看过漫谈五种IO模型（主讲IO多路复用）, 我觉得这篇文章里的例子更容易理解，推荐大家看看。</description>
+    </item>
+    
+    <item>
+      <title>[翻译] VUE：如何把slot从父组件传到子组件</title>
+      <link>http://www.example.com/posts/pass-slots-from-parent-to-child-components/</link>
+      <pubDate>Mon, 13 Jan 2020 22:42:15 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/pass-slots-from-parent-to-child-components/</guid>
+      <description>原文地址： Vue: Pass Slots through from Parent to Child Components
+场景 有A、B、C三个component，分别包含不同的slot:
+const A = { template: `&amp;lt;div&amp;gt;&amp;lt;slot name=&amp;#34;a&amp;#34;&amp;gt;Default A Content&amp;lt;/slot&amp;gt;&amp;lt;/div&amp;gt;` } const B = { template: `&amp;lt;div&amp;gt;&amp;lt;slot name=&amp;#34;b&amp;#34;&amp;gt;Default B Content&amp;lt;/slot&amp;gt;&amp;lt;/div&amp;gt;` } const C = { template: `&amp;lt;div&amp;gt;&amp;lt;slot name=&amp;#34;c&amp;#34;&amp;gt;Default C Content&amp;lt;/slot&amp;gt;&amp;lt;/div&amp;gt;` }  还有一个wrapper component W，代码如下：
+Vue.component(&amp;#39;W&amp;#39;, { props: [&amp;#39;child&amp;#39;], template: `&amp;lt;component :is=&amp;#34;child&amp;#34; /&amp;gt;` })  A, B, C会传入W，但问题是W并不知道A, B, C会用哪个slot。
+问题 如果你尝试着这样写，
+&amp;lt;W :child=&amp;#34;A&amp;#34;&amp;gt; &amp;lt;div slot=&amp;#34;a&amp;#34;&amp;gt;Special A Content&amp;lt;/div&amp;gt; &amp;lt;/W&amp;gt;  输出的结果确是Default A Content, 原因是slot a被当成了W的slot，而不是A的slot。</description>
     </item>
     
     <item>
