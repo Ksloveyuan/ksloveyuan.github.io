@@ -5,7 +5,7 @@
     <link>http://www.example.com/</link>
     <description>Recent content in Home on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 16 Jan 2020 22:40:17 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 26 Feb 2020 22:36:17 +0800</lastBuildDate>
     
 	<atom:link href="http://www.example.com/index.xml" rel="self" type="application/rss+xml" />
     
@@ -21,6 +21,36 @@
  相信
  自律给我自由。
  </description>
+    </item>
+    
+    <item>
+      <title>手把手教你写一个完美的Golang Dockerfile</title>
+      <link>http://www.example.com/posts/golang_dockerfile/</link>
+      <pubDate>Wed, 26 Feb 2020 22:36:17 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/golang_dockerfile/</guid>
+      <description>引言 对于dockerfile而言，何为完美? 我认为应该满足以下三点： - 体积小 - 构建快 - 够安全
+话说不说，直接上拿走可用的Dockerfile。
+FROMgolang:1.13.5-alpine3.10 AS builderWORKDIR/buildRUN adduser -u 10001 -D app-runnerENVGOPROXY https://goproxy.cnCOPY go.mod .COPY go.sum .RUN go mod downloadCOPY . .RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o your-application .FROMalpine:3.10 AS finalWORKDIR/appCOPY --from=builder /build/your-application /app/#COPY --from=builder /build/config /app/configCOPY --from=builder /etc/passwd /etc/passwdCOPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/USER app-runnerENTRYPOINT[&amp;#34;/app/your-application&amp;#34;] 逐行拆解 首先，这个dockerfile分为builder和final两部分。
+builder选择了golang:1.13.5-alpine3.10作为编译的基础镜像，相比于golang:1.13, 一方面是因为它体积更小，另一方面是我发现golang:1.13的编译结果，在alpine:3.10中会报not found的错误，虽说有人提供了其它的解决方案，但是能直接避免，为啥不避免呢。
+RUN adduser -u 10001 -D app-runner  接着是创建了一个app-runner的用户, -D表示无密码。
+此用户的信息是是需要拷到final中，作为应用程序的启动用户。这是为了避免使用container中的默认用户root，那可是有安全漏洞的，详细解释，可以参考这篇medium上的文章Processes In Containers Should Not Run As Root</description>
+    </item>
+    
+    <item>
+      <title>如何把golang的Channel玩出async和await的feel</title>
+      <link>http://www.example.com/posts/channex_promise_actor/</link>
+      <pubDate>Mon, 10 Feb 2020 22:35:48 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/channex_promise_actor/</guid>
+      <description>引言 如何优雅的同步化异步代码，一直以来都是各大编程语言致力于优化的点，记得最早是C# 5.0加入了async/await来简化TPL的多线程模型，后来Javascript的Promise也吸取这一语法糖，在ES 6中也加入了async和await.
+那么，被大家一称赞并发性能好、异步模型独树一帜的golang，能否也有async和await呢？
+其实，这对于golang的CSM来说一点也不难！
+核心代码如下：
+done := make(chan struct{}) go func() { // do work asynchronously here 	// 	close(done) }() &amp;lt;-done 是不是很简单呢？ go rountine负责async， channel的负责await, 简直是完美！
+但这个代码看起来还是有点丑，而且这个go func(){}还没有返回值，虽说可以通过闭包来接收返回值，但那个代码就更难维护了。
+Go Promise 代码难看不要紧，只要Don&amp;rsquo;t repeat yourself (DRY)，封装一下不就好了？
+type WorkFunc func() (interface{}, error) func NewPromise(workFunc WorkFunc) *Promise { promise := Promise{done: make(chan struct{})} go func() { defer close(promise.done) promise.res, promise.err = workFunc() }() return &amp;amp;promise } func (p *Promise) Done() (interface{}, error) { &amp;lt;-p.</description>
     </item>
     
     <item>

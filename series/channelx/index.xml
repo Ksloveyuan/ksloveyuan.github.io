@@ -5,10 +5,26 @@
     <link>http://www.example.com/series/channelx/</link>
     <description>Recent content in channelx on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 26 Sep 2019 23:25:47 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 10 Feb 2020 22:35:48 +0800</lastBuildDate>
     
 	<atom:link href="http://www.example.com/series/channelx/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>如何把golang的Channel玩出async和await的feel</title>
+      <link>http://www.example.com/posts/channex_promise_actor/</link>
+      <pubDate>Mon, 10 Feb 2020 22:35:48 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/channex_promise_actor/</guid>
+      <description>引言 如何优雅的同步化异步代码，一直以来都是各大编程语言致力于优化的点，记得最早是C# 5.0加入了async/await来简化TPL的多线程模型，后来Javascript的Promise也吸取这一语法糖，在ES 6中也加入了async和await.
+那么，被大家一称赞并发性能好、异步模型独树一帜的golang，能否也有async和await呢？
+其实，这对于golang的CSM来说一点也不难！
+核心代码如下：
+done := make(chan struct{}) go func() { // do work asynchronously here 	// 	close(done) }() &amp;lt;-done 是不是很简单呢？ go rountine负责async， channel的负责await, 简直是完美！
+但这个代码看起来还是有点丑，而且这个go func(){}还没有返回值，虽说可以通过闭包来接收返回值，但那个代码就更难维护了。
+Go Promise 代码难看不要紧，只要Don&amp;rsquo;t repeat yourself (DRY)，封装一下不就好了？
+type WorkFunc func() (interface{}, error) func NewPromise(workFunc WorkFunc) *Promise { promise := Promise{done: make(chan struct{})} go func() { defer close(promise.done) promise.res, promise.err = workFunc() }() return &amp;amp;promise } func (p *Promise) Done() (interface{}, error) { &amp;lt;-p.</description>
+    </item>
     
     <item>
       <title>如何用Golang的channel实现消息的批量处理</title>
