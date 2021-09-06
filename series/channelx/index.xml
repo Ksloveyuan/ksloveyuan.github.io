@@ -5,7 +5,20 @@
     <link>http://www.example.com/series/channelx/</link>
     <description>Recent content in channelx on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 10 Feb 2020 22:35:48 +0800</lastBuildDate><atom:link href="http://www.example.com/series/channelx/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 07 May 2021 23:25:47 +0800</lastBuildDate><atom:link href="http://www.example.com/series/channelx/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>下次想在Golang中写个并发处理，就用这个模板，准没错！</title>
+      <link>http://www.example.com/posts/golang_parallel_runner/</link>
+      <pubDate>Fri, 07 May 2021 23:25:47 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/golang_parallel_runner/</guid>
+      <description>引言 要说 Golang 中最引以为傲的特性，那非 goroutine 莫属，goroutine（协程）很轻量，相比于每个线程要使用 1MB 的内存，每个 go 协程只需要 1kb 左右就够了。
+于是，在需要做并发处理的时候，很自然的就想着，go 一下就好了吗？ 示例代码如下
+for i:=0; i &amp;lt; 5; i++ { go func(index int) { fmt.Println(index) }(i) //这里为什么要把i传进来呢？ 	} 这样可以并发处理请求了是不假，但如果其中一个请求出错了，需要退出怎么办了？ 一方面，可以自己实现这个错误处理（稍后会写），另一方面，也可以直接用 golang 官方errgroup
+errorgoup 是个好东东 上面的示例代码，如果用 errgroup 来重新实现，会是下面这个样子
+g, _ := errgroup.WithContext(context.Background()) for i := 0; i &amp;lt; 5; i++ { index := i g.Go(func() error { fmt.Println(index) return nil // 如果想Mock一些错误，也可以return一个error 	}) } if err = g.</description>
+    </item>
+    
     <item>
       <title>如何把golang的Channel玩出async和await的feel</title>
       <link>http://www.example.com/posts/channex_promise_actor/</link>

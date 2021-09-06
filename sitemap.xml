@@ -4,12 +4,12 @@
   
   <url>
     <loc>http://www.example.com/</loc>
-    <lastmod>2020-02-26T22:36:17+08:00</lastmod>
+    <lastmod>2021-05-07T23:25:47+08:00</lastmod>
   </url>
   
   <url>
     <loc>http://www.example.com/posts/</loc>
-    <lastmod>2020-02-26T22:36:17+08:00</lastmod>
+    <lastmod>2021-05-07T23:25:47+08:00</lastmod>
   </url>
   
   <url>
@@ -18,16 +18,46 @@
   
   <url>
     <loc>http://www.example.com/categories/</loc>
-    <lastmod>2020-02-26T22:36:17+08:00</lastmod>
+    <lastmod>2021-05-07T23:25:47+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://www.example.com/tags/docker/</loc>
-    <lastmod>2020-02-26T22:36:17+08:00</lastmod>
+    <loc>http://www.example.com/tags/channel/</loc>
+    <lastmod>2021-05-07T23:25:47+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/series/channelx/</loc>
+    <lastmod>2021-05-07T23:25:47+08:00</lastmod>
   </url>
   
   <url>
     <loc>http://www.example.com/tags/golang/</loc>
+    <lastmod>2021-05-07T23:25:47+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/series/</loc>
+    <lastmod>2021-05-07T23:25:47+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/tags/</loc>
+    <lastmod>2021-05-07T23:25:47+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/categories/toolkit/</loc>
+    <lastmod>2021-05-07T23:25:47+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/posts/golang_parallel_runner/</loc>
+    <lastmod>2021-05-07T23:25:47+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://www.example.com/tags/docker/</loc>
     <lastmod>2020-02-26T22:36:17+08:00</lastmod>
   </url>
   
@@ -37,33 +67,8 @@
   </url>
   
   <url>
-    <loc>http://www.example.com/tags/</loc>
-    <lastmod>2020-02-26T22:36:17+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>http://www.example.com/posts/golang_dockerfile/</loc>
     <lastmod>2020-02-26T22:36:17+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/tags/channel/</loc>
-    <lastmod>2020-02-10T22:35:48+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/series/channelx/</loc>
-    <lastmod>2020-02-10T22:35:48+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/series/</loc>
-    <lastmod>2020-02-10T22:35:48+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://www.example.com/categories/toolkit/</loc>
-    <lastmod>2020-02-10T22:35:48+08:00</lastmod>
   </url>
   
   <url>

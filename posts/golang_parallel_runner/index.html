@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='引言 要说 Golang 中最引以为傲的特性，那非 goroutine 莫属，goroutine（协程）很轻量，相比于每个线程要使用 1MB 的内存，每个 go 协程只需要 1kb 左右就够了。
+于是，在需要做并发处理的时候，很自然的就想着，go 一下就好了吗？ 示例代码如下
+for i:=0; i &lt; 5; i&#43;&#43; { go func(index int) { fmt.Println(index) }(i) //这里为什么要把i传进来呢？ 	} 这样可以并发处理请求了是不假，但如果其中一个请求出错了，需要退出怎么办了？ 一方面，可以自己实现这个错误处理（稍后会写），另一方面，也可以直接用 golang 官方errgroup
+errorgoup 是个好东东 上面的示例代码，如果用 errgroup 来重新实现，会是下面这个样子
+g, _ := errgroup.WithContext(context.Background()) for i := 0; i &lt; 5; i&#43;&#43; { index := i g.Go(func() error { fmt.Println(index) return nil // 如果想Mock一些错误，也可以return一个error 	}) } if err = g.'>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='下次想在Golang中写个并发处理，就用这个模板，准没错！ • 海之方'>
+<meta property='og:description' content='引言 要说 Golang 中最引以为傲的特性，那非 goroutine 莫属，goroutine（协程）很轻量，相比于每个线程要使用 1MB 的内存，每个 go 协程只需要 1kb 左右就够了。
+于是，在需要做并发处理的时候，很自然的就想着，go 一下就好了吗？ 示例代码如下
+for i:=0; i &lt; 5; i&#43;&#43; { go func(index int) { fmt.Println(index) }(i) //这里为什么要把i传进来呢？ 	} 这样可以并发处理请求了是不假，但如果其中一个请求出错了，需要退出怎么办了？ 一方面，可以自己实现这个错误处理（稍后会写），另一方面，也可以直接用 golang 官方errgroup
+errorgoup 是个好东东 上面的示例代码，如果用 errgroup 来重新实现，会是下面这个样子
+g, _ := errgroup.WithContext(context.Background()) for i := 0; i &lt; 5; i&#43;&#43; { index := i g.Go(func() error { fmt.Println(index) return nil // 如果想Mock一些错误，也可以return一个error 	}) } if err = g.'>
+<meta property='og:url' content='http://www.example.com/posts/golang_parallel_runner/'>
+<meta property='og:site_name' content='稀里稀里哗啦啦'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='golang'><meta property='article:tag' content='channel'><meta property='article:published_time' content='2021-05-07T23:25:47&#43;08:00'/><meta property='article:modified_time' content='2021-05-07T23:25:47&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.78.2" />
+
+  <title>下次想在Golang中写个并发处理，就用这个模板，准没错！ • 海之方</title>
+  <link rel='canonical' href='http://www.example.com/posts/golang_parallel_runner/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-145633116-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      稀里稀里哗啦啦
+      </a>
+    </h2>
+    <div class='desc'>
+    代码代码快发芽
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts/'>Posts</a></li><li class='item'>
+  <a href='/authors/me/'>About Me</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/channel/' style='font-size:1.4285714285714286em'>channel</a>
+      </li><li>
+        <a href='/tags/ci/' style='font-size:1em'>CI</a>
+      </li><li>
+        <a href='/tags/docker/' style='font-size:1em'>docker</a>
+      </li><li>
+        <a href='/tags/elk/' style='font-size:1em'>ELK</a>
+      </li><li>
+        <a href='/tags/golang/' style='font-size:2em'>golang</a>
+      </li><li>
+        <a href='/tags/gorm/' style='font-size:1.1428571428571428em'>gorm</a>
+      </li><li>
+        <a href='/tags/html/' style='font-size:1em'>Html</a>
+      </li><li>
+        <a href='/tags/https/' style='font-size:1em'>Https</a>
+      </li><li>
+        <a href='/tags/nginx/' style='font-size:1em'>Nginx</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/sql/' style='font-size:1em'>sql</a>
+      </li><li>
+        <a href='/tags/thinking/' style='font-size:1.2857142857142856em'>thinking</a>
+      </li><li>
+        <a href='/tags/vue.js/' style='font-size:1em'>Vue.js</a>
+      </li><li>
+        <a href='/tags/%E5%AE%89%E5%85%A8/' style='font-size:1em'>安全</a>
+      </li><li>
+        <a href='/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/' style='font-size:1em'>性能优化</a>
+      </li><li>
+        <a href='/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/' style='font-size:1em'>数据分析</a>
+      </li><li>
+        <a href='/tags/%E7%AC%94%E8%AE%B0/' style='font-size:1.4285714285714286em'>笔记</a>
+      </li><li>
+        <a href='/tags/%E9%9D%A2%E8%AF%95/' style='font-size:1.4285714285714286em'>面试</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><nav id='main-menu' class='menu main-menu' aria-label='Main Menu'>
+  <div class='container'>
+    <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+    <ul><li class='item'>
+        <a href='https://github.com/Ksloveyuan/channelx'>channelx</a>
+      </li><li class='item'>
+        <a href='https://ksloveyuan.gitbook.io/vue-code-snippet/'>Vue code snippet</a>
+      </li><li class='item'>
+        <a href='/page/btc_price_analyzer'>BTC price analyzer</a>
+      </li></ul>
+  </div>
+</nav><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>稀里稀里哗啦啦</p><p class='desc site-desc'>代码代码快发芽</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>下次想在Golang中写个并发处理，就用这个模板，准没错！</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2021-05-07T23:25:47&#43;08:00'>2021, May 07</time>
+</span>
+
+  <span class='byline'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M21,21V20c0-2.76-4-5-9-5s-9,2.24-9,5v1"/>
+  <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
+  
+</svg>
+<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+2 mins read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  <h1 id="引言">引言</h1>
+<p>要说 Golang 中最引以为傲的特性，那非 goroutine 莫属，goroutine（协程）很轻量，相比于每个线程要使用 1MB 的内存，每个 go 协程只需要 1kb 左右就够了。</p>
+<p>于是，在需要做并发处理的时候，很自然的就想着，go 一下就好了吗？ 示例代码如下</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">:=</span><span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">5</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+		<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">index</span> <span style="color:#66d9ef">int</span>) {
+			<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">index</span>)
+		}(<span style="color:#a6e22e">i</span>) <span style="color:#75715e">//这里为什么要把i传进来呢？
+</span><span style="color:#75715e"></span>	}
+</code></pre></div><p>这样可以并发处理请求了是不假，但如果其中一个请求出错了，需要退出怎么办了？ 一方面，可以自己实现这个错误处理（<strong>稍后会写</strong>），另一方面，也可以直接用 golang 官方<code>errgroup</code></p>
+<h1 id="errorgoup-是个好东东">errorgoup 是个好东东</h1>
+<p>上面的示例代码，如果用 errgroup 来重新实现，会是下面这个样子</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">g</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">errgroup</span>.<span style="color:#a6e22e">WithContext</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>())
+
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">5</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+	    <span style="color:#a6e22e">index</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">i</span>
+		<span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">error</span> {
+		    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">index</span>)
+		    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span> <span style="color:#75715e">// 如果想Mock一些错误，也可以return一个error
+</span><span style="color:#75715e"></span>		})
+	}
+
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">Wait</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+	}
+</code></pre></div><p>是不是还挺简单的？感兴趣的，可以自行搜下源码，除去注释只有大概 30 行代码，还是很好理解的。</p>
+<p>现在错误处理也有了，是不是就完美了呢？</p>
+<p>这个问题就要看有请求要并发处理了，协程虽然很轻量，但也还是要耗费一些资源的，如果可以预见到有几百上千的请求的要处理，那就需要协程池来复用协程，达到节省资源的目的了。</p>
+<p>网上有很多协程池的实现，大都做的大而全，考虑了很多场景，但实际编码场景中，很可能只是为了解决一个小问题，就引入一个包，实在觉得有些太重了呢，而且可能还不够灵活。</p>
+<p>有没有一个简单的模板，可以 copy/paste/tweak 一下呢？这就来了</p>
+<h1 id="一个简单实用的模板">一个简单实用的模板</h1>
+<p>闲话少絮，直接上代码先，关键部分会在代码中加注释解释。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#66d9ef">var</span> (
+		<span style="color:#a6e22e">err</span>         <span style="color:#66d9ef">error</span>
+		<span style="color:#a6e22e">outputs</span>     []<span style="color:#66d9ef">int</span>
+		<span style="color:#a6e22e">workers</span>     = <span style="color:#ae81ff">4</span> <span style="color:#75715e">//协程的数量，可以按需设置，一般不大于runtime.NumCPU()
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">workChannel</span> = make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>)
+		<span style="color:#a6e22e">errChannel</span>  = make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">error</span>, <span style="color:#a6e22e">workers</span>)
+		<span style="color:#a6e22e">wg</span>          = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{}
+		<span style="color:#a6e22e">mux</span>         = <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">Mutex</span>{}
+	)
+
+	<span style="color:#a6e22e">worker</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">input</span> <span style="color:#66d9ef">int</span>) (<span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">error</span>){
+	    <span style="color:#a6e22e">retrun</span> <span style="color:#a6e22e">input</span>, <span style="color:#66d9ef">nil</span> <span style="color:#75715e">//如果想Mock一些错误，也可以return一个error
+</span><span style="color:#75715e"></span>	}
+
+	<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">workers</span>)
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">workers</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+		<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+			<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+			<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">input</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">workChannel</span> { <span style="color:#75715e">// workChannel被close时，这个循环就会退出
+</span><span style="color:#75715e"></span>				<span style="color:#a6e22e">output</span>, <span style="color:#a6e22e">err</span><span style="color:#f92672">:=</span><span style="color:#a6e22e">worker</span>(<span style="color:#a6e22e">input</span>)
+				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+					<span style="color:#a6e22e">errChannel</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">err</span>
+					<span style="color:#66d9ef">break</span>
+				}
+
+				<span style="color:#a6e22e">mux</span>.<span style="color:#a6e22e">Lock</span>() <span style="color:#75715e">//使用lock保护outputs，来搜集执行结果，如果不需要可以删除
+</span><span style="color:#75715e"></span>				<span style="color:#a6e22e">outputs</span> = append(<span style="color:#a6e22e">outputs</span>, <span style="color:#a6e22e">output</span>)
+				<span style="color:#a6e22e">mux</span>.<span style="color:#a6e22e">Unlock</span>()
+			}
+		}()
+	}
+
+<span style="color:#a6e22e">loop</span>:
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">input</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">inputs</span> {
+		<span style="color:#66d9ef">select</span> {
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">workChannel</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">input</span>:
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">err</span> = <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">errChannel</span>:
+			<span style="color:#66d9ef">break</span> <span style="color:#a6e22e">loop</span>
+		}
+	}
+
+	close(<span style="color:#a6e22e">workChannel</span>) <span style="color:#75715e">//关闭workChannel，可以让工作协程，在处理完当前任务后退出
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+
+	<span style="color:#75715e">// 关于select case，如果有多个case满足时，会选择随机进入一个case的，所以需要再检查一次，双重保险
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">select</span> {
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">err</span> = <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">errChannel</span>:
+		<span style="color:#66d9ef">default</span>:
+		}
+	}
+
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">outputs</span>, <span style="color:#a6e22e">err</span>
+</code></pre></div><p>代码看着是多了些，但在实际使用过程中，按需要改下<code>worker</code>函数输入和输出的类型即可。</p>
+<p>如果 copy/paste 也不想做，那就只能封装一下了，但是因为现在 golang 还没正式推出范型，只能用<code>inteface{}</code>了,看着是不大好看，使用时，也要自己转来转去的,不过可以凑合着用啦。</p>
+<p>话说，封装好的代码在这 <a href="https://github.com/Ksloveyuan/channelx/blob/master/parallel_runner.go">parallel_runner.go</a>，需要的自取了。</p>
+<h1 id="关于-context">关于 context</h1>
+<p>也许有人会问，为什么不用<code>context.WithCancel()</code>，然后在出现错误的时候 cancel 一下？
+讲究一点的话，确实应该用，但那也意味在在<code>worker</code>函数中，你也要检查<code>ctx.Done()</code>, 我不用还是因为懒了……</p>
+<p>不过，我在封装后的代码<a href="https://github.com/Ksloveyuan/channelx/blob/master/parallel_runner.go">parallel_runner.go</a>里，是有加入 context 啦，看着就是更复杂了些……</p>
+<h1 id="写在最后">写在最后</h1>
+<p>之前还写过一些关于 channel 的使用的文章，</p>
+<ul>
+<li><a href="https://juejin.im/post/5d7ba76ef265da03be490856">如何把 Golang 的 channel 用的如 nodejs 的 stream 一样丝滑</a></li>
+<li><a href="https://juejin.im/post/5d8c6775e51d45781332e91f">如何用 Golang 的 channel 实现消息的批量处理</a></li>
+<li><a href="https://juejin.im/post/5e4175a36fb9a07ca80a9c77">如何把 golang 的 Channel 玩出 async 和 await 的 feel</a></li>
+</ul>
+<p>里面实现的轻量级 util 都开源在<a href="https://github.com/Ksloveyuan/channelx">channelx</a>，欢迎大家审阅，如果有你喜欢用的工具，欢迎点个赞或者 star :)</p>
+
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/toolkit/'>toolkit</a></div>
+<div class='series'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="8" y1="6" x2="21" y2="6" />
+  <line x1="8" y1="12" x2="21" y2="12" />
+  <line x1="8" y1="18" x2="21" y2="18" />
+  <line x1="3" y1="6" x2="3" y2="6" />
+  <line x1="3" y1="12" x2="3" y2="12" />
+  <line x1="3" y1="18" x2="3" y2="18" />
+  
+</svg>
+<span class='screen-reader-text'>Series: </span><a class='series' href='/series/channelx/'>channelx</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/golang/'>golang</a>, <a class='tag' href='/tags/channel/'>channel</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/golang_dockerfile/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>手把手教你写一个完美的Golang Dockerfile</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>All rights reserved by &copy; 2019-2021 海之方 </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script>
+
+</body>
+
+</html>
+
