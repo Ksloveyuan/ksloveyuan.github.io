@@ -11,7 +11,7 @@
 <meta property='og:site_name' content='稀里稀里哗啦啦'>
 <meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='golang'><meta property='article:tag' content='gorm'><meta property='article:published_time' content='2019-07-18T23:47:04&#43;08:00'/><meta property='article:modified_time' content='2019-07-18T23:47:04&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.55.6" />
+<meta name="generator" content="Hugo 0.78.2" />
 
   <title>Gorm的使用心得和一些常用扩展(二) • 海之方</title>
   <link rel='canonical' href='http://www.example.com/posts/gorm_extension_2/'>
@@ -66,15 +66,7 @@ if (!doNotTrack) {
       <ul><li class='item'>
   <a href='/'>Home</a></li><li class='item'>
   <a href='/posts/'>Posts</a></li><li class='item'>
-  <a href='/authors/me/'>About Me</a></li><li class='item has-children'>
-  <a href=''>Other Blogs</a><button class='sub-menu-toggler'>
-    <span class='screen-reader-text'>expand sub menu</span>
-    <span class='sign'></span>
-  </button>
-
-  <ul class='sub-menu'><li class='item'>
-  <a href='https://www.jianshu.com/u/7838dc3b4190'>简书</a></li><li class='item'>
-  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li></ul>
+  <a href='/authors/me/'>About Me</a></li></ul>
     </div>
   </nav>
 
@@ -107,7 +99,7 @@ if (!doNotTrack) {
       </li><li>
         <a href='/tags/sql/' style='font-size:1em'>sql</a>
       </li><li>
-        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>Thinking</a>
+        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>thinking</a>
       </li><li>
         <a href='/tags/vue.js/' style='font-size:1em'>Vue.js</a>
       </li><li>
@@ -152,8 +144,6 @@ if (!doNotTrack) {
 </button>
     <ul><li class='item'>
         <a href='https://github.com/Ksloveyuan/channelx'>channelx</a>
-      </li><li class='item'>
-        <a href='https://github.com/Ksloveyuan/gorm-ex'>gorm-ex</a>
       </li><li class='item'>
         <a href='https://ksloveyuan.gitbook.io/vue-code-snippet/'>Vue code snippet</a>
       </li><li class='item'>
@@ -226,44 +216,41 @@ if (!doNotTrack) {
     <span>Table of Contents</span>
   </summary>
   <nav id="TableOfContents">
-<ul>
-<li><a href="#单表查询">单表查询</a>
-<ul>
-<li><a href="#查询一个">查询一个</a></li>
-<li><a href="#范围查询">范围查询</a></li>
-</ul></li>
-<li><a href="#多表查询">多表查询</a>
-<ul>
-<li><a href="#一个复杂的例子">一个复杂的例子</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#查询一个">查询一个</a></li>
+    <li><a href="#范围查询">范围查询</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#一个复杂的例子">一个复杂的例子</a></li>
+  </ul>
 </nav>
 </details>
 
 
   <div class='container entry-content'>
-  <p>在<a href="https://ksloveyuan.github.io/post/gorm_extension_1/" target="_blank">上一篇</a>文章，我分享了自己在新增和更新的场景下，自己使用gorm的一些心得和扩展。本文，我将分享一些在查询的方面的心得。</p>
-
-<p>首先，我把查询按照涉及到的表的数量分为：
-- 单表查询
-- 多表查询</p>
-
-<p>按照查询范围又可以分为：
-- 查询一个
-- 范围查询
-    - 查询一组
-    - 有序查询
-    - 查询前几个
-    - 分页查询</p>
-
+  <p>在<a href="https://ksloveyuan.github.io/post/gorm_extension_1/">上一篇</a>文章，我分享了自己在新增和更新的场景下，自己使用gorm的一些心得和扩展。本文，我将分享一些在查询的方面的心得。</p>
+<p>首先，我把查询按照涉及到的表的数量分为：</p>
+<ul>
+<li>单表查询</li>
+<li>多表查询</li>
+</ul>
+<p>按照查询范围又可以分为：</p>
+<ul>
+<li>查询一个</li>
+<li>范围查询
+<ul>
+<li>查询一组</li>
+<li>有序查询</li>
+<li>查询前几个</li>
+<li>分页查询</li>
+</ul>
+</li>
+</ul>
 <p>在日常使用中，单表查询占据了多半的场景，把这部分的代码按照查询范围做一些封装，可以大大减少冗余的代码。</p>
-
 <h1 id="单表查询">单表查询</h1>
-
 <p>于是，我仿照gorm API的风格，做了如下的封装：</p>
-
 <p><em>ps：以下例子均以假定已定义user对象</em></p>
-
 <h2 id="查询一个">查询一个</h2>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dw</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DBExtension</span>) <span style="color:#a6e22e">GetOne</span>(<span style="color:#a6e22e">result</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">query</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) (<span style="color:#a6e22e">found</span> <span style="color:#66d9ef">bool</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
 	<span style="color:#66d9ef">var</span> (
@@ -290,9 +277,8 @@ if (!doNotTrack) {
 	}
 
 	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">nil</span>
-}</code></pre></div>
-<p>这段值得说明的就是对查询不到数据时的处理，gorm是报了<strong>gorm.ErrRecordNotFound</strong>的error, 我是对这个错误做了特殊处理，用found这个boolean值表述这个特殊状态。</p>
-
+}
+</code></pre></div><p>这段值得说明的就是对查询不到数据时的处理，gorm是报了<strong>gorm.ErrRecordNotFound</strong>的error, 我是对这个错误做了特殊处理，用found这个boolean值表述这个特殊状态。</p>
 <p>调用代码如下：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">condition</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Id</span>:<span style="color:#ae81ff">1</span>}
 <span style="color:#a6e22e">result</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{}
@@ -304,8 +290,8 @@ if (!doNotTrack) {
 </span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
     }
     
-}</code></pre></div>
-<p>也可以这样写，更加灵活的指定的查询条件：</p>
+}
+</code></pre></div><p>也可以这样写，更加灵活的指定的查询条件：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">result</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{}
 
 <span style="color:#66d9ef">if</span>  <span style="color:#a6e22e">found</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">GetOne</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">result</span>, <span style="color:#e6db74">&#34;id = ？&#34;</span><span style="color:#960050;background-color:#1e0010">，</span> <span style="color:#ae81ff">1</span>); !<span style="color:#a6e22e">found</span> {
@@ -315,13 +301,13 @@ if (!doNotTrack) {
 </span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
     }
     
-}</code></pre></div>
-<p>两种写法执行的语句都是：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span></code></pre></div>
-<h2 id="范围查询">范围查询</h2>
-
+}
+</code></pre></div><p>两种写法执行的语句都是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</code></pre></div><h2 id="范围查询">范围查询</h2>
 <p>针对四种范国查询，我做了如下封装：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dw</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DBExtension</span>) <span style="color:#a6e22e">GetList</span>(<span style="color:#a6e22e">result</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">query</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">error</span> {
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">dw</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DBExtension</span>) <span style="color:#a6e22e">GetList</span>(<span style="color:#a6e22e">result</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">query</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">error</span> {
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">getListCore</span>(<span style="color:#a6e22e">result</span>, <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">query</span>, <span style="color:#a6e22e">args</span>)
 }
 
@@ -390,11 +376,9 @@ if (!doNotTrack) {
 	}
 
 	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-}</code></pre></div>
-<p>为了减少冗余的代码，通用的逻辑写在<strong>getListCore</strong>函数里，里面用到了一些golang反射的知识。</p>
-
+}
+</code></pre></div><p>为了减少冗余的代码，通用的逻辑写在<strong>getListCore</strong>函数里，里面用到了一些golang反射的知识。</p>
 <p>但只要记得golang的反射和其它语言的反射最大的不同，是<strong>golang的反射是基本值而不是类型的</strong>，一切就好理解了。</p>
-
 <p>其中的一个小技巧是如何判断一个类型是否实现了某个接口，用到了指向nil的指针。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">elemValue</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">itemType</span>)
 	<span style="color:#a6e22e">elemValueType</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">elemValue</span>)
@@ -402,17 +386,12 @@ if (!doNotTrack) {
 
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">elemValueType</span>.<span style="color:#a6e22e">Implements</span>(<span style="color:#a6e22e">tableNameAbleType</span>) {
 		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;neither the query nor result implement TableNameAble&#34;</span>)
-	}</code></pre></div>
-<p>关于具体的使用，就不再一一举例子了，熟悉gorm api的同学可以一眼看出。</p>
-
+	}
+</code></pre></div><p>关于具体的使用，就不再一一举例子了，熟悉gorm api的同学可以一眼看出。</p>
 <h1 id="多表查询">多表查询</h1>
-
 <p>关于多表查询，因为不同场景很难抽取出不同，也就没有再做封装，但是我的经验是<strong>优先多使用gorm的方法，而不是自己拼sql</strong>。你想要做的gorm都可以实现。</p>
-
 <p>这里，我偷个懒，贴出自己在项目中写的最复杂的一段代码，供各位看官娱乐。</p>
-
 <h2 id="一个复杂的例子">一个复杂的例子</h2>
-
 <p>这段代码是从埋点数据的中间表，为了用通用的代码实现不同展示场景下的查询，代码设计的比较灵活，其中涉及了关联多表的查询，按查询条件动态过滤和聚合，还有分页查询的逻辑。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">buildCommonStatisticQuery</span>(<span style="color:#a6e22e">tableName</span>, <span style="color:#a6e22e">startDate</span>, <span style="color:#a6e22e">endDate</span> <span style="color:#66d9ef">string</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">gorm</span>.<span style="color:#a6e22e">DB</span> {
 	<span style="color:#a6e22e">query</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">models</span>.<span style="color:#a6e22e">DB</span>().<span style="color:#a6e22e">Table</span>(<span style="color:#a6e22e">tableName</span>)
@@ -514,10 +493,10 @@ if (!doNotTrack) {
 		<span style="color:#a6e22e">query</span> = <span style="color:#a6e22e">query</span>.<span style="color:#a6e22e">Having</span>(<span style="color:#e6db74">&#34;app_id = ?&#34;</span>, <span style="color:#a6e22e">appId</span>)
 	}
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">query</span>
-}</code></pre></div>
-<p>感谢各位看官耐心看完，如果本文对你有用，请点个赞~~~</p>
+}
 
-<p>如果能到代码仓库：<a href="https://github.com/Ksloveyuan/gorm-ex" target="_blank">Github:Ksloveyuan/gorm-ex</a> 给个✩star✩, 楼主就更加感谢了！</p>
+</code></pre></div><p>感谢各位看官耐心看完，如果本文对你有用，请点个赞~~~</p>
+<p>如果能到代码仓库：<a href="https://github.com/Ksloveyuan/gorm-ex">Github:Ksloveyuan/gorm-ex</a> 给个✩star✩, 楼主就更加感谢了！</p>
 </div>
 
   
@@ -614,7 +593,7 @@ if (!doNotTrack) {
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p>All rights reserved by &copy; 2019-2020 海之方 </p>
+  <p>All rights reserved by &copy; 2019-2021 海之方 </p>
 </div>
 
         </div>

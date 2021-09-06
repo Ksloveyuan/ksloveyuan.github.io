@@ -11,7 +11,7 @@
 <meta property='og:site_name' content='稀里稀里哗啦啦'>
 <meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='安全'><meta property='article:published_time' content='2019-08-26T23:39:00&#43;08:00'/><meta property='article:modified_time' content='2019-08-26T23:39:00&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.55.6" />
+<meta name="generator" content="Hugo 0.78.2" />
 
   <title>内部API的安全防护怎么搞？密码学中有答案 • 海之方</title>
   <link rel='canonical' href='http://www.example.com/posts/api_security/'>
@@ -66,15 +66,7 @@ if (!doNotTrack) {
       <ul><li class='item'>
   <a href='/'>Home</a></li><li class='item'>
   <a href='/posts/'>Posts</a></li><li class='item'>
-  <a href='/authors/me/'>About Me</a></li><li class='item has-children'>
-  <a href=''>Other Blogs</a><button class='sub-menu-toggler'>
-    <span class='screen-reader-text'>expand sub menu</span>
-    <span class='sign'></span>
-  </button>
-
-  <ul class='sub-menu'><li class='item'>
-  <a href='https://www.jianshu.com/u/7838dc3b4190'>简书</a></li><li class='item'>
-  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li></ul>
+  <a href='/authors/me/'>About Me</a></li></ul>
     </div>
   </nav>
 
@@ -107,7 +99,7 @@ if (!doNotTrack) {
       </li><li>
         <a href='/tags/sql/' style='font-size:1em'>sql</a>
       </li><li>
-        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>Thinking</a>
+        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>thinking</a>
       </li><li>
         <a href='/tags/vue.js/' style='font-size:1em'>Vue.js</a>
       </li><li>
@@ -152,8 +144,6 @@ if (!doNotTrack) {
 </button>
     <ul><li class='item'>
         <a href='https://github.com/Ksloveyuan/channelx'>channelx</a>
-      </li><li class='item'>
-        <a href='https://github.com/Ksloveyuan/gorm-ex'>gorm-ex</a>
       </li><li class='item'>
         <a href='https://ksloveyuan.gitbook.io/vue-code-snippet/'>Vue code snippet</a>
       </li><li class='item'>
@@ -226,41 +216,25 @@ if (!doNotTrack) {
     <span>Table of Contents</span>
   </summary>
   <nav id="TableOfContents">
-<ul>
-<li><a href="#前言">前言</a></li>
-<li><a href="#分析">分析</a></li>
-<li><a href="#实现">实现</a>
-<ul>
-<li><a href="#后端实现">后端实现</a></li>
-<li><a href="#前端实现">前端实现</a></li>
-</ul></li>
-<li><a href="#写在最后">写在最后</a></li>
-</ul>
+  <ul>
+    <li><a href="#后端实现">后端实现</a></li>
+    <li><a href="#前端实现">前端实现</a></li>
+  </ul>
 </nav>
 </details>
 
 
   <div class='container entry-content'>
   <h1 id="前言">前言</h1>
-
-<p>事情的起因是公司之前的CDN服务是通过腾讯云的COSFS来做的，它的好处是可以像使用本地文件系统一样直接操作腾讯云对象存储中的对象，但后来因为性能等因素，我花时间把上传文件到CDN的功能用SDK重写了（*其实可能比搭个COSFS还简单呢*）。</p>
-
+<p>事情的起因是公司之前的CDN服务是通过腾讯云的COSFS来做的，它的好处是可以像使用本地文件系统一样直接操作腾讯云对象存储中的对象，但后来因为性能等因素，我花时间把上传文件到CDN的功能用SDK重写了（<em>其实可能比搭个COSFS还简单呢</em>）。</p>
 <p>前端同事恰好也有图床的使用需求，就想让我给他们开个API，这样他们就可以直接通过代码上传文件了，而不用每次都找后端同事帮忙。这件事本身没什么难度，唯一的问题是这个API的安全方面如何保证，至少不能让外人勿用。</p>
-
 <h1 id="分析">分析</h1>
-
-<p>其它业务上的API都是用的用户登录后的token及用户的权限进行验证，眼下这种用于开发需求的API虽然也可以用同样的方式来做，但一方面不够方便（*上传个图还要先登录，想想就麻烦*），另一方面安全性也还是差些（*是不是所有登录的用户都能调用呢？如果要再加权限的限制，也是麻烦*）。</p>
-
+<p>其它业务上的API都是用的用户登录后的token及用户的权限进行验证，眼下这种用于开发需求的API虽然也可以用同样的方式来做，但一方面不够方便（<em>上传个图还要先登录，想想就麻烦</em>），另一方面安全性也还是差些（<em>是不是所有登录的用户都能调用呢？如果要再加权限的限制，也是麻烦</em>）。</p>
 <p>恰好自己上份工作是做区块链相关的，有一些密码学的基础知识，所以很自然想到用<strong>签名验签</strong>的方式来做安全验证。</p>
-
 <p>先简单的解释一下密码学基础知识，常用的加密方式有两大类，一种是对称加密，即加密和解密都是相同的秘钥; 另一种是非对称加密，秘钥有公私钥之分，公钥是用私钥生成的。签名是指要私钥对一段信息的Hash加密，验签是指用私钥对应的公钥来验证一段信息的签名是否和信息匹配。非对称加密原理的保证了签名只能来自于私钥，而只有对应在公钥才能解签。(<em>如果你对这些原理感兴趣，可以自行搜索相关文章哈</em>)</p>
-
 <h1 id="实现">实现</h1>
-
 <p>我们的后端是用的golang，前端是用NodeJS来实现的。非对称加密的实现方式有好几种，考虑到多端调试的成本，同时不想引入过多的第三方包，我这里选择了更加常用的RSA。下面将分为后端和前端两个部分来分别说明。</p>
-
 <h2 id="后端实现">后端实现</h2>
-
 <p>1 生成密钥。方法有很多，可以ssh的工具来生成，这是是用代码来生成.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">GenerateKey</span>(<span style="color:#a6e22e">bits</span> <span style="color:#66d9ef">int</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">PrivateKey</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">PublicKey</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">private</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">GenerateKey</span>(<span style="color:#a6e22e">rand</span>.<span style="color:#a6e22e">Reader</span>, <span style="color:#a6e22e">bits</span>)
@@ -268,8 +242,8 @@ if (!doNotTrack) {
 		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
 	}
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">private</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">private</span>.<span style="color:#a6e22e">PublicKey</span>, <span style="color:#66d9ef">nil</span>
-}</code></pre></div>
-<p>然后把密钥导出成base64的字符串，方便保存和使用。</p>
+}
+</code></pre></div><p>然后把密钥导出成base64的字符串，方便保存和使用。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">EncodePrivateKey</span>(<span style="color:#a6e22e">private</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">PrivateKey</span>) []<span style="color:#66d9ef">byte</span> {
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">pem</span>.<span style="color:#a6e22e">EncodeToMemory</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pem</span>.<span style="color:#a6e22e">Block</span>{
 		<span style="color:#a6e22e">Bytes</span>: <span style="color:#a6e22e">x509</span>.<span style="color:#a6e22e">MarshalPKCS1PrivateKey</span>(<span style="color:#a6e22e">private</span>),
@@ -286,9 +260,8 @@ if (!doNotTrack) {
 		<span style="color:#a6e22e">Bytes</span>: <span style="color:#a6e22e">publicBytes</span>,
 		<span style="color:#a6e22e">Type</span>:  <span style="color:#e6db74">&#34;PUBLIC KEY&#34;</span>,
 	}), <span style="color:#66d9ef">nil</span>
-}</code></pre></div>
-<p>代码的话，没什么花头，唯一需要注意的是Type不要乱填，这可是标准哈! pem也是最常用的的密钥的编码方式。</p>
-
+}
+</code></pre></div><p>代码的话，没什么花头，唯一需要注意的是Type不要乱填，这可是标准哈! pem也是最常用的的密钥的编码方式。</p>
 <p>2 签名解签。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">SignWithSha256Base64</span>(<span style="color:#a6e22e">data</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">prvKeyBytes</span> []<span style="color:#66d9ef">byte</span>) (<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#a6e22e">block</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pem</span>.<span style="color:#a6e22e">Decode</span>(<span style="color:#a6e22e">prvKeyBytes</span>)
@@ -329,11 +302,9 @@ if (!doNotTrack) {
 	<span style="color:#a6e22e">hash</span>.<span style="color:#a6e22e">Write</span>([]byte(<span style="color:#a6e22e">originalData</span>))
 	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">VerifyPKCS1v15</span>(<span style="color:#a6e22e">pub</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">rsa</span>.<span style="color:#a6e22e">PublicKey</span>), <span style="color:#a6e22e">crypto</span>.<span style="color:#a6e22e">SHA256</span>, <span style="color:#a6e22e">hash</span>.<span style="color:#a6e22e">Sum</span>(<span style="color:#66d9ef">nil</span>), <span style="color:#a6e22e">sign</span>)
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-}</code></pre></div>
-<p>这里选用的Hash方法是Sha256，在签名和解签时都要用Sha256哦。</p>
-
+}
+</code></pre></div><p>这里选用的Hash方法是Sha256，在签名和解签时都要用Sha256哦。</p>
 <p>其实，加解密的相关代码在使用起来是比较固定的，但是一定是要记得使用的Hash方式和加解密的方法，要不然&ndash;嘿嘿&ndash;那真是调试到欲哭无泪呀。</p>
-
 <p>3 经过一层封装，使用起来就很方便啦，下面测试一下。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestSignAndVerify</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>)  {
 	<span style="color:#a6e22e">sk</span>, <span style="color:#a6e22e">pk</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">GenerateKey</span>(<span style="color:#ae81ff">1024</span>)
@@ -354,9 +325,8 @@ if (!doNotTrack) {
 	} <span style="color:#66d9ef">else</span> {
 		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%+v&#34;</span>, <span style="color:#a6e22e">err</span>)
 	}
-}</code></pre></div>
-<p>上述代码可在<a href="https://github.com/Ksloveyuan/rsautil" target="_blank">ksloveyuan/rsautil</a>查看。</p>
-
+}
+</code></pre></div><p>上述代码可在<a href="https://github.com/Ksloveyuan/rsautil">ksloveyuan/rsautil</a>查看。</p>
 <p>4 接着，我用echo写了一个简单的server端。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
@@ -393,9 +363,8 @@ if (!doNotTrack) {
 	})
 
 	<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Start</span>(<span style="color:#e6db74">&#34;:1323&#34;</span>))
-}</code></pre></div>
-<h2 id="前端实现">前端实现</h2>
-
+}
+</code></pre></div><h2 id="前端实现">前端实现</h2>
 <p>前端的主要工作是发起请求，同时附带请求参数的签名。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">crypto</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;crypto&#39;</span>)
 <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">request</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;request&#39;</span>)
@@ -436,23 +405,18 @@ if (!doNotTrack) {
 }
 
 <span style="color:#a6e22e">action</span>()
-</code></pre></div>
-<p>其中request第三方包，crypto是nodejs自带的库。</p>
 
-<p>代码中需要注意的地方有两点:
-1. 选用的签名方法一定要是<strong>RSA-SHA256</strong>，否则的话，和后端就对不上了。
-2. 使用的私钥的格式参数虽然是默认参数，但最好显示指定哈。</p>
-
-<p>以上demo的完整代码可在<a href="https://github.com/Ksloveyuan/ApiSecurityDemo" target="_blank">ksloveyuan/ApiSecurityDemo</a>中查看，欢迎star哈。</p>
-
+</code></pre></div><p>其中request第三方包，crypto是nodejs自带的库。</p>
+<p>代码中需要注意的地方有两点:</p>
+<ol>
+<li>选用的签名方法一定要是<strong>RSA-SHA256</strong>，否则的话，和后端就对不上了。</li>
+<li>使用的私钥的格式参数虽然是默认参数，但最好显示指定哈。</li>
+</ol>
+<p>以上demo的完整代码可在<a href="https://github.com/Ksloveyuan/ApiSecurityDemo">ksloveyuan/ApiSecurityDemo</a>中查看，欢迎star哈。</p>
 <h1 id="写在最后">写在最后</h1>
-
 <p>关于私钥的保存，明文HardCode在代码里自然是一个安全隐患。</p>
-
-<p>这一点，一方面可以保存在文件里，使用时读取，密钥的安全由保管的人负责（*话说ssh密钥登录就是这样*）;或者是对私钥再做一层AES的加密，每次使用时输入AES加密的Keyword。</p>
-
+<p>这一点，一方面可以保存在文件里，使用时读取，密钥的安全由保管的人负责（<em>话说ssh密钥登录就是这样</em>）;或者是对私钥再做一层AES的加密，每次使用时输入AES加密的Keyword。</p>
 <p>话说回来，安全攻防是没有尽头的，主要还是要看要保证的安全级别而定。</p>
-
 <p>公司前端的同事，对目前的安全保证已经很满意了。</p>
 </div>
 
@@ -539,7 +503,7 @@ if (!doNotTrack) {
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p>All rights reserved by &copy; 2019-2020 海之方 </p>
+  <p>All rights reserved by &copy; 2019-2021 海之方 </p>
 </div>
 
         </div>

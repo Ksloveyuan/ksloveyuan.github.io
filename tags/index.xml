@@ -1,15 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on 稀里稀里哗啦啦</title>
     <link>http://www.example.com/tags/</link>
     <description>Recent content in Tags on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 26 Feb 2020 22:36:17 +0800</lastBuildDate>
-    
-	<atom:link href="http://www.example.com/tags/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 26 Feb 2020 22:36:17 +0800</lastBuildDate><atom:link href="http://www.example.com/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>docker</title>
       <link>http://www.example.com/tags/docker/</link>
@@ -38,7 +34,7 @@
     </item>
     
     <item>
-      <title>Thinking</title>
+      <title>thinking</title>
       <link>http://www.example.com/tags/thinking/</link>
       <pubDate>Thu, 16 Jan 2020 22:40:17 +0800</pubDate>
       

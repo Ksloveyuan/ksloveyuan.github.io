@@ -1,15 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>排错笔记 on 稀里稀里哗啦啦</title>
     <link>http://www.example.com/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/</link>
     <description>Recent content in 排错笔记 on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 12 Aug 2019 23:48:17 +0800</lastBuildDate>
-    
-	<atom:link href="http://www.example.com/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Mon, 12 Aug 2019 23:48:17 +0800</lastBuildDate><atom:link href="http://www.example.com/categories/%E6%8E%92%E9%94%99%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>记一次golang程序CPU高的排查过程</title>
       <link>http://www.example.com/posts/golang_high_cpu/</link>

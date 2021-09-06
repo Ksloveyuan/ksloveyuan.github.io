@@ -1,26 +1,22 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>docker on 稀里稀里哗啦啦</title>
     <link>http://www.example.com/tags/docker/</link>
     <description>Recent content in docker on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 26 Feb 2020 22:36:17 +0800</lastBuildDate>
-    
-	<atom:link href="http://www.example.com/tags/docker/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 26 Feb 2020 22:36:17 +0800</lastBuildDate><atom:link href="http://www.example.com/tags/docker/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>手把手教你写一个完美的Golang Dockerfile</title>
       <link>http://www.example.com/posts/golang_dockerfile/</link>
       <pubDate>Wed, 26 Feb 2020 22:36:17 +0800</pubDate>
       
       <guid>http://www.example.com/posts/golang_dockerfile/</guid>
-      <description>引言 对于dockerfile而言，何为完美? 我认为应该满足以下三点： - 体积小 - 构建快 - 够安全
-话说不说，直接上拿走可用的Dockerfile。
-FROMgolang:1.13.5-alpine3.10 AS builderWORKDIR/buildRUN adduser -u 10001 -D app-runnerENVGOPROXY https://goproxy.cnCOPY go.mod .COPY go.sum .RUN go mod downloadCOPY . .RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o your-application .FROMalpine:3.10 AS finalWORKDIR/appCOPY --from=builder /build/your-application /app/#COPY --from=builder /build/config /app/configCOPY --from=builder /etc/passwd /etc/passwdCOPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/USER app-runnerENTRYPOINT[&amp;#34;/app/your-application&amp;#34;] 逐行拆解 首先，这个dockerfile分为builder和final两部分。
-builder选择了golang:1.13.5-alpine3.10作为编译的基础镜像，相比于golang:1.13, 一方面是因为它体积更小，另一方面是我发现golang:1.13的编译结果，在alpine:3.10中会报not found的错误，虽说有人提供了其它的解决方案，但是能直接避免，为啥不避免呢。
-RUN adduser -u 10001 -D app-runner  接着是创建了一个app-runner的用户, -D表示无密码。
+      <description>引言 对于dockerfile而言，何为完美? 我认为应该满足以下三点：
+ 体积小 构建快 够安全  话说不说，直接上拿走可用的Dockerfile。
+FROMgolang:1.13.5-alpine3.10 AS builderWORKDIR/buildRUN adduser -u 10001 -D app-runnerENV GOPROXY https://goproxy.cnCOPY go.mod .COPY go.sum .RUN go mod downloadCOPY . .RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o your-application .FROMalpine:3.10 AS finalWORKDIR/appCOPY --from=builder /build/your-application /app/#COPY --from=builder /build/config /app/configCOPY --from=builder /etc/passwd /etc/passwdCOPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/USERapp-runnerENTRYPOINT [&amp;#34;/app/your-application&amp;#34;]逐行拆解 首先，这个dockerfile分为builder和final两部分。
+builder选择了golang:1.13.5-alpine3.10作为编译的基础镜像，相比于golang:1.13, 一方面是因为它体积更小，另一方面是我发现golang:1.13的编译结果，在alpine:3.10 中会报not found的错误，虽说有人提供了其它的解决方案，但是能直接避免，为啥不避免呢。
+RUN adduser -u 10001 -D app-runner 接着是创建了一个app-runner的用户, -D表示无密码。
 此用户的信息是是需要拷到final中，作为应用程序的启动用户。这是为了避免使用container中的默认用户root，那可是有安全漏洞的，详细解释，可以参考这篇medium上的文章Processes In Containers Should Not Run As Root</description>
     </item>
     

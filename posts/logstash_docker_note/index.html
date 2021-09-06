@@ -11,7 +11,7 @@
 <meta property='og:site_name' content='稀里稀里哗啦啦'>
 <meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='ELK'><meta property='article:tag' content='笔记'><meta property='article:published_time' content='2019-06-29T00:43:12&#43;08:00'/><meta property='article:modified_time' content='2019-06-29T00:43:12&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.55.6" />
+<meta name="generator" content="Hugo 0.78.2" />
 
   <title>Logstash Docker部署的踩坑笔记 • 海之方</title>
   <link rel='canonical' href='http://www.example.com/posts/logstash_docker_note/'>
@@ -66,15 +66,7 @@ if (!doNotTrack) {
       <ul><li class='item'>
   <a href='/'>Home</a></li><li class='item'>
   <a href='/posts/'>Posts</a></li><li class='item'>
-  <a href='/authors/me/'>About Me</a></li><li class='item has-children'>
-  <a href=''>Other Blogs</a><button class='sub-menu-toggler'>
-    <span class='screen-reader-text'>expand sub menu</span>
-    <span class='sign'></span>
-  </button>
-
-  <ul class='sub-menu'><li class='item'>
-  <a href='https://www.jianshu.com/u/7838dc3b4190'>简书</a></li><li class='item'>
-  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li></ul>
+  <a href='/authors/me/'>About Me</a></li></ul>
     </div>
   </nav>
 
@@ -107,7 +99,7 @@ if (!doNotTrack) {
       </li><li>
         <a href='/tags/sql/' style='font-size:1em'>sql</a>
       </li><li>
-        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>Thinking</a>
+        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>thinking</a>
       </li><li>
         <a href='/tags/vue.js/' style='font-size:1em'>Vue.js</a>
       </li><li>
@@ -152,8 +144,6 @@ if (!doNotTrack) {
 </button>
     <ul><li class='item'>
         <a href='https://github.com/Ksloveyuan/channelx'>channelx</a>
-      </li><li class='item'>
-        <a href='https://github.com/Ksloveyuan/gorm-ex'>gorm-ex</a>
       </li><li class='item'>
         <a href='https://ksloveyuan.gitbook.io/vue-code-snippet/'>Vue code snippet</a>
       </li><li class='item'>
@@ -224,15 +214,11 @@ One min read
 
   <div class='container entry-content'>
   <p>这周要开始做埋点日记的分析，初步调研后，准备用filebeat+logstash+mongodb来做。</p>
-
 <p>基于golang写的filebeat比较轻量，解压后就可以直接用了，而logstash还有好多依赖要装，所以毫不犹豫就选择用docker来部署。</p>
-
-<p>因为是现学现用，时间也有些紧，再加上完全是新手入门，看到文档<a href="https://www.elastic.co/guide/en/logstash/current/docker-config.html#_settings" target="_blank">Configuaring Logstash for Docker</a>中Bind-mounted settings files这段后，</p>
-
-<p><img src="https://i.loli.net/2019/09/19/G2dXZEFYlCTfmQN.png" alt="" /></p>
-
+<p>因为是现学现用，时间也有些紧，再加上完全是新手入门，看到文档<a href="https://www.elastic.co/guide/en/logstash/current/docker-config.html#_settings">Configuaring Logstash for Docker</a>中Bind-mounted settings files这段后，</p>
+<p><img src="https://i.loli.net/2019/09/19/G2dXZEFYlCTfmQN.png" alt=""></p>
 <p>就自己定义了一个logstash.yml</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-conf" data-lang="conf">input{
+<pre><code class="language-conf" data-lang="conf">input{
   beats {
     port =&gt; 5044
   }
@@ -240,35 +226,27 @@ One min read
 
 output{
    mongodb {
-    uri =&gt; &#34;mongodb://localhost:27017&#34;
-    database =&gt; &#34;spot_logs&#34;
-    collection =&gt; &#34;raw_data&#34;
+    uri =&gt; &quot;mongodb://localhost:27017&quot;
+    database =&gt; &quot;spot_logs&quot;
+    collection =&gt; &quot;raw_data&quot;
   }
-}</code></pre></div>
-<p>心想着这样通过volume挂进去就可以用了。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run  --rm -it -v ./logstash.yml:/usr/share/logstash/config/logstash.yml docker.elastic.co/logstash/logstash:7.2.0</code></pre></div>
-<p><strong>然后，悲剧开始了</strong>~~~</p>
-
+}
+</code></pre><p>心想着这样通过volume挂进去就可以用了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run  --rm -it -v ./logstash.yml:/usr/share/logstash/config/logstash.yml docker.elastic.co/logstash/logstash:7.2.0
+</code></pre></div><p><strong>然后，悲剧开始了</strong>~~~</p>
 <p>首先，我定义的其实是一个.<strong>conf</strong>文件，而不是logstash.yml。</p>
-
 <p>于是，刚一启动就报错了。</p>
-
 <p>当我经过一番搜索，知道这其实是一个conf文件后,就直接改把它的后缀名改成了.conf,然后执行了</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run --rm --network host -it -v ./logstash.conf:/usr/share/logstash/config/logstash.conf docker.elastic.co/logstash/logstash:7.2.0</code></pre></div>
-<p>然后，“奇迹发生”了~~filebeat发过来日志，logstash都能收到，而且还打印了出来（*好神奇，那可是我第一次跑通filebeat+logstash*），但是还没开心1分钟，就发现mongodb里根本没数据。</p>
-
-<p>然后，没有方向的我，开始了一通乱试（*略去不表，其实都是泪*），白白耗费了一个下午加晚上也没找到原因（*那时真是心情沉重，想着这个sprint估计有点难交差了！*）。</p>
-
-<p>回到家后，洗了澡，重新开始思考这个问题的时候，我突然意识到，可能我设置的配置根本就不起作用，现在的行为没准是logstash镜像的默认行为。（*在时间压力下，现学现用，很容易钻牛角尖，这时暂停下来，平静心情，换个思路很重要！*）</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker run --rm --network host -it -v ./logstash.conf:/usr/share/logstash/config/logstash.conf docker.elastic.co/logstash/logstash:7.2.0
+</code></pre></div><p>然后，“奇迹发生”了~~filebeat发过来日志，logstash都能收到，而且还打印了出来（<em>好神奇，那可是我第一次跑通filebeat+logstash</em>），但是还没开心1分钟，就发现mongodb里根本没数据。</p>
+<p>然后，没有方向的我，开始了一通乱试（<em>略去不表，其实都是泪</em>），白白耗费了一个下午加晚上也没找到原因（<em>那时真是心情沉重，想着这个sprint估计有点难交差了！</em>）。</p>
+<p>回到家后，洗了澡，重新开始思考这个问题的时候，我突然意识到，可能我设置的配置根本就不起作用，现在的行为没准是logstash镜像的默认行为。（<em>在时间压力下，现学现用，很容易钻牛角尖，这时暂停下来，平静心情，换个思路很重要！</em>）</p>
 <p>查了一下logstash官方的dockerfile也没发现什么，到是在一篇搜索到文章中，发现可能是e受容器里的pipelines.yml的影响。</p>
-
 <p>当我打开容器里的/usr/share/logstash/config/pipelines.yml的时候，看见：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- pipeline.id: main
-  path.config: <span style="color:#e6db74">&#34;/usr/share/logstash/pipeline&#34;</span></code></pre></div>
-<p>再打开
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">pipeline.id</span>: <span style="color:#ae81ff">main</span>
+  <span style="color:#f92672">path.config</span>: <span style="color:#e6db74">&#34;/usr/share/logstash/pipeline&#34;</span>
+</code></pre></div><p>再打开
 /usr/share/logstash/pipeline，看到：</p>
-
 <pre><code>input {
   beats {
     port =&gt; 5044
@@ -280,67 +258,51 @@ output {
     codec =&gt; rubydebug
   }
 }
-</code></pre>
-
-<p><strong>真是一口老血喷出来~心想好坑呀，隐藏的这么深！</strong></p>
-
+</code></pre><p><strong>真是一口老血喷出来~心想好坑呀，隐藏的这么深！</strong></p>
 <p>于是，仿造这个pipelines.yml，也写了个pipelines.yml，把config指向自己的配置。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- pipeline.id: main
-  path.config: <span style="color:#e6db74">&#34;/usr/share/logstash/config/logstash.conf&#34;</span>
-  pipeline.workers: <span style="color:#ae81ff">3</span></code></pre></div>
-<p>再挂载进docker启动后，看到mongodb的报错信息后，就知道自己的设置终于生效了。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#f92672">pipeline.id</span>: <span style="color:#ae81ff">main</span>
+  <span style="color:#f92672">path.config</span>: <span style="color:#e6db74">&#34;/usr/share/logstash/config/logstash.conf&#34;</span>
+  <span style="color:#f92672">pipeline.workers</span>: <span style="color:#ae81ff">3</span>
+</code></pre></div><p>再挂载进docker启动后，看到mongodb的报错信息后，就知道自己的设置终于生效了。</p>
 <p>报错的原因，是因为logstash-output-mongodb这个output默认是没有的，需要自己装好，解决方法也很简单，自定义一个dockerfile，做一个安装好logstash-output-mongodb的镜像就好。</p>
-
 <p>同时，在这里我也把自己写的放在config文件里的pipelines.yml和logstash.conf拷了进去，具体内容如下；</p>
-
 <pre><code>FROM docker.elastic.co/logstash/logstash:7.2.0
 RUN rm -f /usr/share/logstash/pipeline/logstash.conf
 COPY ./config/ /usr/share/logstash/config/
 RUN logstash-plugin install logstash-output-mongodb
-</code></pre>
+</code></pre><p>然后运行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker build -f logstash.dockerfile -t mine/logstash:1.0
+</code></pre></div><p>最后定义了一个docker-compose.logstash.yml文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">version</span>: <span style="color:#e6db74">&#39;3&#39;</span>
 
-<p>然后运行：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker build -f logstash.dockerfile -t mine/logstash:1.0</code></pre></div>
-<p>最后定义了一个docker-compose.logstash.yml文件：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">version: <span style="color:#e6db74">&#39;3&#39;</span>
-
-services:
-  logstash:
-    image: mine/logstash:<span style="color:#ae81ff">1.0</span>
-    restart: always
-    container_name: finxos_logstash
-    network_mode: <span style="color:#e6db74">&#39;host&#39;</span>
-    volumes:
+<span style="color:#f92672">services</span>:
+  <span style="color:#f92672">logstash</span>:
+    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">mine/logstash:1.0</span>
+    <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">always</span>
+    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">finxos_logstash</span>
+    <span style="color:#f92672">network_mode</span>: <span style="color:#e6db74">&#39;host&#39;</span>
+    <span style="color:#f92672">volumes</span>:
       - <span style="color:#e6db74">&#34;$PWD/config/logstash.conf:/usr/share/logstash/config/logstash.conf&#34;</span>
-    depends_on:
-      - mongodb
+    <span style="color:#f92672">depends_on</span>:
+      - <span style="color:#ae81ff">mongodb</span>
 
-  mongodb:
-    image: mongo:<span style="color:#ae81ff">4.0</span>
-    restart: always
-    container_name: finxos_mongodb
-    volumes:
+  <span style="color:#f92672">mongodb</span>:
+    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">mongo:4.0</span>
+    <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">always</span>
+    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">finxos_mongodb</span>
+    <span style="color:#f92672">volumes</span>:
       - <span style="color:#e6db74">&#34;$PWD/mongodb_data:/data/db&#34;</span>
-    network_mode: <span style="color:#e6db74">&#39;host&#39;</span></code></pre></div>
-<p>这样就可以通过下面的命令一键启动了。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker-compose -f docker-compose.logstash.yml up</code></pre></div>
-<h1 id="写在最后">写在最后</h1>
-
+    <span style="color:#f92672">network_mode</span>: <span style="color:#e6db74">&#39;host&#39;</span>
+</code></pre></div><p>这样就可以通过下面的命令一键启动了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker-compose -f docker-compose.logstash.yml up
+</code></pre></div><h1 id="写在最后">写在最后</h1>
 <p>在下笔前，我是心想着写下自己的踩坑经验，估计会对他人有用。</p>
-
-<p>但是写着的时候，才发现我觉得很坑的默认行为，其实在<a href="https://www.elastic.co/guide/en/logstash/current/docker-config.html#_pipeline_configuration" target="_blank">Configuaring Logstash for Docker</a>的Pipeline Configuration章节里有提到。</p>
-
-<p>而当时的我急着赶紧用起来，看到Pipeline也不知道是干什么的（*其实现在也不是很清楚*），就直接跳到Settings章节了。</p>
-
+<p>但是写着的时候，才发现我觉得很坑的默认行为，其实在<a href="https://www.elastic.co/guide/en/logstash/current/docker-config.html#_pipeline_configuration">Configuaring Logstash for Docker</a>的Pipeline Configuration章节里有提到。</p>
+<p>而当时的我急着赶紧用起来，看到Pipeline也不知道是干什么的（<em>其实现在也不是很清楚</em>），就直接跳到Settings章节了。</p>
 <p><strong>真的是要好好看文档！抓住重要信息呀！</strong></p>
-
 <p>但是再一想，即再来一次，以当时的我刚刚接触filebeat+logstash, docker也好久不用了的状态，还面临着完成业务需求的紧迫感，大概率还是会略过这段。</p>
-
 <p>现学现用，真的很痛苦！</p>
-
 <p>这期间，关键是要准确的定位问题，然后逢山开路，遇水搭桥，其实也不失为一次蜕变的体验！</p>
-
 <p>而<strong>关键的关键在于，要相信自己最终还是会搞定的</strong>。</p>
 </div>
 
@@ -417,7 +379,7 @@ services:
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p>All rights reserved by &copy; 2019-2020 海之方 </p>
+  <p>All rights reserved by &copy; 2019-2021 海之方 </p>
 </div>
 
         </div>

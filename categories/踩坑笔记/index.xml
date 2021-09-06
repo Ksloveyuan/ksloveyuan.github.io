@@ -1,15 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>踩坑笔记 on 稀里稀里哗啦啦</title>
     <link>http://www.example.com/categories/%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/</link>
     <description>Recent content in 踩坑笔记 on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sat, 29 Jun 2019 00:43:12 +0800</lastBuildDate>
-    
-	<atom:link href="http://www.example.com/categories/%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sat, 29 Jun 2019 00:43:12 +0800</lastBuildDate><atom:link href="http://www.example.com/categories/%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Logstash Docker部署的踩坑笔记</title>
       <link>http://www.example.com/posts/logstash_docker_note/</link>

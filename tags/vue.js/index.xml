@@ -1,15 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Vue.js on 稀里稀里哗啦啦</title>
     <link>http://www.example.com/tags/vue.js/</link>
     <description>Recent content in Vue.js on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 13 Jan 2020 22:42:15 +0800</lastBuildDate>
-    
-	<atom:link href="http://www.example.com/tags/vue.js/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Mon, 13 Jan 2020 22:42:15 +0800</lastBuildDate><atom:link href="http://www.example.com/tags/vue.js/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>[翻译] VUE：如何把slot从父组件传到子组件</title>
       <link>http://www.example.com/posts/pass-slots-from-parent-to-child-components/</link>
@@ -18,10 +14,10 @@
       <guid>http://www.example.com/posts/pass-slots-from-parent-to-child-components/</guid>
       <description>原文地址： Vue: Pass Slots through from Parent to Child Components
 场景 有A、B、C三个component，分别包含不同的slot:
-const A = { template: `&amp;lt;div&amp;gt;&amp;lt;slot name=&amp;#34;a&amp;#34;&amp;gt;Default A Content&amp;lt;/slot&amp;gt;&amp;lt;/div&amp;gt;` } const B = { template: `&amp;lt;div&amp;gt;&amp;lt;slot name=&amp;#34;b&amp;#34;&amp;gt;Default B Content&amp;lt;/slot&amp;gt;&amp;lt;/div&amp;gt;` } const C = { template: `&amp;lt;div&amp;gt;&amp;lt;slot name=&amp;#34;c&amp;#34;&amp;gt;Default C Content&amp;lt;/slot&amp;gt;&amp;lt;/div&amp;gt;` }  还有一个wrapper component W，代码如下：
-Vue.component(&amp;#39;W&amp;#39;, { props: [&amp;#39;child&amp;#39;], template: `&amp;lt;component :is=&amp;#34;child&amp;#34; /&amp;gt;` })  A, B, C会传入W，但问题是W并不知道A, B, C会用哪个slot。
+const A = { template: `&amp;lt;div&amp;gt;&amp;lt;slot name=&amp;#34;a&amp;#34;&amp;gt;Default A Content&amp;lt;/slot&amp;gt;&amp;lt;/div&amp;gt;` } const B = { template: `&amp;lt;div&amp;gt;&amp;lt;slot name=&amp;#34;b&amp;#34;&amp;gt;Default B Content&amp;lt;/slot&amp;gt;&amp;lt;/div&amp;gt;` } const C = { template: `&amp;lt;div&amp;gt;&amp;lt;slot name=&amp;#34;c&amp;#34;&amp;gt;Default C Content&amp;lt;/slot&amp;gt;&amp;lt;/div&amp;gt;` } 还有一个wrapper component W，代码如下：
+Vue.component(&amp;#39;W&amp;#39;, { props: [&amp;#39;child&amp;#39;], template: `&amp;lt;component :is=&amp;#34;child&amp;#34; /&amp;gt;` }) A, B, C会传入W，但问题是W并不知道A, B, C会用哪个slot。
 问题 如果你尝试着这样写，
-&amp;lt;W :child=&amp;#34;A&amp;#34;&amp;gt; &amp;lt;div slot=&amp;#34;a&amp;#34;&amp;gt;Special A Content&amp;lt;/div&amp;gt; &amp;lt;/W&amp;gt;  输出的结果确是Default A Content, 原因是slot a被当成了W的slot，而不是A的slot。</description>
+&amp;lt;W :child=&amp;#34;A&amp;#34;&amp;gt; &amp;lt;div slot=&amp;#34;a&amp;#34;&amp;gt;Special A Content&amp;lt;/div&amp;gt; &amp;lt;/W&amp;gt; 输出的结果确是Default A Content, 原因是slot a被当成了W的slot，而不是A的slot。</description>
     </item>
     
   </channel>

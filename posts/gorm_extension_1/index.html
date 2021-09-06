@@ -11,7 +11,7 @@
 <meta property='og:site_name' content='稀里稀里哗啦啦'>
 <meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='golang'><meta property='article:tag' content='gorm'><meta property='article:published_time' content='2019-07-13T15:46:36&#43;08:00'/><meta property='article:modified_time' content='2019-07-13T15:46:36&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.55.6" />
+<meta name="generator" content="Hugo 0.78.2" />
 
   <title>Gorm的使用心得和一些常用扩展(一) • 海之方</title>
   <link rel='canonical' href='http://www.example.com/posts/gorm_extension_1/'>
@@ -66,15 +66,7 @@ if (!doNotTrack) {
       <ul><li class='item'>
   <a href='/'>Home</a></li><li class='item'>
   <a href='/posts/'>Posts</a></li><li class='item'>
-  <a href='/authors/me/'>About Me</a></li><li class='item has-children'>
-  <a href=''>Other Blogs</a><button class='sub-menu-toggler'>
-    <span class='screen-reader-text'>expand sub menu</span>
-    <span class='sign'></span>
-  </button>
-
-  <ul class='sub-menu'><li class='item'>
-  <a href='https://www.jianshu.com/u/7838dc3b4190'>简书</a></li><li class='item'>
-  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li></ul>
+  <a href='/authors/me/'>About Me</a></li></ul>
     </div>
   </nav>
 
@@ -107,7 +99,7 @@ if (!doNotTrack) {
       </li><li>
         <a href='/tags/sql/' style='font-size:1em'>sql</a>
       </li><li>
-        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>Thinking</a>
+        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>thinking</a>
       </li><li>
         <a href='/tags/vue.js/' style='font-size:1em'>Vue.js</a>
       </li><li>
@@ -152,8 +144,6 @@ if (!doNotTrack) {
 </button>
     <ul><li class='item'>
         <a href='https://github.com/Ksloveyuan/channelx'>channelx</a>
-      </li><li class='item'>
-        <a href='https://github.com/Ksloveyuan/gorm-ex'>gorm-ex</a>
       </li><li class='item'>
         <a href='https://ksloveyuan.gitbook.io/vue-code-snippet/'>Vue code snippet</a>
       </li><li class='item'>
@@ -226,44 +216,30 @@ if (!doNotTrack) {
     <span>Table of Contents</span>
   </summary>
   <nav id="TableOfContents">
-<ul>
-<li><a href="#准备">准备</a></li>
-<li><a href="#新增">新增</a></li>
-<li><a href="#更新">更新</a>
-<ul>
-<li><a href="#全量更新">全量更新</a></li>
-<li><a href="#条件更新">条件更新</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#全量更新">全量更新</a></li>
+    <li><a href="#条件更新">条件更新</a></li>
+  </ul>
 </nav>
 </details>
 
 
   <div class='container entry-content'>
   <p>Gorm是golang的一个orm框架，它提供了对数据库操作的封装，使用起来相当便利。</p>
-
 <p>但在项目开发中，代码写的多了，还是发现在它之上还是有再次封装的空间，比如说添加错误日志、或者是一些使用频率非常高的对单个表的条件查询、分页查询、数据更新等。再则是，关于相同的功能操作，gorm也提供多种实现方式，对新学多少有些困惑，不知道该用哪个好。</p>
-
 <p>于是，我基于自己在项目中的使用经验和编码习惯，做了如下一些扩展，供大家参考。</p>
-
 <h1 id="准备">准备</h1>
-
 <p>为了兼容gorm的使用方法，我使用了内嵌类型来扩展。 定义如下：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">DBExtension</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#f92672">*</span><span style="color:#a6e22e">gorm</span>.<span style="color:#a6e22e">DB</span>
 	<span style="color:#a6e22e">logger</span> <span style="color:#a6e22e">DBLogger</span>
-}</code></pre></div>
-<p>这样子定义的wrapper对象是最小侵入式的扩展，不仅可以直接点出gorm的原有方法，也可以点出扩展的方法。</p>
-
+}
+</code></pre></div><p>这样子定义的wrapper对象是最小侵入式的扩展，不仅可以直接点出gorm的原有方法，也可以点出扩展的方法。</p>
 <h1 id="新增">新增</h1>
-
 <p>关于新建数据，我建议使用<strong>Save</strong>方法，当匹配主键的数据不存在时，它的效果是插入一条新数据，而当匹配主键的数据存在时，则<strong>更新全部字段</strong>，再说一遍，<strong>它会更新全部字段</strong>！</p>
-
 <p><strong>无论字段是否做了修改或者是否是定义类型的默认值</strong>。</p>
-
 <p>请再次注意：默认值是否生效在gorm的不同方法中处理的方式是不一样的，需要非常小心才行。</p>
-
-<p>举个例子，如果你定义了一个User的结构体，里面有个Age的字段类型是int。（*注：以后的例子，都默认已定义这个结构体*）</p>
+<p>举个例子，如果你定义了一个User的结构体，里面有个Age的字段类型是int。（<em>注：以后的例子，都默认已定义这个结构体</em>）</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">User</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">Id</span>           <span style="color:#66d9ef">int</span>     <span style="color:#e6db74">`gorm:&#34;column:id; type:int(11);primary_key&#34;`</span>
 	<span style="color:#a6e22e">Name</span>         <span style="color:#66d9ef">string</span>  <span style="color:#e6db74">`gorm:&#34;column:name; type:varchar(32);&#34;`</span>
@@ -273,17 +249,12 @@ if (!doNotTrack) {
 
 <span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">User</span>) <span style="color:#a6e22e">TableName</span>() <span style="color:#66d9ef">string</span> {
 	<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;test.user&#34;</span>
-}</code></pre></div>
-<p>++请特别注意Id的定义中的<strong>primary_key</strong>, 如果没有加个这个Save方法是无法正常工作的。++</p>
-
+}
+</code></pre></div><p>++请特别注意Id的定义中的<strong>primary_key</strong>, 如果没有加个这个Save方法是无法正常工作的。++</p>
 <p>如果在定义时，没有给Age赋值，那么这条数据的Age将被置为0。</p>
-
 <p>对于新增数据，可能问题不大，但是对于数据更新，那这就可就是一个隐晦的bug了！</p>
-
 <p>那既然Save方法有这样一个坑，为什么还要用它呢？</p>
-
 <p>简单来说，不用显示的判断是新增数据和更新数据，可以让代码更加简洁，利大于弊，不是吗？</p>
-
 <p>扩展代码如下,增加了一些错误判断和日志：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">TableNameAble</span> <span style="color:#66d9ef">interface</span> {
 	<span style="color:#a6e22e">TableName</span>() <span style="color:#66d9ef">string</span>
@@ -301,34 +272,31 @@ if (!doNotTrack) {
 		<span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">LogErrorc</span>(<span style="color:#e6db74">&#34;mysql&#34;</span>, <span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;Failed to save %s, the value is %+v&#34;</span>, <span style="color:#a6e22e">tableNameAble</span>.<span style="color:#a6e22e">TableName</span>(), <span style="color:#a6e22e">value</span>))
 	}
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-}</code></pre></div>
-<p>使用代码如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">user1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Id</span>:<span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">Name</span>:<span style="color:#e6db74">&#34;Jeremy&#34;</span>, <span style="color:#a6e22e">Age</span>: <span style="color:#ae81ff">30</span>, <span style="color:#a6e22e">Description</span>: <span style="color:#e6db74">&#34;A gopher&#34;</span>}
+}
+</code></pre></div><p>使用代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
+<span style="color:#a6e22e">user1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Id</span>:<span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">Name</span>:<span style="color:#e6db74">&#34;Jeremy&#34;</span>, <span style="color:#a6e22e">Age</span>: <span style="color:#ae81ff">30</span>, <span style="color:#a6e22e">Description</span>: <span style="color:#e6db74">&#34;A gopher&#34;</span>}
 
 <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">SaveOne</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">instInfo</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
     <span style="color:#75715e">// error handling
 </span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-}</code></pre></div>
-<p>当记录不存在时，执行的Sql语句是：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> test.<span style="color:#66d9ef">user</span>(id ,name, age, description) <span style="color:#66d9ef">values</span>(<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;Jeremy&#34;</span>, <span style="color:#ae81ff">30</span>, <span style="color:#e6db74">&#34;A gopher&#34;</span>)</code></pre></div>
-<p>当记录存在时，执行的语句就是：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Jeremy&#34;</span>, age <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>, description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A gohper&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span></code></pre></div>
-<p>这样写新建，还兼顾了全字段更新的情况，是不是一举两得呢？</p>
+}
 
+</code></pre></div><p>当记录不存在时，执行的Sql语句是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> test.<span style="color:#66d9ef">user</span>(id ,name, age, description) <span style="color:#66d9ef">values</span>(<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;Jeremy&#34;</span>, <span style="color:#ae81ff">30</span>, <span style="color:#e6db74">&#34;A gopher&#34;</span>)
+</code></pre></div><p>当记录存在时，执行的语句就是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Jeremy&#34;</span>, age <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>, description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A gohper&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</code></pre></div><p>这样写新建，还兼顾了全字段更新的情况，是不是一举两得呢？</p>
 <p>PS: 如果主键Id是一个自增列，在新建时，可以不用给Id赋值。当数据成功插入后，这条数据的Id还会自动更新到Id字段，这个特性在一些场景下特别有用。</p>
-
 <h1 id="更新">更新</h1>
-
-<p>首先，按照更新的字段的范围可以分为：
-- 全量更新
-- 条件更新</p>
-
+<p>首先，按照更新的字段的范围可以分为：</p>
+<ul>
+<li>全量更新</li>
+<li>条件更新</li>
+</ul>
 <p>下面将分这两种情况分别说明：</p>
-
 <h2 id="全量更新">全量更新</h2>
-
 <p>SaveOne方法是<strong>全量更新</strong>，但大部分情况是，可能只是更新某条数据的部分字段，又或者是只想更新改过的字段。关于这部分操作，gorm虽然提供了很多操作方法，但也是最让人困惑的。</p>
-
 <p>在这种场景我常用的处理方式有两种，一是定义一个专门的结构体，如：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">UserDesc</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">Id</span>           <span style="color:#66d9ef">int</span>     <span style="color:#e6db74">`gorm:&#34;column:id; type:int(11);primary_key&#34;`</span>
@@ -337,18 +305,20 @@ if (!doNotTrack) {
 
 <span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">UserDesc</span>) <span style="color:#a6e22e">TableName</span>() <span style="color:#66d9ef">string</span> {
 	<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;test.user&#34;</span>
-}</code></pre></div>
-<p>这时就可以使用SaveOne方法，用如下方式更新：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">userDesc</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">UserDesc</span>{<span style="color:#a6e22e">Id</span>:<span style="color:#ae81ff">1</span>,  <span style="color:#a6e22e">Description</span>: <span style="color:#e6db74">&#34;A programmer&#34;</span>}
+}
+
+</code></pre></div><p>这时就可以使用SaveOne方法，用如下方式更新：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
+<span style="color:#a6e22e">userDesc</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">UserDesc</span>{<span style="color:#a6e22e">Id</span>:<span style="color:#ae81ff">1</span>,  <span style="color:#a6e22e">Description</span>: <span style="color:#e6db74">&#34;A programmer&#34;</span>}
 
 <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">SaveOne</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">userDesc</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
     <span style="color:#75715e">// error handling
 </span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-}</code></pre></div>
-<p>执行的sql语句是：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A programmer&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span></code></pre></div>
-<h2 id="条件更新">条件更新</h2>
+}
 
+</code></pre></div><p>执行的sql语句是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A programmer&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</code></pre></div><h2 id="条件更新">条件更新</h2>
 <p>但是更多的时候，是想按匹配条件更新的匹配的数据，这时SaveOne就无法满足了。于是，我做了如下扩展：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">table_name</span> =  <span style="color:#e6db74">&#34;$Table_Name$&#34;</span>
 
@@ -393,13 +363,11 @@ if (!doNotTrack) {
 	}
 
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-}</code></pre></div>
-<p>下面，我将结合Sql语句，逐一解释如何使用。</p>
-
+}
+</code></pre></div><p>下面，我将结合Sql语句，逐一解释如何使用。</p>
 <p>还是先以要执行下面这条语句为例：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A programmer&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span></code></pre></div>
-<p>现在，可以有如下几种实现方式</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A programmer&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</code></pre></div><p>现在，可以有如下几种实现方式</p>
 <ul>
 <li>写法一</li>
 </ul>
@@ -408,76 +376,65 @@ if (!doNotTrack) {
 <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Update</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">udateAttrs</span>, <span style="color:#a6e22e">condition</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
     <span style="color:#75715e">// error handling
 </span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-}</code></pre></div>
-<ul>
-<li><p>写法二</p>
+}
+</code></pre></div><ul>
+<li>写法二</li>
+</ul>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">udateAttrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Description</span>: <span style="color:#e6db74">&#34;A programmer&#34;</span>}
 <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Update</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">udateAttrs</span>, <span style="color:#e6db74">&#34;id = ?&#34;</span>, <span style="color:#ae81ff">1</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
-<span style="color:#75715e">// error handling
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-}</code></pre></div>
-<ul>
-<li>写法三
-```go
-udateAttrs := NewUpdateAttrs(&ldquo;test.user&rdquo;)
-udateAttrs[&ldquo;description&rdquo;] = &ldquo;A programmer&rdquo;</li>
-</ul>
-
-<p>if err := dw.Update(&amp;udateAttrs, &ldquo;id = ?&rdquo;, 1); err != nil{
-// error handling
-return err
+    <span style="color:#75715e">// error handling
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
 }
-```</p></li>
-
-<li><p>写法四
-```go
-udateAttrs := NewUpdateAttrs(&ldquo;test.user&rdquo;)
-udateAttrs[&ldquo;description&rdquo;] = &ldquo;A programmer&rdquo;
-condition := User{Id: 1}</p></li>
+</code></pre></div><ul>
+<li>写法三</li>
 </ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">udateAttrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewUpdateAttrs</span>(<span style="color:#e6db74">&#34;test.user&#34;</span>)
+<span style="color:#a6e22e">udateAttrs</span>[<span style="color:#e6db74">&#34;description&#34;</span>] = <span style="color:#e6db74">&#34;A programmer&#34;</span>
 
-<p>if err := dw.Update(&amp;udateAttrs, condition); err != nil{
-    // error handling
-    return err
-}</p>
-
-<pre><code>
-咋一看，四种写法很相似。那么，为什么要搞这么多种写法呢？
-
-这可是不是为了炫耀回字的几种写法, 而是因为gorm原生的Update方法对于struct的参数是会忽略默认值的。
-
-比如说，如果你想把descritpion清空，如果像下面这样写：
-
-```go
-udateAttrs := User{Description: &quot;&quot;}
-condition := User{Id: 1}
-if err := dw.Update(&amp;udateAttrs, condition); err != nil{
-    // error handling
-    return err
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Update</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">udateAttrs</span>, <span style="color:#e6db74">&#34;id = ?&#34;</span>, <span style="color:#ae81ff">1</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+    <span style="color:#75715e">// error handling
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
 }
-</code></pre>
+</code></pre></div><ul>
+<li>写法四</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">udateAttrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewUpdateAttrs</span>(<span style="color:#e6db74">&#34;test.user&#34;</span>)
+<span style="color:#a6e22e">udateAttrs</span>[<span style="color:#e6db74">&#34;description&#34;</span>] = <span style="color:#e6db74">&#34;A programmer&#34;</span>
+<span style="color:#a6e22e">condition</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Id</span>: <span style="color:#ae81ff">1</span>}
 
-<p>descritpion是不会被更新的，这是就需要写法三或者写法四了，以写法四为例</p>
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Update</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">udateAttrs</span>, <span style="color:#a6e22e">condition</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+    <span style="color:#75715e">// error handling
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+}
+</code></pre></div><p>咋一看，四种写法很相似。那么，为什么要搞这么多种写法呢？</p>
+<p>这可是不是为了炫耀回字的几种写法, 而是因为gorm原生的Update方法对于struct的参数是会忽略默认值的。</p>
+<p>比如说，如果你想把descritpion清空，如果像下面这样写：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">udateAttrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Description</span>: <span style="color:#e6db74">&#34;&#34;</span>}
+<span style="color:#a6e22e">condition</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Id</span>: <span style="color:#ae81ff">1</span>}
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Update</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">udateAttrs</span>, <span style="color:#a6e22e">condition</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
+    <span style="color:#75715e">// error handling
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+}
+</code></pre></div><p>descritpion是不会被更新的，这是就需要写法三或者写法四了，以写法四为例</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">udateAttrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewUpdateAttrs</span>(<span style="color:#e6db74">&#34;test.user&#34;</span>)
 <span style="color:#a6e22e">udateAttrs</span>[<span style="color:#e6db74">&#34;description&#34;</span>] = <span style="color:#e6db74">&#34;&#34;</span>
 <span style="color:#a6e22e">condition</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Id</span>: <span style="color:#ae81ff">1</span>}
 <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Update</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">udateAttrs</span>, <span style="color:#a6e22e">condition</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
     <span style="color:#75715e">// error handling
 </span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-}</code></pre></div>
-<p>才会如愿执行：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span></code></pre></div>
-<p>而写法二（三）的强大之处在于可以更自由的指定匹配条件，比如：</p>
+}
+</code></pre></div><p>才会如愿执行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</code></pre></div><p>而写法二（三）的强大之处在于可以更自由的指定匹配条件，比如：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">udateAttrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">User</span>{<span style="color:#a6e22e">Description</span>: <span style="color:#e6db74">&#34;A programmer&#34;</span>}
 <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dw</span>.<span style="color:#a6e22e">Update</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">udateAttrs</span>, <span style="color:#e6db74">&#34;id in (?) and age &gt; ? and description != ?&#34;</span>, []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>}, <span style="color:#ae81ff">30</span>, <span style="color:#e6db74">&#34;&#34;</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span>{
     <span style="color:#75715e">// error handling
 </span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
-}</code></pre></div>
-<p>执行的sql是：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A programmer&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#66d9ef">in</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">and</span> age <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">30</span> <span style="color:#66d9ef">and</span> description <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;&#39;</span></code></pre></div>
-<p>未完待续……</p>
-
-<p>代码地址：<a href="https://github.com/Ksloveyuan/gorm-ex" target="_blank">Github:Ksloveyuan/gorm-ex</a></p>
+}
+</code></pre></div><p>执行的sql是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> test.<span style="color:#66d9ef">user</span> <span style="color:#66d9ef">set</span> description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A programmer&#34;</span> <span style="color:#66d9ef">where</span> id <span style="color:#66d9ef">in</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">and</span> age <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">30</span> <span style="color:#66d9ef">and</span> description <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</code></pre></div><p>未完待续……</p>
+<p>代码地址：<a href="https://github.com/Ksloveyuan/gorm-ex">Github:Ksloveyuan/gorm-ex</a></p>
 </div>
 
   
@@ -574,7 +531,7 @@ if err := dw.Update(&amp;udateAttrs, condition); err != nil{
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p>All rights reserved by &copy; 2019-2020 海之方 </p>
+  <p>All rights reserved by &copy; 2019-2021 海之方 </p>
 </div>
 
         </div>

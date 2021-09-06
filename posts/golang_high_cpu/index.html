@@ -11,7 +11,7 @@
 <meta property='og:site_name' content='稀里稀里哗啦啦'>
 <meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='golang'><meta property='article:tag' content='笔记'><meta property='article:published_time' content='2019-08-12T23:48:17&#43;08:00'/><meta property='article:modified_time' content='2019-08-12T23:48:17&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.55.6" />
+<meta name="generator" content="Hugo 0.78.2" />
 
   <title>记一次golang程序CPU高的排查过程 • 海之方</title>
   <link rel='canonical' href='http://www.example.com/posts/golang_high_cpu/'>
@@ -66,15 +66,7 @@ if (!doNotTrack) {
       <ul><li class='item'>
   <a href='/'>Home</a></li><li class='item'>
   <a href='/posts/'>Posts</a></li><li class='item'>
-  <a href='/authors/me/'>About Me</a></li><li class='item has-children'>
-  <a href=''>Other Blogs</a><button class='sub-menu-toggler'>
-    <span class='screen-reader-text'>expand sub menu</span>
-    <span class='sign'></span>
-  </button>
-
-  <ul class='sub-menu'><li class='item'>
-  <a href='https://www.jianshu.com/u/7838dc3b4190'>简书</a></li><li class='item'>
-  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li></ul>
+  <a href='/authors/me/'>About Me</a></li></ul>
     </div>
   </nav>
 
@@ -107,7 +99,7 @@ if (!doNotTrack) {
       </li><li>
         <a href='/tags/sql/' style='font-size:1em'>sql</a>
       </li><li>
-        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>Thinking</a>
+        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>thinking</a>
       </li><li>
         <a href='/tags/vue.js/' style='font-size:1em'>Vue.js</a>
       </li><li>
@@ -152,8 +144,6 @@ if (!doNotTrack) {
 </button>
     <ul><li class='item'>
         <a href='https://github.com/Ksloveyuan/channelx'>channelx</a>
-      </li><li class='item'>
-        <a href='https://github.com/Ksloveyuan/gorm-ex'>gorm-ex</a>
       </li><li class='item'>
         <a href='https://ksloveyuan.gitbook.io/vue-code-snippet/'>Vue code snippet</a>
       </li><li class='item'>
@@ -227,36 +217,21 @@ One min read
   <summary class='title'>
     <span>Table of Contents</span>
   </summary>
-  <nav id="TableOfContents">
-<ul>
-<li><a href="#前言">前言</a></li>
-<li><a href="#分析">分析</a></li>
-<li><a href="#解决方法">解决方法</a></li>
-<li><a href="#总结">总结</a></li>
-<li><a href="#参考文章">参考文章</a></li>
-</ul>
-</nav>
+  <nav id="TableOfContents"></nav>
 </details>
 
 
   <div class='container entry-content'>
   <h1 id="前言">前言</h1>
-
 <p>事情的起因是某天CTO突然和我说，生产环境的程序CPU有点高，关键是现在也没什么负载，同样的代码在开发环境上CPU就低的多了。</p>
-
 <p>不用细说，那一定是有什么地方出问题了。</p>
-
-<p>CTO还说，他pprof过了，占用CPU最高的<strong>runtime.futex</strong>，还发了一篇相关的文章<a href="https://zhuanlan.zhihu.com/p/45959147" target="_blank">谁占了该CPU核的30% - 一个较意外的Go性能问题
+<p>CTO还说，他pprof过了，占用CPU最高的<strong>runtime.futex</strong>，还发了一篇相关的文章<a href="https://zhuanlan.zhihu.com/p/45959147">谁占了该CPU核的30% - 一个较意外的Go性能问题
 </a>，打趣说没准系统负载高了，这个问题就没了。因为原文中写到：</p>
-
 <blockquote>
 <p>必须指出，本问题是因为系统空闲没有goroutine可以调度造成的。显然的，系统繁忙的时候，即CPU资源真正体现价值时，上述30%的%CPU的overhead并不存在，因为大概率下会有goroutine可供调度，无需去做让M去sleep这个很重的操作。</p>
 </blockquote>
-
 <p>然后就把这个锅就“甩”给我了，让我研究一下。毕竟开发环境的负载也没有那么高，但是CPU却蛮正常的。</p>
-
 <h1 id="分析">分析</h1>
-
 <p>一开始我是没什么头绪，顺着CTO提供的线索，搜索了一些<strong>runtime.futex</strong>的文章，几乎所有文章都会提到以下可能会使CPU占用率高的示例代码：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">ticker</span> = <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">NewTicker</span>(<span style="color:#ae81ff">100</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Millisecond</span>)
     <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">ticker</span>.<span style="color:#a6e22e">Stop</span>()
@@ -268,30 +243,19 @@ One min read
         <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">ticker</span>.<span style="color:#a6e22e">C</span>:
             <span style="color:#a6e22e">counter</span> <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
         }
-    }</code></pre></div>
-<p>这段代码给我指明了一些方向，我开始全局搜索一些time.NewTicker的代码。</p>
-
+    }
+</code></pre></div><p>这段代码给我指明了一些方向，我开始全局搜索一些time.NewTicker的代码。</p>
 <p>巧的是，还真让我搜到了一些，其中一个ticker的时间设置的很有问题。</p>
-
 <pre><code>options = append(options, metrics.BatchInterval(time.Duration(conf.BatchInterval)))
-</code></pre>
-
-<p>这里的<strong>time.Duration</strong>(<strong>conf.BatchInterval</strong>)没有指定单位，那可就是nano second（纳秒）级别的，这ticker的协程跑起来，没造成死锁，只能说linux服务器的性能好。</p>
-
+</code></pre><p>这里的<strong>time.Duration</strong>(<strong>conf.BatchInterval</strong>)没有指定单位，那可就是nano second（纳秒）级别的，这ticker的协程跑起来，没造成死锁，只能说linux服务器的性能好。</p>
 <p>后来，顺藤摸瓜，发现了这个interval其实是promethus的采样interval，promethus只在生产打开了，也可以解释了为什么同样的代码只在生产上出问题。</p>
-
 <h1 id="解决方法">解决方法</h1>
-
 <p>初步的解决方法很简单，就是给这个interval加上单位，再略微调大一些就好，而且目前我们并没有太重视promethus的性能数据，所以也不是很确定50ms的采样间隔是不是有些过大。</p>
-
 <h1 id="总结">总结</h1>
-
 <p>虽说找到了问题的root cause，但还是有值得改进的地方，比如说，如果一开始就先diff生产和开发的程序的配置有哪些不同，说不定可以更快的解决问题。</p>
-
 <h1 id="参考文章">参考文章</h1>
-
 <ul>
-<li><a href="http://xiaorui.cc/2018/03/28/%E5%88%86%E6%9E%90golang%E5%AE%9A%E6%97%B6%E5%99%A8cpu%E4%BD%BF%E7%94%A8%E7%8E%87%E9%AB%98%E7%9A%84%E7%8E%B0%E8%B1%A1/" target="_blank">分析golang定时器cpu使用率高的现象</a></li>
+<li><a href="http://xiaorui.cc/2018/03/28/%E5%88%86%E6%9E%90golang%E5%AE%9A%E6%97%B6%E5%99%A8cpu%E4%BD%BF%E7%94%A8%E7%8E%87%E9%AB%98%E7%9A%84%E7%8E%B0%E8%B1%A1/">分析golang定时器cpu使用率高的现象</a></li>
 </ul>
 </div>
 
@@ -378,7 +342,7 @@ One min read
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p>All rights reserved by &copy; 2019-2020 海之方 </p>
+  <p>All rights reserved by &copy; 2019-2021 海之方 </p>
 </div>
 
         </div>

@@ -11,7 +11,7 @@
 <meta property='og:site_name' content='稀里稀里哗啦啦'>
 <meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='sql'><meta property='article:tag' content='性能优化'><meta property='article:tag' content='笔记'><meta property='article:published_time' content='2019-09-19T23:46:57&#43;08:00'/><meta property='article:modified_time' content='2019-09-19T23:46:57&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.55.6" />
+<meta name="generator" content="Hugo 0.78.2" />
 
   <title>为什么所有的查询条件都命中索引还是那么慢？记一次慢查询优化过程 • 海之方</title>
   <link rel='canonical' href='http://www.example.com/posts/slow_sql_analysis_1/'>
@@ -66,15 +66,7 @@ if (!doNotTrack) {
       <ul><li class='item'>
   <a href='/'>Home</a></li><li class='item'>
   <a href='/posts/'>Posts</a></li><li class='item'>
-  <a href='/authors/me/'>About Me</a></li><li class='item has-children'>
-  <a href=''>Other Blogs</a><button class='sub-menu-toggler'>
-    <span class='screen-reader-text'>expand sub menu</span>
-    <span class='sign'></span>
-  </button>
-
-  <ul class='sub-menu'><li class='item'>
-  <a href='https://www.jianshu.com/u/7838dc3b4190'>简书</a></li><li class='item'>
-  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li></ul>
+  <a href='/authors/me/'>About Me</a></li></ul>
     </div>
   </nav>
 
@@ -107,7 +99,7 @@ if (!doNotTrack) {
       </li><li>
         <a href='/tags/sql/' style='font-size:1em'>sql</a>
       </li><li>
-        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>Thinking</a>
+        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>thinking</a>
       </li><li>
         <a href='/tags/vue.js/' style='font-size:1em'>Vue.js</a>
       </li><li>
@@ -152,8 +144,6 @@ if (!doNotTrack) {
 </button>
     <ul><li class='item'>
         <a href='https://github.com/Ksloveyuan/channelx'>channelx</a>
-      </li><li class='item'>
-        <a href='https://github.com/Ksloveyuan/gorm-ex'>gorm-ex</a>
       </li><li class='item'>
         <a href='https://ksloveyuan.gitbook.io/vue-code-snippet/'>Vue code snippet</a>
       </li><li class='item'>
@@ -225,27 +215,16 @@ One min read
   <summary class='title'>
     <span>Table of Contents</span>
   </summary>
-  <nav id="TableOfContents">
-<ul>
-<li><a href="#引子">引子</a></li>
-<li><a href="#排查过程">排查过程</a></li>
-<li><a href="#总结与反思">总结与反思</a></li>
-</ul>
-</nav>
+  <nav id="TableOfContents"></nav>
 </details>
 
 
   <div class='container entry-content'>
   <h1 id="引子">引子</h1>
-
 <p>话说，自从前段时间用granafa配好后端微服务prometheus监控的Dashboard后，我就有了一个新习惯，每天上班第一件事就是盯着这个Dashboard瞅一会儿。</p>
-
 <p>你还别说，很快我就发现了问题，一些名字看似不复杂的查询接口，却慢到要2到3秒，这是很不正常的。</p>
-
 <p>于是，我就是这样盯上了一个接口。</p>
-
 <h1 id="排查过程">排查过程</h1>
-
 <p>这是一个查询文章列表的接口，支持分页，最终执行的SQL如下：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">DISTINCT</span>
     <span style="color:#66d9ef">C</span>.<span style="color:#f92672">*</span>,
@@ -266,25 +245,16 @@ One min read
 <span style="color:#66d9ef">WHERE</span>
      A.app_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;pf&#39;</span> <span style="color:#66d9ef">AND</span> A.pubno <span style="color:#f92672">=</span> <span style="color:#66d9ef">C</span>.pubno <span style="color:#66d9ef">AND</span> A.pubno <span style="color:#f92672">=</span> B.pubno
 <span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> <span style="color:#66d9ef">C</span>.create_time <span style="color:#66d9ef">DESC</span>
-<span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">0</span> , <span style="color:#ae81ff">20</span></code></pre></div>
-<p>咋一看这么多表联查，还有一个左联接，心想能快就奇怪了！</p>
-
+<span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">0</span> , <span style="color:#ae81ff">20</span>
+</code></pre></div><p>咋一看这么多表联查，还有一个左联接，心想能快就奇怪了！</p>
 <p>一开始真不想理这段sql的业务逻辑，就快速用工具分析了一下查询计划，想着如果是没加索引，那<strong>偷个懒</strong>:）加个索引就好了。</p>
-
-<p><img src="https://i.loli.net/2019/09/16/TaB52AsWroieGPD.png" alt="slow_analysis.png" /></p>
-
+<p><img src="https://i.loli.net/2019/09/16/TaB52AsWroieGPD.png" alt="slow_analysis.png"></p>
 <p><strong>结果一看，竟然全部都命中索引了…</strong> &gt;_&lt;!!!</p>
-
 <p>心想有点麻烦呀，没办法只能耐着性子一点点看起。</p>
-
 <p><strong>首先</strong>，对于select部分，因为是C表在左的左联，那么distinct关键字是明显不需要的。但是去掉后，也没有快太多。</p>
-
 <p><strong>接着</strong>，因为个人风格偏好，内联查询更喜欢写inner join on，于是，我把sql的from和where整理了一下，虽然看起来规整些，但并无任何提升。</p>
-
 <p><strong>这时</strong>，我把注意力转移到limit部分，心想如果能<strong>早点做limit</strong>，这样就可以<strong>减少表联接笛卡尔积的集合大小</strong>。</p>
-
 <p>突破口就在这里！</p>
-
 <p>当我把sql调整成，</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span>
 	<span style="color:#66d9ef">C</span>.<span style="color:#f92672">*</span>,
@@ -298,26 +268,20 @@ One min read
     <span style="color:#66d9ef">inner</span> <span style="color:#66d9ef">join</span> XXcloud.wechat_pubno B <span style="color:#66d9ef">on</span> <span style="color:#66d9ef">C</span>.pubno <span style="color:#f92672">=</span> B.pubno
     <span style="color:#66d9ef">left</span> <span style="color:#66d9ef">join</span> XXcloud.mp_feed_info D <span style="color:#66d9ef">ON</span> D.<span style="color:#66d9ef">valid</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">AND</span> D.app_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;sc&#39;</span> <span style="color:#66d9ef">AND</span> D.element_type <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span> <span style="color:#66d9ef">AND</span>  D.element_id <span style="color:#f92672">=</span> <span style="color:#66d9ef">C</span>.article_id
 <span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span>
-	<span style="color:#66d9ef">C</span>.create_time <span style="color:#66d9ef">DESC</span></code></pre></div>
-<p>再分析一下查询计划，</p>
-
-<p><img src="https://i.loli.net/2019/09/16/GRHoA4wjfVEih86.png" alt="quick_analysis.png" /></p>
-
+	<span style="color:#66d9ef">C</span>.create_time <span style="color:#66d9ef">DESC</span>
+</code></pre></div><p>再分析一下查询计划，</p>
+<p><img src="https://i.loli.net/2019/09/16/GRHoA4wjfVEih86.png" alt="quick_analysis.png"></p>
 <p><strong>清爽的看到query cost从1975降到107!</strong></p>
-
 <p>但还有优化空间，在这里为了能够一句sql实现查询，使用了临时表，实际上是可以在代码中通过两次查询，一次查询出前20的article_id, 第二次查询时，直接把这20个article_id当成in的命中条件即可。</p>
-
 <h1 id="总结与反思">总结与反思</h1>
-
 <p>话说，这次排查慢sql，打破了我原有的一个认知偏误，以为命中了索引查询速度就不会慢；同时也让我加深了对左联加内联查询性能消耗的认识，左联真心是拖油瓶，本质上还是会将一个表的数据全部查出，如果这个表的数据还是逐渐增加的，那么上了生产环境变慢是必然的。</p>
-
 <p>值得反思的是，目前公司项目的后端是使用的微服务架构，但涉及到数据库查询方面还是比较随便，同库的表连接也许还可以接受，跨库的表连接实在是后患无穷。</p>
-
-<p>我能想到的未来改进方向是：
-- 要么是加索引，不断优化查询计划；
-- 要么就是严格限制单表查询，在代码中完成联接等操作，方便以后分库分表的扩展；
-- 特别复杂的需要group by的查询考虑场景做离线的ETL，或者用引入ELK。</p>
-
+<p>我能想到的未来改进方向是：</p>
+<ul>
+<li>要么是加索引，不断优化查询计划；</li>
+<li>要么就是严格限制单表查询，在代码中完成联接等操作，方便以后分库分表的扩展；</li>
+<li>特别复杂的需要group by的查询考虑场景做离线的ETL，或者用引入ELK。</li>
+</ul>
 <p>最后，各位看官，关于数据库应用查询方面的优化，你们有什么好的实战经验可以分享一下吗？</p>
 </div>
 
@@ -404,7 +368,7 @@ One min read
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p>All rights reserved by &copy; 2019-2020 海之方 </p>
+  <p>All rights reserved by &copy; 2019-2021 海之方 </p>
 </div>
 
         </div>

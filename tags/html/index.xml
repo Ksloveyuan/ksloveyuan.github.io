@@ -1,15 +1,11 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Html on 稀里稀里哗啦啦</title>
     <link>http://www.example.com/tags/html/</link>
     <description>Recent content in Html on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 15 Nov 2019 11:23:48 +0800</lastBuildDate>
-    
-	<atom:link href="http://www.example.com/tags/html/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Fri, 15 Nov 2019 11:23:48 +0800</lastBuildDate><atom:link href="http://www.example.com/tags/html/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>原来，这才是html&#43;css导出word最佳方式！</title>
       <link>http://www.example.com/posts/html_to_word/</link>
@@ -30,12 +26,12 @@
 这下终于可以用上过去.net的开发经验了，C#是可以通过com组件的方式操作word，但前提是运行程序的机器上必须装word才行。
 核心代码，也是非常的简单：
 首先引用Microsoft.Office.Interop.Word，调用的代码如下:
-var word = new Application {Visible = false}; var doc = word.Documents.Open(htmlFilePath, Format: WdOpenFormat.wdOpenFormatWebPages,ReadOnly: false); doc.SaveAs2000(wordFilePath, WdSaveFormat.wdFormatDocumentDefault,ReadOnlyRecommended: false); doc.Close(); word.quit()  是不是很简单呢？
+var word = new Application {Visible = false}; var doc = word.Documents.Open(htmlFilePath, Format: WdOpenFormat.wdOpenFormatWebPages,ReadOnly: false); doc.SaveAs2000(wordFilePath, WdSaveFormat.wdFormatDocumentDefault,ReadOnlyRecommended: false); doc.Close(); word.quit() 是不是很简单呢？
 而这里唯一还需要处理的就是图片，如果不做处理，图片还是以链接的方式存储的。
 一方面，每次打开的时候需要重复下载，好处是word文件比较小，但缺点是受限于网速，可能会出现图片加载不出来的情况;
 另一方面时，如果图片没有指定宽度和高度，当图片的尺寸大于文档的尺寸时，显示的效果就很差。
 估化的思路很简单，即强行把图片的尺寸拉伸到一页可以显示下，同时将图片链接转成内嵌的图片。
-foreach (InlineShape s in doc.InlineShapes) { var inlineShape = s; if (inlineShape.Type != WdInlineShapeType.wdInlineShapePicture &amp;amp;&amp;amp; inlineShape.Type != WdInlineShapeType.</description>
+foreach (InlineShape s in doc.InlineShapes) { var inlineShape = s; if (inlineShape.Type != WdInlineShapeType.wdInlineShapePicture &amp;amp;&amp;amp; inlineShape.Type != WdInlineShapeType.wdInlineShapeLinkedPicture) { continue; } if (inlineShape.</description>
     </item>
     
   </channel>

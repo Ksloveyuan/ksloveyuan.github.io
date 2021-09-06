@@ -2,26 +2,26 @@
 <html lang='en'><head>
   <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
-<meta name='description' content='引言 对于dockerfile而言，何为完美? 我认为应该满足以下三点： - 体积小 - 构建快 - 够安全
-话说不说，直接上拿走可用的Dockerfile。
-FROMgolang:1.13.5-alpine3.10 AS builderWORKDIR/buildRUN adduser -u 10001 -D app-runnerENVGOPROXY https://goproxy.cnCOPY go.mod .COPY go.sum .RUN go mod downloadCOPY . .RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o your-application .FROMalpine:3.10 AS finalWORKDIR/appCOPY --from=builder /build/your-application /app/#COPY --from=builder /build/config /app/configCOPY --from=builder /etc/passwd /etc/passwdCOPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/USER app-runnerENTRYPOINT[&#34;/app/your-application&#34;] 逐行拆解 首先，这个dockerfile分为builder和final两部分。
-builder选择了golang:1.13.5-alpine3.10作为编译的基础镜像，相比于golang:1.13, 一方面是因为它体积更小，另一方面是我发现golang:1.13的编译结果，在alpine:3.10中会报not found的错误，虽说有人提供了其它的解决方案，但是能直接避免，为啥不避免呢。
-RUN adduser -u 10001 -D app-runner  接着是创建了一个app-runner的用户, -D表示无密码。
+<meta name='description' content='引言 对于dockerfile而言，何为完美? 我认为应该满足以下三点：
+ 体积小 构建快 够安全  话说不说，直接上拿走可用的Dockerfile。
+FROMgolang:1.13.5-alpine3.10 AS builderWORKDIR/buildRUN adduser -u 10001 -D app-runnerENV GOPROXY https://goproxy.cnCOPY go.mod .COPY go.sum .RUN go mod downloadCOPY . .RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o your-application .FROMalpine:3.10 AS finalWORKDIR/appCOPY --from=builder /build/your-application /app/#COPY --from=builder /build/config /app/configCOPY --from=builder /etc/passwd /etc/passwdCOPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/USERapp-runnerENTRYPOINT [&#34;/app/your-application&#34;]逐行拆解 首先，这个dockerfile分为builder和final两部分。
+builder选择了golang:1.13.5-alpine3.10作为编译的基础镜像，相比于golang:1.13, 一方面是因为它体积更小，另一方面是我发现golang:1.13的编译结果，在alpine:3.10 中会报not found的错误，虽说有人提供了其它的解决方案，但是能直接避免，为啥不避免呢。
+RUN adduser -u 10001 -D app-runner 接着是创建了一个app-runner的用户, -D表示无密码。
 此用户的信息是是需要拷到final中，作为应用程序的启动用户。这是为了避免使用container中的默认用户root，那可是有安全漏洞的，详细解释，可以参考这篇medium上的文章Processes In Containers Should Not Run As Root'>
 <meta name='theme-color' content='#ffcd00'>
 
 <meta property='og:title' content='手把手教你写一个完美的Golang Dockerfile • 海之方'>
-<meta property='og:description' content='引言 对于dockerfile而言，何为完美? 我认为应该满足以下三点： - 体积小 - 构建快 - 够安全
-话说不说，直接上拿走可用的Dockerfile。
-FROMgolang:1.13.5-alpine3.10 AS builderWORKDIR/buildRUN adduser -u 10001 -D app-runnerENVGOPROXY https://goproxy.cnCOPY go.mod .COPY go.sum .RUN go mod downloadCOPY . .RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o your-application .FROMalpine:3.10 AS finalWORKDIR/appCOPY --from=builder /build/your-application /app/#COPY --from=builder /build/config /app/configCOPY --from=builder /etc/passwd /etc/passwdCOPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/USER app-runnerENTRYPOINT[&#34;/app/your-application&#34;] 逐行拆解 首先，这个dockerfile分为builder和final两部分。
-builder选择了golang:1.13.5-alpine3.10作为编译的基础镜像，相比于golang:1.13, 一方面是因为它体积更小，另一方面是我发现golang:1.13的编译结果，在alpine:3.10中会报not found的错误，虽说有人提供了其它的解决方案，但是能直接避免，为啥不避免呢。
-RUN adduser -u 10001 -D app-runner  接着是创建了一个app-runner的用户, -D表示无密码。
+<meta property='og:description' content='引言 对于dockerfile而言，何为完美? 我认为应该满足以下三点：
+ 体积小 构建快 够安全  话说不说，直接上拿走可用的Dockerfile。
+FROMgolang:1.13.5-alpine3.10 AS builderWORKDIR/buildRUN adduser -u 10001 -D app-runnerENV GOPROXY https://goproxy.cnCOPY go.mod .COPY go.sum .RUN go mod downloadCOPY . .RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o your-application .FROMalpine:3.10 AS finalWORKDIR/appCOPY --from=builder /build/your-application /app/#COPY --from=builder /build/config /app/configCOPY --from=builder /etc/passwd /etc/passwdCOPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/USERapp-runnerENTRYPOINT [&#34;/app/your-application&#34;]逐行拆解 首先，这个dockerfile分为builder和final两部分。
+builder选择了golang:1.13.5-alpine3.10作为编译的基础镜像，相比于golang:1.13, 一方面是因为它体积更小，另一方面是我发现golang:1.13的编译结果，在alpine:3.10 中会报not found的错误，虽说有人提供了其它的解决方案，但是能直接避免，为啥不避免呢。
+RUN adduser -u 10001 -D app-runner 接着是创建了一个app-runner的用户, -D表示无密码。
 此用户的信息是是需要拷到final中，作为应用程序的启动用户。这是为了避免使用container中的默认用户root，那可是有安全漏洞的，详细解释，可以参考这篇medium上的文章Processes In Containers Should Not Run As Root'>
 <meta property='og:url' content='http://www.example.com/posts/golang_dockerfile/'>
 <meta property='og:site_name' content='稀里稀里哗啦啦'>
 <meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='golang'><meta property='article:tag' content='docker'><meta property='article:published_time' content='2020-02-26T22:36:17&#43;08:00'/><meta property='article:modified_time' content='2020-02-26T22:36:17&#43;08:00'/><meta name='twitter:card' content='summary'>
 
-<meta name="generator" content="Hugo 0.55.6" />
+<meta name="generator" content="Hugo 0.78.2" />
 
   <title>手把手教你写一个完美的Golang Dockerfile • 海之方</title>
   <link rel='canonical' href='http://www.example.com/posts/golang_dockerfile/'>
@@ -76,15 +76,7 @@ if (!doNotTrack) {
       <ul><li class='item'>
   <a href='/'>Home</a></li><li class='item'>
   <a href='/posts/'>Posts</a></li><li class='item'>
-  <a href='/authors/me/'>About Me</a></li><li class='item has-children'>
-  <a href=''>Other Blogs</a><button class='sub-menu-toggler'>
-    <span class='screen-reader-text'>expand sub menu</span>
-    <span class='sign'></span>
-  </button>
-
-  <ul class='sub-menu'><li class='item'>
-  <a href='https://www.jianshu.com/u/7838dc3b4190'>简书</a></li><li class='item'>
-  <a href='https://juejin.im/user/55fcf7b360b26a5209371f25/posts'>掘金</a></li></ul></li></ul>
+  <a href='/authors/me/'>About Me</a></li></ul>
     </div>
   </nav>
 
@@ -117,7 +109,7 @@ if (!doNotTrack) {
       </li><li>
         <a href='/tags/sql/' style='font-size:1em'>sql</a>
       </li><li>
-        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>Thinking</a>
+        <a href='/tags/thinking/' style='font-size:1.3333333333333333em'>thinking</a>
       </li><li>
         <a href='/tags/vue.js/' style='font-size:1em'>Vue.js</a>
       </li><li>
@@ -162,8 +154,6 @@ if (!doNotTrack) {
 </button>
     <ul><li class='item'>
         <a href='https://github.com/Ksloveyuan/channelx'>channelx</a>
-      </li><li class='item'>
-        <a href='https://github.com/Ksloveyuan/gorm-ex'>gorm-ex</a>
       </li><li class='item'>
         <a href='https://ksloveyuan.gitbook.io/vue-code-snippet/'>Vue code snippet</a>
       </li><li class='item'>
@@ -233,81 +223,58 @@ One min read
   
 
   <div class='container entry-content'>
-  
-
-<h1 id="引言">引言</h1>
-
-<p>对于dockerfile而言，何为完美? 我认为应该满足以下三点：
-- 体积小
-- 构建快
-- 够安全</p>
-
+  <h1 id="引言">引言</h1>
+<p>对于dockerfile而言，何为完美? 我认为应该满足以下三点：</p>
+<ul>
+<li>体积小</li>
+<li>构建快</li>
+<li>够安全</li>
+</ul>
 <p>话说不说，直接上拿走可用的Dockerfile。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:1.13.5-alpine3.10 AS builder</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /build</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> adduser -u <span style="color:#ae81ff">10001</span> -D app-runner<span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span><span style="color:#e6db74"> GOPROXY https://goproxy.cn</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>COPY go.mod .<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>COPY go.sum .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> GOPROXY https://goproxy.cn<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> go.mod .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> go.sum .<span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> go mod download<span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>COPY . .<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . .<span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> CGO_ENABLED<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> GOARCH<span style="color:#f92672">=</span>amd64 GOOS<span style="color:#f92672">=</span>linux go build -a -o your-application .<span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> alpine:3.10 AS final</span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>COPY --from<span style="color:#f92672">=</span>builder /build/your-application /app/<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>builder /build/your-application /app/<span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e">#COPY --from=builder /build/config /app/config</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>COPY --from<span style="color:#f92672">=</span>builder /etc/passwd /etc/passwd<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>COPY --from<span style="color:#f92672">=</span>builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>builder /etc/passwd /etc/passwd<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/<span style="color:#960050;background-color:#1e0010">
 </span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span>USER app-runner<span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span><span style="color:#e6db74"> [&#34;/app/your-application&#34;]</span></code></pre></div>
-<h1 id="逐行拆解">逐行拆解</h1>
-
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">USER</span><span style="color:#e6db74"> app-runner</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;/app/your-application&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><h1 id="逐行拆解">逐行拆解</h1>
 <p>首先，这个dockerfile分为builder和final两部分。</p>
-
-<p><strong>builder</strong>选择了<code>golang:1.13.5-alpine3.10</code>作为编译的基础镜像，相比于<code>golang:1.13</code>, 一方面是因为它体积更小，另一方面是我发现<code>golang:1.13</code>的编译结果，在<code>alpine:3.10</code>中会报<code>not found</code>的错误，虽说有人提供了其它的<a href="https://cloud.tencent.com/developer/article/1419659" target="_blank">解决方案</a>，但是能直接避免，为啥不避免呢。</p>
-
+<p><strong>builder</strong>选择了<code>golang:1.13.5-alpine3.10</code>作为编译的基础镜像，相比于<code>golang:1.13</code>, 一方面是因为它体积更小，另一方面是我发现<code>golang:1.13</code>的编译结果，在<code>alpine:3.10 </code>中会报<code>not found</code>的错误，虽说有人提供了其它的<a href="https://cloud.tencent.com/developer/article/1419659">解决方案</a>，但是能直接避免，为啥不避免呢。</p>
 <pre><code>RUN adduser -u 10001 -D app-runner
-</code></pre>
-
-<p>接着是创建了一个<code>app-runner</code>的用户, <code>-D</code>表示无密码。</p>
-
-<p>此用户的信息是是需要拷到final中，作为应用程序的启动用户。这是为了避免使用container中的默认用户<code>root</code>，那可是有安全漏洞的，详细解释，可以参考这篇medium上的文章<a href="https://medium.com/@mccode/processes-in-containers-should-not-run-as-root-2feae3f0df3b" target="_blank">Processes In Containers Should Not Run As Root</a></p>
-
+</code></pre><p>接着是创建了一个<code>app-runner</code>的用户, <code>-D</code>表示无密码。</p>
+<p>此用户的信息是是需要拷到final中，作为应用程序的启动用户。这是为了避免使用container中的默认用户<code>root</code>，那可是有安全漏洞的，详细解释，可以参考这篇medium上的文章<a href="https://medium.com/@mccode/processes-in-containers-should-not-run-as-root-2feae3f0df3b">Processes In Containers Should Not Run As Root</a></p>
 <p>再下面的四行，</p>
-
 <pre><code>ENV GOPROXY https://goproxy.cn
 COPY go.mod .
 COPY go.sum .
 RUN go mod download
-</code></pre>
-
-<p>是配置了国内的代理，安装依赖包了。这里用<code>go mod download</code>的好处是下次构建镜像文件时，当<code>go.mod</code>和<code>go.sum</code>没有改变时，它是有缓存的，可以避免重复下载依赖包，加快构建。</p>
-
+</code></pre><p>是配置了国内的代理，安装依赖包了。这里用<code>go mod download</code>的好处是下次构建镜像文件时，当<code>go.mod</code>和<code>go.sum</code>没有改变时，它是有缓存的，可以避免重复下载依赖包，加快构建。</p>
 <p>builder的最后，就是把当前目录的文件拷过去，编译代码了。</p>
-
 <pre><code>COPY . .
 RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o your-application .
-</code></pre>
-
-<p><strong>final</strong>选择了<code>alpine:3.10</code>,一方面是体积小，只有5m；另一方面也是和构建镜像的alpine版本保持一致。</p>
-
-<p>接下来几行没啥说的，就是把构建结果、配置文件（*有的话*）和用户的相关文件拷过去。</p>
-
+</code></pre><p><strong>final</strong>选择了<code>alpine:3.10</code>,一方面是体积小，只有5m；另一方面也是和构建镜像的alpine版本保持一致。</p>
+<p>接下来几行没啥说的，就是把构建结果、配置文件（<em>有的话</em>）和用户的相关文件拷过去。</p>
 <p>下面的这步一定不要忘记了，</p>
-
 <pre><code>USER app-runner
-</code></pre>
-
-<p>没有它，container启动时就是用root用户启动了!!! 如果被攻击了，那黑客可是就有root权限了（*不要问我为啥会被攻击*）。</p>
-
+</code></pre><p>没有它，container启动时就是用root用户启动了!!! 如果被攻击了，那黑客可是就有root权限了（<em>不要问我为啥会被攻击</em>）。</p>
 <p>最后，设置一个<code>ENTRYPOINT</code>，完事!</p>
-
 <p>如果你程序的启动过程比较复杂，或者是要在启动时根据环境变量的值做不同的操作，那还是写个shell文件吧。</p>
 
 </div>
@@ -319,7 +286,7 @@ RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o your-application .
   <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
   
 </svg>
-<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/step-by-step/'>step by step</a></div>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/step-by-step/'>Step by step</a></div>
 <div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
   
   <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
@@ -385,7 +352,7 @@ RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o your-application .
       </li></ul>
   </nav>
 </section><div class='copyright'>
-  <p>All rights reserved by &copy; 2019-2020 海之方 </p>
+  <p>All rights reserved by &copy; 2019-2021 海之方 </p>
 </div>
 
         </div>
