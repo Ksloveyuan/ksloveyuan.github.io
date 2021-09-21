@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='两百行代码实现生产级PubSub工具类'>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='玩转Golang的channel，二百行代码实现PubSub模式 • 海之方'>
+<meta property='og:description' content='两百行代码实现生产级PubSub工具类'>
+<meta property='og:url' content='http://www.example.com/posts/golang_pubsub/'>
+<meta property='og:site_name' content='稀里稀里哗啦啦'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='golang'><meta property='article:tag' content='channel'><meta property='article:published_time' content='2021-09-21T21:59:01&#43;08:00'/><meta property='article:modified_time' content='2021-09-21T21:59:01&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.78.2" />
+
+  <title>玩转Golang的channel，二百行代码实现PubSub模式 • 海之方</title>
+  <link rel='canonical' href='http://www.example.com/posts/golang_pubsub/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-145633116-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      稀里稀里哗啦啦
+      </a>
+    </h2>
+    <div class='desc'>
+    代码代码快发芽
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts/'>Posts</a></li><li class='item'>
+  <a href='/authors/me/'>About Me</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/channel/' style='font-size:1.5em'>channel</a>
+      </li><li>
+        <a href='/tags/ci/' style='font-size:1em'>CI</a>
+      </li><li>
+        <a href='/tags/docker/' style='font-size:1em'>docker</a>
+      </li><li>
+        <a href='/tags/elk/' style='font-size:1em'>ELK</a>
+      </li><li>
+        <a href='/tags/golang/' style='font-size:2em'>golang</a>
+      </li><li>
+        <a href='/tags/gorm/' style='font-size:1.125em'>gorm</a>
+      </li><li>
+        <a href='/tags/html/' style='font-size:1em'>Html</a>
+      </li><li>
+        <a href='/tags/https/' style='font-size:1em'>Https</a>
+      </li><li>
+        <a href='/tags/nginx/' style='font-size:1em'>Nginx</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/sql/' style='font-size:1em'>sql</a>
+      </li><li>
+        <a href='/tags/thinking/' style='font-size:1.25em'>thinking</a>
+      </li><li>
+        <a href='/tags/vue.js/' style='font-size:1em'>Vue.js</a>
+      </li><li>
+        <a href='/tags/%E5%AE%89%E5%85%A8/' style='font-size:1em'>安全</a>
+      </li><li>
+        <a href='/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/' style='font-size:1em'>性能优化</a>
+      </li><li>
+        <a href='/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/' style='font-size:1em'>数据分析</a>
+      </li><li>
+        <a href='/tags/%E7%AC%94%E8%AE%B0/' style='font-size:1.375em'>笔记</a>
+      </li><li>
+        <a href='/tags/%E9%9D%A2%E8%AF%95/' style='font-size:1.375em'>面试</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><nav id='main-menu' class='menu main-menu' aria-label='Main Menu'>
+  <div class='container'>
+    <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+    <ul><li class='item'>
+        <a href='https://github.com/Ksloveyuan/channelx'>channelx</a>
+      </li><li class='item'>
+        <a href='https://ksloveyuan.gitbook.io/vue-code-snippet/'>Vue code snippet</a>
+      </li><li class='item'>
+        <a href='/page/btc_price_analyzer'>BTC price analyzer</a>
+      </li></ul>
+  </div>
+</nav><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>稀里稀里哗啦啦</p><p class='desc site-desc'>代码代码快发芽</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>玩转Golang的channel，二百行代码实现PubSub模式</h1>
+      
+<p class='desc'>两百行代码实现生产级PubSub工具类</p>
+
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2021-09-21T21:59:01&#43;08:00'>2021, Sep 21</time>
+</span>
+
+  <span class='byline'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M21,21V20c0-2.76-4-5-9-5s-9,2.24-9,5v1"/>
+  <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
+  
+</svg>
+<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+3 mins read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  <h1 id="引言">引言</h1>
+<p>PubSub(<em>Publish/Subscribe</em>)模式，，意为“发布/订阅”模式，是为了解决一对多的依赖关系，使多个消费者同时监听某一个主题，不仅可以让生产者和消费者解耦，同时也让不同的消费者之间相互解耦（<em>注：有些反模式依赖订阅者执行的先后顺序，使用共享数据来传递状态，是需要避免的，因为这样会使消费者耦合在一起，不能独立变化</em>）。这其中的关键就在于需要有<strong>中介</strong>来维护订阅关系，并负责把生产的消息，传递给订阅方。</p>
+<p>在 Golang 这门语言中，channel 天然就适合来当这个中介，下面就让我们一步步根据 PubSub 模式，实现工具类 EventBus.</p>
+<h1 id="定义类型">定义类型</h1>
+<p>首先，让我们先定义一些基本类型和核心操作。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#75715e">//EventID是Event的唯一标识
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">EventID</span> <span style="color:#66d9ef">int64</span>
+
+<span style="color:#75715e">//Event
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Event</span> <span style="color:#66d9ef">interface</span> {
+	<span style="color:#a6e22e">ID</span>() <span style="color:#a6e22e">EventID</span>
+}
+
+<span style="color:#75715e">//EventHandler
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">EventHandler</span> <span style="color:#66d9ef">interface</span> {
+	<span style="color:#a6e22e">OnEvent</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">event</span> <span style="color:#a6e22e">Event</span>) <span style="color:#66d9ef">error</span>
+	<span style="color:#a6e22e">CanAutoRetry</span>(<span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) <span style="color:#66d9ef">bool</span>
+}
+
+<span style="color:#75715e">// JobStatus holds information related to a job status
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">JobStatus</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">RunAt</span>      <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Time</span>
+	<span style="color:#a6e22e">FinishedAt</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Time</span>
+	<span style="color:#a6e22e">Err</span>        <span style="color:#66d9ef">error</span>
+}
+
+<span style="color:#75715e">//EventBus ...
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">EventBus</span> <span style="color:#66d9ef">struct</span> {}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">eb</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">EventBus</span>) <span style="color:#a6e22e">Subscribe</span>(<span style="color:#a6e22e">eventID</span> <span style="color:#a6e22e">EventID</span>, <span style="color:#a6e22e">handlers</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">EventHandler</span>) { }
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">eb</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">EventBus</span>) <span style="color:#a6e22e">Unsubscribe</span>(<span style="color:#a6e22e">eventID</span> <span style="color:#a6e22e">EventID</span>, <span style="color:#a6e22e">handlers</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">EventHandler</span>) { }
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">eb</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">EventBus</span>) <span style="color:#a6e22e">Publish</span>(<span style="color:#a6e22e">evt</span> <span style="color:#a6e22e">Event</span>) <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">JobStatus</span> { }
+
+</code></pre></div><h1 id="重点拆解">重点拆解</h1>
+<p>首先，消费者要通过 Subscribe 来订阅相关的主题，这其中的重点就是需要根据 EventID 维护订阅的消费者，很自然的想到 map，我们选择用<code>handlers map[EventID][]EventHandler</code>来维护，考虑到并发问题，还需要来加个锁。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#75715e">//Subscribe ...
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">eb</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">EventBus</span>) <span style="color:#a6e22e">Subscribe</span>(<span style="color:#a6e22e">eventID</span> <span style="color:#a6e22e">EventID</span>, <span style="color:#a6e22e">handlers</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">EventHandler</span>) {
+	<span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Lock</span>()
+	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Unlock</span>()
+
+	<span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">handlers</span>[<span style="color:#a6e22e">eventID</span>] = append(<span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">handlers</span>[<span style="color:#a6e22e">eventID</span>], <span style="color:#a6e22e">handlers</span><span style="color:#f92672">...</span>)
+}
+</code></pre></div><p>这里实现的比较简单，没有考虑一个消费者，重复订阅的问题，留给了使用方自己处理。（<em>但同一个消费者为什么要多次调用 subcribe，订阅同一个主题呢，感觉是在写 bug</em>）</p>
+<p>下面就是最核心的 Publish 函数了，一方面一定是需要一个 channel(<em>最好是有 buffer 的</em>)来传递 Event 数据，另一方面，为了保证性能，需要有一些常驻协程，来监听消息，并启动相关的消费者。以下是相关代码(<em>在完整版代码里，添加了日志、错误处理等，这里为了展示重点，暂且隐去</em>)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">eb</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">EventBus</span>) <span style="color:#a6e22e">Start</span>() {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">started</span> {
+		<span style="color:#66d9ef">return</span>
+	}
+
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">eventWorkers</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+		<span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">1</span>)
+		<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">eventWorker</span>(<span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">eventJobQueue</span>)
+	}
+
+	<span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">started</span> = <span style="color:#66d9ef">true</span>
+}
+
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">eb</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">EventBus</span>) <span style="color:#a6e22e">eventWorker</span>(<span style="color:#a6e22e">jobQueue</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">EventJob</span>) {
+<span style="color:#a6e22e">loop</span>:
+	<span style="color:#66d9ef">for</span> {
+		<span style="color:#66d9ef">select</span> {
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">job</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">jobQueue</span>:
+			<span style="color:#a6e22e">jobStatus</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">JobStatus</span>{
+				<span style="color:#a6e22e">RunAt</span>: <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>(),
+			}
+
+			<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">cancel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">WithTimeout</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">timeout</span>)
+			<span style="color:#a6e22e">g</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">errgroup</span>.<span style="color:#a6e22e">WithContext</span>(<span style="color:#a6e22e">ctx</span>)
+			<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">index</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">job</span>.<span style="color:#a6e22e">handlers</span> {
+				<span style="color:#a6e22e">handler</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">job</span>.<span style="color:#a6e22e">handlers</span>[<span style="color:#a6e22e">index</span>]
+				<span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">error</span> {
+					<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">runHandler</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">handler</span>, <span style="color:#a6e22e">job</span>.<span style="color:#a6e22e">event</span>)
+				})
+			}
+			<span style="color:#a6e22e">jobStatus</span>.<span style="color:#a6e22e">Err</span> = <span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">Wait</span>()
+
+			<span style="color:#a6e22e">jobStatus</span>.<span style="color:#a6e22e">FinishedAt</span> = <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()
+
+			<span style="color:#66d9ef">select</span> {
+			<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">job</span>.<span style="color:#a6e22e">resultChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">jobStatus</span>:
+			<span style="color:#66d9ef">default</span>:
+			}
+		    <span style="color:#a6e22e">cancel</span>()
+		}
+	}
+}
+</code></pre></div><p>做好上面的准备工作后，以下就是真正的 Publish 代码了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#75715e">// EventJob ...
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">EventJob</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">event</span>      <span style="color:#a6e22e">Event</span>
+	<span style="color:#a6e22e">handlers</span>   []<span style="color:#a6e22e">EventHandler</span>
+	<span style="color:#a6e22e">resultChan</span> <span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">JobStatus</span>
+}
+
+<span style="color:#75715e">//Publish ...
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">eb</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">EventBus</span>) <span style="color:#a6e22e">Publish</span>(<span style="color:#a6e22e">evt</span> <span style="color:#a6e22e">Event</span>) <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">JobStatus</span> {
+	<span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">RLock</span>()
+	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">RUnlock</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ehs</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">handlers</span>[<span style="color:#a6e22e">evt</span>.<span style="color:#a6e22e">ID</span>()]; <span style="color:#a6e22e">ok</span> {
+		<span style="color:#a6e22e">handlers</span> <span style="color:#f92672">:=</span> make([]<span style="color:#a6e22e">EventHandler</span>, len(<span style="color:#a6e22e">ehs</span>))
+		copy(<span style="color:#a6e22e">handlers</span>, <span style="color:#a6e22e">ehs</span>) <span style="color:#75715e">//snapshot一份当时的消费者
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">job</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">EventJob</span>{
+			<span style="color:#a6e22e">event</span>:      <span style="color:#a6e22e">evt</span>,
+			<span style="color:#a6e22e">handlers</span>:   <span style="color:#a6e22e">handlers</span>,
+			<span style="color:#a6e22e">resultChan</span>: make(<span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">JobStatus</span>, <span style="color:#ae81ff">1</span>),
+		}
+
+		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">jobQueue</span> = <span style="color:#a6e22e">eb</span>.<span style="color:#a6e22e">eventJobQueue</span>
+		<span style="color:#66d9ef">select</span> {
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">jobQueue</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">job</span>:
+		<span style="color:#66d9ef">default</span>:
+		}
+
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">job</span>.<span style="color:#a6e22e">resultChan</span>
+	} <span style="color:#66d9ef">else</span> {
+		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;no handlers for event(%d)&#34;</span>, <span style="color:#a6e22e">evt</span>.<span style="color:#a6e22e">ID</span>())
+		<span style="color:#a6e22e">resultChan</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">JobStatus</span>, <span style="color:#ae81ff">1</span>)
+		<span style="color:#a6e22e">resultChan</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">JobStatus</span>{
+			<span style="color:#a6e22e">Err</span>: <span style="color:#a6e22e">err</span>,
+		}
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">resultChan</span>
+	}
+}
+</code></pre></div><p>这里没有在 eventWorker 中直接从 handlers 中根据 ID 拿到相关的消费者，一方面是为了让 eventWorker 更加通用，另一方面也是为减少因为锁操作引起的阻塞。</p>
+<p>至此，我们已经把最核心的代码一一拆解完成，完整代码，请参见 channelx 项目中的<a href="https://github.com/Ksloveyuan/channelx/blob/master/event_bus.go">event_bus.go</a></p>
+<h1 id="使用示例">使用示例</h1>
+<p>没有例子的工具类是不完整的，下面就提供一个例子。</p>
+<p>先定义一个 event，这里把<code>id</code>定义成私有的，然后在构造函数中，强制指定。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ExampleEventID</span> <span style="color:#a6e22e">channelx</span>.<span style="color:#a6e22e">EventID</span> = <span style="color:#ae81ff">1</span>
+
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ExampleEvent</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">id</span> <span style="color:#a6e22e">channelx</span>.<span style="color:#a6e22e">EventID</span>
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewExampleEvent</span>() <span style="color:#a6e22e">ExampleEvent</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ExampleEvent</span>{<span style="color:#a6e22e">id</span>:<span style="color:#a6e22e">ExampleEventID</span>}
+}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">evt</span> <span style="color:#a6e22e">ExampleEvent</span>) <span style="color:#a6e22e">ID</span>() <span style="color:#a6e22e">channelx</span>.<span style="color:#a6e22e">EventID</span>  {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">evt</span>.<span style="color:#a6e22e">id</span>
+}
+
+</code></pre></div><p>接下来是 event handler，需要根据实际的需要，在<code>OnEvent</code>中检查接收到的事件是否是订阅的事件，以及接收到事件结构是否能转换成特定的类型。在防御编程后，就可以处理事件逻辑了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ExampleHandler</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">logger</span> <span style="color:#a6e22e">channelx</span>.<span style="color:#a6e22e">Logger</span>
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewExampleHandler</span>(<span style="color:#a6e22e">logger</span> <span style="color:#a6e22e">channelx</span>.<span style="color:#a6e22e">Logger</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">ExampleHandler</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">ExampleHandler</span>{
+		<span style="color:#a6e22e">logger</span>: <span style="color:#a6e22e">logger</span>,
+	}
+}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#a6e22e">ExampleHandler</span>) <span style="color:#a6e22e">Logger</span>() <span style="color:#a6e22e">channelx</span>.<span style="color:#a6e22e">Logger</span>{
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">logger</span>
+}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#a6e22e">ExampleHandler</span>) <span style="color:#a6e22e">CanAutoRetry</span>(<span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) <span style="color:#66d9ef">bool</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#a6e22e">ExampleHandler</span>) <span style="color:#a6e22e">OnEvent</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">event</span> <span style="color:#a6e22e">channelx</span>.<span style="color:#a6e22e">Event</span>) <span style="color:#66d9ef">error</span> {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">ID</span>() <span style="color:#f92672">!=</span> <span style="color:#a6e22e">ExampleEventID</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;subscribe wrong event(%d)&#34;</span>, <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">ID</span>())
+	}
+
+	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">event</span>.(<span style="color:#a6e22e">ExampleEvent</span>)
+	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;failed to convert received event to ExampleEvent&#34;</span>)
+	}
+
+    <span style="color:#75715e">// handle the event here
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">Logger</span>().<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;event handled&#34;</span>)
+
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+}
+
+</code></pre></div><p>最后，就是<code>EventBus</code>的启动，事件的订阅和发布了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#a6e22e">eventBus</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">channelx</span>.<span style="color:#a6e22e">NewEventBus</span>(<span style="color:#a6e22e">logger</span>, <span style="color:#e6db74">&#34;test&#34;</span>, <span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">2</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>, <span style="color:#ae81ff">5</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+<span style="color:#a6e22e">eventBus</span>.<span style="color:#a6e22e">Start</span>()
+
+<span style="color:#a6e22e">handler</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewExampleHandler</span>(<span style="color:#a6e22e">logger</span>)
+<span style="color:#a6e22e">eventBus</span>.<span style="color:#a6e22e">Subscribe</span>(<span style="color:#a6e22e">ExampleEventID</span>, <span style="color:#a6e22e">handler</span>)
+<span style="color:#a6e22e">eventBus</span>.<span style="color:#a6e22e">Publish</span>(<span style="color:#a6e22e">NewExampleEvent</span>())
+</code></pre></div>
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/toolkit/'>toolkit</a></div>
+<div class='series'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="8" y1="6" x2="21" y2="6" />
+  <line x1="8" y1="12" x2="21" y2="12" />
+  <line x1="8" y1="18" x2="21" y2="18" />
+  <line x1="3" y1="6" x2="3" y2="6" />
+  <line x1="3" y1="12" x2="3" y2="12" />
+  <line x1="3" y1="18" x2="3" y2="18" />
+  
+</svg>
+<span class='screen-reader-text'>Series: </span><a class='series' href='/series/channelx/'>channelx</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/golang/'>golang</a>, <a class='tag' href='/tags/channel/'>channel</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/golang_parallel_runner/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>下次想在Golang中写个并发处理，就用这个模板，准没错！</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>All rights reserved by &copy; 2019-2021 海之方 </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script>
+
+</body>
+
+</html>
+

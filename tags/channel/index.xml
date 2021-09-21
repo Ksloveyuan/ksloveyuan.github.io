@@ -5,7 +5,19 @@
     <link>http://www.example.com/tags/channel/</link>
     <description>Recent content in channel on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 07 May 2021 23:25:47 +0800</lastBuildDate><atom:link href="http://www.example.com/tags/channel/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 21 Sep 2021 21:59:01 +0800</lastBuildDate><atom:link href="http://www.example.com/tags/channel/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>玩转Golang的channel，二百行代码实现PubSub模式</title>
+      <link>http://www.example.com/posts/golang_pubsub/</link>
+      <pubDate>Tue, 21 Sep 2021 21:59:01 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/golang_pubsub/</guid>
+      <description>引言 PubSub(Publish/Subscribe)模式，，意为“发布/订阅”模式，是为了解决一对多的依赖关系，使多个消费者同时监听某一个主题，不仅可以让生产者和消费者解耦，同时也让不同的消费者之间相互解耦（注：有些反模式依赖订阅者执行的先后顺序，使用共享数据来传递状态，是需要避免的，因为这样会使消费者耦合在一起，不能独立变化）。这其中的关键就在于需要有中介来维护订阅关系，并负责把生产的消息，传递给订阅方。
+在 Golang 这门语言中，channel 天然就适合来当这个中介，下面就让我们一步步根据 PubSub 模式，实现工具类 EventBus.
+定义类型 首先，让我们先定义一些基本类型和核心操作。
+//EventID是Event的唯一标识 type EventID int64 //Event type Event interface { ID() EventID } //EventHandler type EventHandler interface { OnEvent(ctx context.Context, event Event) error CanAutoRetry(err error) bool } // JobStatus holds information related to a job status type JobStatus struct { RunAt time.Time FinishedAt time.Time Err error } //EventBus ... type EventBus struct {} func (eb *EventBus) Subscribe(eventID EventID, handlers ...EventHandler) { } func (eb *EventBus) Unsubscribe(eventID EventID, handlers .</description>
+    </item>
+    
     <item>
       <title>下次想在Golang中写个并发处理，就用这个模板，准没错！</title>
       <link>http://www.example.com/posts/golang_parallel_runner/</link>
