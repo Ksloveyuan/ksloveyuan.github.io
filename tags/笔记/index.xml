@@ -5,7 +5,21 @@
     <link>http://www.example.com/tags/%E7%AC%94%E8%AE%B0/</link>
     <description>Recent content in 笔记 on 稀里稀里哗啦啦</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 24 Sep 2019 21:58:12 +0800</lastBuildDate><atom:link href="http://www.example.com/tags/%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 26 Sep 2021 17:37:06 +0800</lastBuildDate><atom:link href="http://www.example.com/tags/%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Golang实现SOAP客户端的经验总结</title>
+      <link>http://www.example.com/posts/golang_soap_client/</link>
+      <pubDate>Sun, 26 Sep 2021 17:37:06 +0800</pubDate>
+      
+      <guid>http://www.example.com/posts/golang_soap_client/</guid>
+      <description>引言 SOAP 是一种“简单”的基于 XML 的协议，在 10 多年前流行过一阵。与现在行其道的基于 JSON 协议的 restFul API 相比，SOAP 无疑要笨重许多。
+如果项目的开发语言是.net 或者 Java，那还好还，因为 IDE 有方便的内置功能来解析 SOAP 服务的 WSDL 文件，自动生成 Client 的相关代码。但如果是用 Golang，那就麻烦了。
+下面说说 SOAP 的不同之处，或者说麻烦的地方。
+SOAP 的不同之处  Request/Response 结构复杂，嵌套层级多且深  下面是一个 Request Body 的示例，这个 XML 是必须指定特定的 namespace 的。API 的验证密钥信息，也是要写在 Request Body 中。
+&amp;lt;soapenv:Envelope xmlns:ns=&amp;#34;http://www.id3global.com/ID3gWS/2013/04&amp;#34; xmlns:soap=&amp;#34;soap&amp;#34; xmlns:soapenv=&amp;#34;http://schemas.xmlsoap.org/soap/envelope/&amp;#34;&amp;gt; &amp;lt;soapenv:Header xmlns:wsa=&amp;#34;http://www.w3.org/2005/08/addressing&amp;#34;&amp;gt; &amp;lt;wsse:Security soapenv:mustUnderstand=&amp;#34;1&amp;#34; xmlns:wsse=&amp;#34;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&amp;#34; xmlns:wsu=&amp;#34;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&amp;#34;&amp;gt; &amp;lt;wsse:UsernameToken&amp;gt; &amp;lt;wsse:Username&amp;gt;&amp;lt;/wsse:Username&amp;gt; &amp;lt;wsse:Password&amp;gt;&amp;lt;/wsse:Password&amp;gt; &amp;lt;/wsse:UsernameToken&amp;gt; &amp;lt;/wsse:Security&amp;gt; &amp;lt;/soapenv:Header&amp;gt; &amp;lt;soapenv:Body&amp;gt; &amp;lt;/soapenv:Body&amp;gt; &amp;lt;/soapenv:Envelope&amp;gt; 通常soapenv:Body部分通常是会更加复杂的，如果没有工具支持，纯手工来写，累人不说，还容易出错。
+ Header 的设置  Content-Type: text/xml; charset=&amp;quot;utf-8&amp;quot; SOAPAction: http://www.</description>
+    </item>
+    
     <item>
       <title>用Nginx配置https证书，你绝对不能忽略这一点！</title>
       <link>http://www.example.com/posts/nginx_https_ssl/</link>
