@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang='en'><head>
+  <meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='description' content='引言 SOAP 是一种“简单”的基于 XML 的协议，在 10 多年前流行过一阵。与现在行其道的基于 JSON 协议的 restFul API 相比，SOAP 无疑要笨重许多。
+如果项目的开发语言是.net 或者 Java，那还好还，因为 IDE 有方便的内置功能来解析 SOAP 服务的 WSDL 文件，自动生成 Client 的相关代码。但如果是用 Golang，那就麻烦了。
+下面说说 SOAP 的不同之处，或者说麻烦的地方。
+SOAP 的不同之处  Request/Response 结构复杂，嵌套层级多且深  下面是一个 Request Body 的示例，这个 XML 是必须指定特定的 namespace 的。API 的验证密钥信息，也是要写在 Request Body 中。
+&lt;soapenv:Envelope xmlns:ns=&#34;http://www.id3global.com/ID3gWS/2013/04&#34; xmlns:soap=&#34;soap&#34; xmlns:soapenv=&#34;http://schemas.xmlsoap.org/soap/envelope/&#34;&gt; &lt;soapenv:Header xmlns:wsa=&#34;http://www.w3.org/2005/08/addressing&#34;&gt; &lt;wsse:Security soapenv:mustUnderstand=&#34;1&#34; xmlns:wsse=&#34;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&#34; xmlns:wsu=&#34;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&#34;&gt; &lt;wsse:UsernameToken&gt; &lt;wsse:Username&gt;&lt;/wsse:Username&gt; &lt;wsse:Password&gt;&lt;/wsse:Password&gt; &lt;/wsse:UsernameToken&gt; &lt;/wsse:Security&gt; &lt;/soapenv:Header&gt; &lt;soapenv:Body&gt; &lt;/soapenv:Body&gt; &lt;/soapenv:Envelope&gt; 通常soapenv:Body部分通常是会更加复杂的，如果没有工具支持，纯手工来写，累人不说，还容易出错。
+ Header 的设置  Content-Type: text/xml; charset=&quot;utf-8&quot; SOAPAction: http://www.'>
+<meta name='theme-color' content='#ffcd00'>
+
+<meta property='og:title' content='Golang实现SOAP客户端的经验总结 • 海之方'>
+<meta property='og:description' content='引言 SOAP 是一种“简单”的基于 XML 的协议，在 10 多年前流行过一阵。与现在行其道的基于 JSON 协议的 restFul API 相比，SOAP 无疑要笨重许多。
+如果项目的开发语言是.net 或者 Java，那还好还，因为 IDE 有方便的内置功能来解析 SOAP 服务的 WSDL 文件，自动生成 Client 的相关代码。但如果是用 Golang，那就麻烦了。
+下面说说 SOAP 的不同之处，或者说麻烦的地方。
+SOAP 的不同之处  Request/Response 结构复杂，嵌套层级多且深  下面是一个 Request Body 的示例，这个 XML 是必须指定特定的 namespace 的。API 的验证密钥信息，也是要写在 Request Body 中。
+&lt;soapenv:Envelope xmlns:ns=&#34;http://www.id3global.com/ID3gWS/2013/04&#34; xmlns:soap=&#34;soap&#34; xmlns:soapenv=&#34;http://schemas.xmlsoap.org/soap/envelope/&#34;&gt; &lt;soapenv:Header xmlns:wsa=&#34;http://www.w3.org/2005/08/addressing&#34;&gt; &lt;wsse:Security soapenv:mustUnderstand=&#34;1&#34; xmlns:wsse=&#34;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&#34; xmlns:wsu=&#34;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&#34;&gt; &lt;wsse:UsernameToken&gt; &lt;wsse:Username&gt;&lt;/wsse:Username&gt; &lt;wsse:Password&gt;&lt;/wsse:Password&gt; &lt;/wsse:UsernameToken&gt; &lt;/wsse:Security&gt; &lt;/soapenv:Header&gt; &lt;soapenv:Body&gt; &lt;/soapenv:Body&gt; &lt;/soapenv:Envelope&gt; 通常soapenv:Body部分通常是会更加复杂的，如果没有工具支持，纯手工来写，累人不说，还容易出错。
+ Header 的设置  Content-Type: text/xml; charset=&quot;utf-8&quot; SOAPAction: http://www.'>
+<meta property='og:url' content='http://www.example.com/posts/golang_soap_client/'>
+<meta property='og:site_name' content='稀里稀里哗啦啦'>
+<meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/10062e04217572ec83deabc4d50d254c?s=256'><meta property='article:section' content='posts'><meta property='article:tag' content='golang'><meta property='article:tag' content='SOAP'><meta property='article:published_time' content='2021-09-26T17:37:06&#43;08:00'/><meta property='article:modified_time' content='2021-09-26T17:37:06&#43;08:00'/><meta name='twitter:card' content='summary'>
+
+<meta name="generator" content="Hugo 0.78.2" />
+
+  <title>Golang实现SOAP客户端的经验总结 • 海之方</title>
+  <link rel='canonical' href='http://www.example.com/posts/golang_soap_client/'>
+  
+  
+  <link rel='icon' href='/favicon.ico'>
+<link rel='stylesheet' href='/assets/css/main.6a060eb7.css'><style>
+:root{--color-accent:#ffcd00;}
+</style>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-145633116-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+</head>
+<body class='page type-posts has-sidebar'>
+
+  <div class='site'><div id='sidebar' class='sidebar'>
+  <a class='screen-reader-text' href='#main-menu'>Skip to Main Menu</a>
+
+  <div class='container'><section class='widget widget-about sep-after'>
+  <header>
+    
+    <div class='logo'>
+      <a href='/'>
+        <img src='/images/logo.png'>
+      </a>
+    </div>
+    
+    <h2 class='title site-title '>
+      <a href='/'>
+      稀里稀里哗啦啦
+      </a>
+    </h2>
+    <div class='desc'>
+    代码代码快发芽
+    </div>
+  </header>
+
+</section>
+<section class='widget widget-sidebar_menu sep-after'><nav id='sidebar-menu' class='menu sidebar-menu' aria-label='Sidebar Menu'>
+    <div class='container'>
+      <ul><li class='item'>
+  <a href='/'>Home</a></li><li class='item'>
+  <a href='/posts/'>Posts</a></li><li class='item'>
+  <a href='/authors/me/'>About Me</a></li></ul>
+    </div>
+  </nav>
+
+</section><section class='widget widget-taxonomy_cloud sep-after'>
+  <header>
+    <h4 class='title widget-title'>Tags</h4>
+  </header>
+
+  <div class='container list-container'>
+  <ul class='list taxonomy-cloud'><li>
+        <a href='/tags/channel/' style='font-size:1.4444444444444444em'>channel</a>
+      </li><li>
+        <a href='/tags/ci/' style='font-size:1em'>CI</a>
+      </li><li>
+        <a href='/tags/docker/' style='font-size:1em'>docker</a>
+      </li><li>
+        <a href='/tags/elk/' style='font-size:1em'>ELK</a>
+      </li><li>
+        <a href='/tags/golang/' style='font-size:2em'>golang</a>
+      </li><li>
+        <a href='/tags/gorm/' style='font-size:1.1111111111111112em'>gorm</a>
+      </li><li>
+        <a href='/tags/html/' style='font-size:1em'>Html</a>
+      </li><li>
+        <a href='/tags/https/' style='font-size:1em'>Https</a>
+      </li><li>
+        <a href='/tags/nginx/' style='font-size:1em'>Nginx</a>
+      </li><li>
+        <a href='/tags/python/' style='font-size:1em'>python</a>
+      </li><li>
+        <a href='/tags/soap/' style='font-size:1em'>SOAP</a>
+      </li><li>
+        <a href='/tags/sql/' style='font-size:1em'>sql</a>
+      </li><li>
+        <a href='/tags/thinking/' style='font-size:1.2222222222222223em'>thinking</a>
+      </li><li>
+        <a href='/tags/vue.js/' style='font-size:1em'>Vue.js</a>
+      </li><li>
+        <a href='/tags/%E5%AE%89%E5%85%A8/' style='font-size:1em'>安全</a>
+      </li><li>
+        <a href='/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/' style='font-size:1em'>性能优化</a>
+      </li><li>
+        <a href='/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/' style='font-size:1em'>数据分析</a>
+      </li><li>
+        <a href='/tags/%E7%AC%94%E8%AE%B0/' style='font-size:1.3333333333333333em'>笔记</a>
+      </li><li>
+        <a href='/tags/%E9%9D%A2%E8%AF%95/' style='font-size:1.3333333333333333em'>面试</a>
+      </li></ul>
+</div>
+
+
+</section>
+</div>
+
+  <div class='sidebar-overlay'></div>
+</div><div class='main'><nav id='main-menu' class='menu main-menu' aria-label='Main Menu'>
+  <div class='container'>
+    <a class='screen-reader-text' href='#content'>Skip to Content</a>
+
+<button id='sidebar-toggler' class='sidebar-toggler' aria-controls='sidebar'>
+  <span class='screen-reader-text'>Toggle Sidebar</span>
+  <span class='open'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="3" y1="12" x2="21" y2="12" />
+  <line x1="3" y1="6" x2="21" y2="6" />
+  <line x1="3" y1="18" x2="21" y2="18" />
+  
+</svg>
+</span>
+  <span class='close'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="18" y1="6" x2="6" y2="18" />
+  <line x1="6" y1="6" x2="18" y2="18" />
+  
+</svg>
+</span>
+</button>
+    <ul><li class='item'>
+        <a href='https://github.com/Ksloveyuan/channelx'>channelx</a>
+      </li><li class='item'>
+        <a href='https://ksloveyuan.gitbook.io/vue-code-snippet/'>Vue code snippet</a>
+      </li><li class='item'>
+        <a href='/page/btc_price_analyzer'>BTC price analyzer</a>
+      </li></ul>
+  </div>
+</nav><div class='header-widgets'>
+        <div class='container'></div>
+      </div>
+
+      <header id='header' class='header site-header'>
+        <div class='container sep-after'>
+          <div class='header-info'><p class='site-title title'>稀里稀里哗啦啦</p><p class='desc site-desc'>代码代码快发芽</p>
+          </div>
+        </div>
+      </header>
+
+      <main id='content'>
+
+
+<article lang='en' class='entry'>
+  <header class='header entry-header'>
+  <div class='container sep-after'>
+    <div class='header-info'>
+      <h1 class='title'>Golang实现SOAP客户端的经验总结</h1>
+      
+
+    </div>
+    <div class='entry-meta'>
+  <span class='posted-on'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="3" y1="10" x2="21" y2="10"/>
+  
+</svg>
+<span class='screen-reader-text'>Posted on </span>
+  <time class='entry-date' datetime='2021-09-26T17:37:06&#43;08:00'>2021, Sep 26</time>
+</span>
+
+  <span class='byline'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M21,21V20c0-2.76-4-5-9-5s-9,2.24-9,5v1"/>
+  <path d="M16,6.37A4,4,0,1,1,12.63,3,4,4,0,0,1,16,6.37Z"/>
+  
+</svg>
+<span class='screen-reader-text'> by </span><a href='/authors/me'>海之方</a></span>
+  
+<span class='reading-time'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <circle cx="12" cy="12" r="10"/>
+  <polyline points="12 6 12 12 15 15"/>
+  
+</svg>
+2 mins read
+</span>
+
+
+</div>
+
+
+  </div>
+</header>
+
+  
+  
+
+  <div class='container entry-content'>
+  <h1 id="引言">引言</h1>
+<p>SOAP 是一种“<strong>简单</strong>”的基于 XML 的协议，在 10 多年前流行过一阵。与现在行其道的基于 JSON 协议的 restFul API 相比，SOAP 无疑要笨重许多。</p>
+<p>如果项目的开发语言是.net 或者 Java，那还好还，因为 IDE 有方便的内置功能来解析 SOAP 服务的 WSDL 文件，自动生成 Client 的相关代码。但如果是用 Golang，那就麻烦了。</p>
+<p>下面说说 SOAP 的不同之处，或者说麻烦的地方。</p>
+<h1 id="soap-的不同之处">SOAP 的不同之处</h1>
+<ul>
+<li>Request/Response 结构复杂，嵌套层级多且深</li>
+</ul>
+<p>下面是一个 Request Body 的示例，这个 XML 是必须指定特定的 namespace 的。API 的验证密钥信息，也是要写在 Request Body 中。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;soapenv:Envelope</span> <span style="color:#a6e22e">xmlns:ns=</span><span style="color:#e6db74">&#34;http://www.id3global.com/ID3gWS/2013/04&#34;</span> <span style="color:#a6e22e">xmlns:soap=</span><span style="color:#e6db74">&#34;soap&#34;</span> <span style="color:#a6e22e">xmlns:soapenv=</span><span style="color:#e6db74">&#34;http://schemas.xmlsoap.org/soap/envelope/&#34;</span><span style="color:#f92672">&gt;</span>
+   <span style="color:#f92672">&lt;soapenv:Header</span> <span style="color:#a6e22e">xmlns:wsa=</span><span style="color:#e6db74">&#34;http://www.w3.org/2005/08/addressing&#34;</span><span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;wsse:Security</span> <span style="color:#a6e22e">soapenv:mustUnderstand=</span><span style="color:#e6db74">&#34;1&#34;</span> <span style="color:#a6e22e">xmlns:wsse=</span><span style="color:#e6db74">&#34;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&#34;</span> <span style="color:#a6e22e">xmlns:wsu=</span><span style="color:#e6db74">&#34;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&#34;</span><span style="color:#f92672">&gt;</span>
+         <span style="color:#f92672">&lt;wsse:UsernameToken&gt;</span>
+            <span style="color:#f92672">&lt;wsse:Username&gt;&lt;/wsse:Username&gt;</span>
+            <span style="color:#f92672">&lt;wsse:Password&gt;&lt;/wsse:Password&gt;</span>
+         <span style="color:#f92672">&lt;/wsse:UsernameToken&gt;</span>
+      <span style="color:#f92672">&lt;/wsse:Security&gt;</span>
+   <span style="color:#f92672">&lt;/soapenv:Header&gt;</span>
+   <span style="color:#f92672">&lt;soapenv:Body&gt;</span>
+   <span style="color:#f92672">&lt;/soapenv:Body&gt;</span>
+<span style="color:#f92672">&lt;/soapenv:Envelope&gt;</span>
+</code></pre></div><p>通常<code>soapenv:Body</code>部分通常是会更加复杂的，如果没有工具支持，纯手工来写，累人不说，还容易出错。</p>
+<ul>
+<li>Header 的设置</li>
+</ul>
+<pre><code>Content-Type: text/xml; charset=&quot;utf-8&quot;
+SOAPAction: http://www.id3global.com/ID3gWS/2013/04/IGlobalAuthenticate/AuthenticateSP
+</code></pre><p>header 中的<code>Content-Type</code>是<code>application/json</code>, 可不要下意识的写成<code>application/json</code>哦。而<code>SOAPAction</code>这个 header 就是特别注意了，需要设置成要调用的 action，而且需要注意的是，不同的 action 的 baseUrl 可能是不一样的。相比而言，restFul 的 API 可没这么多坑。</p>
+<ul>
+<li>multiple part 的 reponse</li>
+</ul>
+<p>虽说大部分时候，SOAP 的返回数据是 XML 格式，但有时会是如下这种 multiple part 的格式，解析起来也是需要些功夫的。</p>
+<pre><code>--uuid:6d335978-5c93-40b7-b5c4-3acc067e3d8c+id=302
+Content-ID: &lt;http://tempuri.org/0&gt;
+Content-Transfer-Encoding: 8bit
+Content-Type: application/xop+xml;charset=utf-8;type=&quot;text/xml&quot;
+
+&lt;s:Envelope xmlns:s=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:u=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&quot;&gt;
+&lt;s:Header&gt;&lt;o:Security s:mustUnderstand=&quot;1&quot; xmlns:o=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd&quot;&gt;&lt;/s:Header&gt;
+&lt;s:Body&gt;&lt;/s:Body&gt;
+&lt;/s:Envelope&gt;
+--uuid:6d335978-5c93-40b7-b5c4-3acc067e3d8c+id=302--
+</code></pre><ul>
+<li>时间的反序列化与 Golang 的 time.Time 类型</li>
+</ul>
+<p>Golang 的 time.Time 类型在 unmarshal 时是需要 time zone 的信息的，简单来说就是结尾至少要有个 Z，例：2021-09-23T14:55:43.835Z。如果没有 time zone 信息，如：2024-07-13T00:00:00，那么，或者你不用 time.Time 而用 string，再或者就是重写<code>UnmarshalXML</code>的方法了。</p>
+<h1 id="解决方案">解决方案</h1>
+<p>写了这么多，你也会发现，如果没有现成的工具，自己要处理的细节不是一般的多。</p>
+<p>本着技术领域没有新问题，或者说<strong>你永远不会是第一个遇到这个问题的人</strong>，我开始搜索之路，不得不说搜索还是要 google！</p>
+<p>我通过 medium 上的一篇文章，找到心仪的工具, <a href="https://github.com/hooklift/gowsdl">gowsdl</a>，你可以用这个工具方便的生成模板代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">gowsdl <span style="color:#f92672">[</span>options<span style="color:#f92672">]</span> myservice.wsdl
+</code></pre></div><p>但是呢，我不建议你直接使用生成的代码，而只是使用它定义的结构，自己再重新封装一个 client，原因是:</p>
+<ol>
+<li>通常一个 wsdl 里定义的 action 特别多，而你只需要用其中一两个 action</li>
+<li>再则，生成的代码关于时间字段默认使用的还是<code>time.Time</code>，建议还是自己手动改成 gowsdl 中定义好的<a href="https://github.com/hooklift/gowsdl/blob/master/soap/xsdDateTime.go">XSDDateTime</a>。想想也是好笑，为啥不直接用 XSDDateTime 呢。</li>
+</ol>
+<p>总体来说，生成的代码也是有很多优点的:</p>
+<ol>
+<li>可以识别出 Enum，会生成特定的类型及值。</li>
+<li>可以识别出每个 action 对应的<code>SOAPAction</code>的 http header</li>
+</ol>
+<p>最后，再提一点，不知道是我集成的第三方服务的 SOAP 协议特别古老了，还是这个库有 bug，总之，是在处理 multiple part 的 response 时，有一些检查的逻辑没过，我是提了一个<a href="https://github.com/hooklift/gowsdl/pull/217/files">PR</a>，虽说目前还没人处理，但确实有些 tricky。</p>
+<p>在这种情况，就涉及到另一个问题，<strong>在用 go mod 管理第三方包的时候，如何 hotfix 在引用包中发现的问题？</strong></p>
+<p>其实，主要是可以分 3 步：</p>
+<ol>
+<li>在 github 上，fork 一个自己的 repo</li>
+<li>改动相关代码，然后 Push 一个新的 tag</li>
+<li>但因为这个 Module 的引用名称还要保持原来的名字，如果用自己克隆的 repo 的，就会遇到下面这个错误</li>
+</ol>
+<pre><code>go: github.com/ksloveyuan/gowsdl@v0.5.1: parsing go.mod:
+	module declares its path as: github.com/hooklift/gowsdl
+	        but was required as: github.com/ksloveyuan/gowsdl
+</code></pre><p>我没深入调查原因，但感觉是和 go.mod 有关。还是那句话，你不会是第一个遇到这个问题人，解决方法是使用 go.mod 中的 replace 功能，在 go.mod 文件的最后，加入下面这行就可以修复这个错误了</p>
+<pre><code>replace github.com/hooklift/gowsdl v0.5.0 =&gt; github.com/ksloveyuan/gowsdl v0.5.1
+</code></pre>
+</div>
+
+  
+<footer class='entry-footer'>
+  <div class='container sep-before'><div class='categories'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M22,19a2,2,0,0,1-2,2H4a2,2,0,0,1-2-2V5A2,2,0,0,1,4,3H9l2,3h9a2,2,0,0,1,2,2Z"/>
+  
+</svg>
+<span class='screen-reader-text'>Categories: </span><a class='category' href='/categories/toolkit/'>toolkit</a></div>
+<div class='tags'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M20.59,13.41l-7.17,7.17a2,2,0,0,1-2.83,0L2,12V2H12l8.59,8.59A2,2,0,0,1,20.59,13.41Z"/>
+  <line x1="7" y1="7" x2="7" y2="7"/>
+  
+</svg>
+<span class='screen-reader-text'>Tags: </span><a class='tag' href='/tags/golang/'>golang</a>, <a class='tag' href='/tags/soap/'>SOAP</a></div>
+
+  </div>
+</footer>
+
+
+</article>
+
+<nav class='entry-nav'>
+  <div class='container'><div class='prev-entry sep-before'>
+      <a href='/posts/golang_pubsub/'>
+        <span aria-hidden='true'><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <line x1="20" y1="12" x2="4" y2="12"/>
+  <polyline points="10 18 4 12 10 6"/>
+  
+</svg>
+ Previous</span>
+        <span class='screen-reader-text'>Previous post: </span>玩转Golang的channel，二百行代码实现PubSub模式</a>
+    </div></div>
+</nav>
+
+
+
+
+      </main>
+
+      <footer id='footer' class='footer'>
+        <div class='container sep-before'><section class='widget widget-social_menu sep-after'><nav aria-label='Social Menu'>
+    <ul><li>
+        <a href='mailto:ksloveyuan@live.com' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Contact via Email</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+  <polyline points="22,6 12,13 2,6"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://github.com/ksloveyuan' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Github account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+  
+</svg>
+</a>
+      </li><li>
+        <a href='https://linkedin.com/in/jeremy-liu-24278668' target='_blank' rel='noopener'>
+          <span class='screen-reader-text'>Open Linkedin account in new tab</span><svg class='icon' viewbox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' aria-hidden='true'>
+  
+  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+  <rect x="2" y="9" width="4" height="12"/>
+  <circle cx="4" cy="4" r="2"/>
+  
+</svg>
+</a>
+      </li></ul>
+  </nav>
+</section><div class='copyright'>
+  <p>All rights reserved by &copy; 2019-2021 海之方 </p>
+</div>
+
+        </div>
+      </footer>
+
+    </div>
+  </div><script>window.__assets_js_src="/assets/js/"</script>
+
+<script src='/assets/js/main.67d669ac.js'></script>
+
+</body>
+
+</html>
+
